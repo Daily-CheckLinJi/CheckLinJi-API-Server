@@ -35,3 +35,4 @@ CheckLinJi-API/target/maven-status
 CheckLinJi-API/target/surefire-reports
 *.original
 CheckLinJi-API/.factorypath
+CheckLinJi-API/target/test-classes/com/upside/api/CheckLinJiApiApplicationTests.class
