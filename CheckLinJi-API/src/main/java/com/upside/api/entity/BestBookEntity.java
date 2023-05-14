@@ -32,7 +32,13 @@ public class BestBookEntity { // User 테이블: 사용자 정보를 저장하�
  private String name;
  
  @Column(name = "date")
- private LocalDate date;
+ private String date;
+ 
+ @Column(name = "rank")
+ private Integer rank;
+ 
+ @Column(name = "updateDate")
+ private LocalDate updateDate;
  
 
 
@@ -40,10 +46,12 @@ public class BestBookEntity { // User 테이블: 사용자 정보를 저장하�
  
  
 @Builder
-public BestBookEntity(String name, LocalDate date) {
+public BestBookEntity(String name , String date , Integer rank , LocalDate updateDate) {
 	super();
 	this.name = name;
 	this.date = date;
+	this.rank = rank;
+	this.updateDate = updateDate;
 	
 	}
 

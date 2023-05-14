@@ -2,10 +2,10 @@ package com.upside.api.service;
 
 
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -13,7 +13,10 @@ import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.upside.api.dto.BestBookDto;
+import com.upside.api.entity.BestBookEntity;
 import com.upside.api.entity.SayingEntity;
+import com.upside.api.repository.BestBookRepository;
 import com.upside.api.repository.WiseSayingRepository;
 import com.upside.api.util.APIConnect;
 import com.upside.api.util.Constants;
@@ -40,6 +43,8 @@ public class ExternalAPIService {
 	private String clientSecret; // //  클라이언트 시크릿
 	
 	private final WiseSayingRepository wiseSayingRepository;
+	
+	private final BestBookRepository bestBooRepository;
 	
 //	private final ApiComponent apiCoponent;
 	
@@ -73,37 +78,27 @@ public class ExternalAPIService {
 	    }	
 	 
 	 /**
-	  * 오타 검수 API 
+	  * 베스트 셀러 
 	  * @return
 	  */
-	 public  Map<String,String> spellCheckAPI (String content) {
+	 public  Map<String,Object> bestSeller (String day) {
 		 
-		 Map<String,String> result = new HashMap<String, String>();
-		 
-//		 String clientId = "YOUR_CLIENT_ID"; //애플리케이션 클라이언트 아이디
-//		 String clientSecret = "YOUR_CLIENT_SECRET"; //애플리케이션 클라이언트 시크릿
-		 		 
-		        try {
-		        	content = URLEncoder.encode("그린팩토리", "UTF-8");
-		        } catch (UnsupportedEncodingException e) {
-		            throw new RuntimeException("검색어 인코딩 실패",e);
-		        }
-
-
-	        String apiURL = "https://openapi.naver.com/v1/search/blog?query=" + content;    // JSON 결과	        
-
-	        Map<String, String> requestHeaders = new HashMap<>();
-	        requestHeaders.put("X-Naver-Client-Id", clientId);
-	        requestHeaders.put("X-Naver-Client-Secret", clientSecret);
-	        
-	        String responseBody = APIConnect.get(apiURL,requestHeaders);
-
-	        
-	        
-	        log.info("오타 검수 ------> " + Constants.SUCCESS);
-			result.put("HttpStatus","2.00");
-	        result.put("Msg",responseBody);
-	        return result;
+		 Map<String,Object> result = new HashMap<String, Object>();
+		 		 		 
+		 List<BestBookEntity> existYN = bestBooRepository.findByDate(day);	     		
+	     	     
+		 if(existYN != null) {
+			 log.info("베스트셀러 확인 ------> " + Constants.SUCCESS);
+			 result.put("HttpStatus","2.00");
+			 result.put("Msg",Constants.SUCCESS);
+			 result.put("bestSeller",existYN);			 		 			 
+		 } else {
+			 log.info("베스트셀러 확인 ------> " + Constants.FAIL);
+			 result.put("HttpStatus","1.00");
+			 result.put("Msg",Constants.FAIL);
+		 }
+	
+	        return result ;
 	    }	
 	 
 	 /**

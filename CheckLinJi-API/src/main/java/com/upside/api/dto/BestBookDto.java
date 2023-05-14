@@ -9,7 +9,9 @@ public class BestBookDto {
  
  private int seq;
  private String name;
- private LocalDate date;
+ private String date;
+ private Integer rank;
+ private LocalDate updateDate;
  
  
 }

@@ -67,6 +67,7 @@ public class SecurityConfig {
 
 //        configuration.addAllowedOrigin("*");
         configuration.addAllowedOrigin("http://localhost:8080");
+        configuration.addAllowedOrigin("http://localhost:8081");
         configuration.addAllowedOrigin("http://localhost:9999");
         configuration.addAllowedOrigin("http://localhost:3000");
         configuration.addAllowedOrigin("http://15.164.49.235:3000");

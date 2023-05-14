@@ -266,7 +266,7 @@
 	        <properties>
 	            <env>local</env>
 	        </properties>
-	        <!-- 기본 프로파일 -->
+<!-- 	        기본 프로파일 -->
 	        <activation>
 	            <activeByDefault>true</activeByDefault>
 	        </activation>
@@ -276,6 +276,10 @@
 	        <properties>
 	            <env>prod</env>
 	        </properties>
+<!-- 	         기본 프로파일 -->
+<!-- 	        <activation> -->
+<!-- 	            <activeByDefault>true</activeByDefault> -->
+<!-- 	        </activation> -->
 	    </profile>
 </profiles>
 </project>

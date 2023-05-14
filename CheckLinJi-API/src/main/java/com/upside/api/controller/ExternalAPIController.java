@@ -2,6 +2,7 @@ package com.upside.api.controller;
 
 
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.json.simple.JSONArray;
@@ -10,11 +11,13 @@ import org.json.simple.parser.JSONParser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.upside.api.dto.BestBookDto;
 import com.upside.api.dto.MessageDto;
 import com.upside.api.service.ExternalAPIService;
 import com.upside.api.util.Constants;
@@ -45,6 +48,36 @@ public class ExternalAPIController {
 		}
 		
 	 }
+	
+	/**
+	 * 베스트셀러 Top 10 
+	 * @return
+	 */
+	@GetMapping("/bestSeller") 						  	
+	public ResponseEntity<Map<String,Object>> bestSeller (@RequestBody BestBookDto bestBookDto) {
+						
+		String day = bestBookDto.getDate();
+		
+		Map<String,Object> result = new HashMap<String, Object>();
+		
+		// 요청 온 데이터가 날짜가 아닐때 -> 잘못된 요청
+		if(!day.equals("today") && !day.equals("yesterDay") && !day.equals("week")) {
+			result.put("HttpStatus", "1.00");
+			result.put("Msg", Constants.FAIL);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);		
+		}else {
+			result = externalAPIService.bestSeller(day);
+		}
+												
+		if(result.get("HttpStatus").equals("2.00")) {			
+			return new ResponseEntity<>(result ,HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(result,HttpStatus.BAD_REQUEST);
+		}
+		
+	 }
+	
+	
 	
 	/**
 	 * ChatGpt API
