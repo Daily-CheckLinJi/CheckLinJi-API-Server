@@ -99,4 +99,9 @@
 		   AND UC.EMAIL = #{email} 					 
 	</select>
 	
+	<!-- 등급 업데이트 -->
+	<update id="updateGrade" parameterType="MemberDto" >
+		UPDATE MEMBER_INFO SET GRADE = #{grade} WHERE EMAIL = #{email};			 
+	</update>
+	
 </mapper>

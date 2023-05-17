@@ -17,7 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.upside.api.dto.ChallengeDto;
 import com.upside.api.dto.ChallengeSubmissionDto;
-import com.upside.api.dto.FileUploadDto;
+import com.upside.api.dto.MemberDto;
 import com.upside.api.entity.ChallengeEntity;
 import com.upside.api.entity.ChallengeSubmissionEntity;
 import com.upside.api.entity.MemberEntity;
@@ -237,20 +237,40 @@ public class ChallengeService {
 			result.put("Msg","첼린지 제출이 완료되었습니다.");	       
 			log.info("첼린지 제출 ------> " + "End");
 			
-			// 첼린지 미션 제출 후 누적 미션 수 체크 후 등급 업데이트 
-			int missionSum = memberService.missionCompletedSum(submissonDto.getEmail());
+			
+			// 첼린지 미션 제출 후 누적 미션 수 체크 
+			MemberDto memberDto = new MemberDto();
+			int missionSum = memberService.missionCompletedSum(submissonDto.getEmail());						
+			memberDto.setEmail(submissonDto.getEmail());						
+			int updateGrade = 0 ;
+			
+			// 누적 미션 횟수에 따른 등급 업데이트
 			if(missionSum == 0 ) {
 				result.put("HttpStatus","2.00");		
 				result.put("Msg","첼린지 제출이 완료되었으나 예상치 못한 에러로 등급 업데이트에 실패하였습니다.");	
-				
+			}else if(missionSum >= 0 && missionSum <= 19) { // 0~19회 책갈피
+				memberDto.setGrade("책갈피");
+				updateGrade = memberService.updateGrade(memberDto);		
 			}else if(missionSum >= 20 && missionSum <= 49) { // 20~49회 책린이
-											
+				memberDto.setGrade("책린이");
+				updateGrade = memberService.updateGrade(memberDto);						
 			}else if(missionSum >= 50 && missionSum <= 79) { // 50~79회 책벌레
-				
+				memberDto.setGrade("책벌레");
+				updateGrade = memberService.updateGrade(memberDto);				
 			}else if(missionSum >= 80 && missionSum <= 99) { // 50~79회 책탐험가
-				
+				memberDto.setGrade("책탐험가");
+				updateGrade = memberService.updateGrade(memberDto);				
 			}else if(missionSum >= 100) { // 100회 책박사
-				
+				memberDto.setGrade("책박사");
+				updateGrade = memberService.updateGrade(memberDto);
+			}
+						
+			log.info("등급 업데이트 결과 0(실패),1(성공) ----->" + updateGrade);
+			
+			// 등급 업데이트 실패 메시지 
+			if(updateGrade == 0 ) {
+				result.put("HttpStatus","2.00");		
+				result.put("Msg","첼린지 제출이 완료되었으나 예상치 못한 에러로 등급 업데이트에 실패하였습니다.");	
 			}
 			
 	 	} else {
