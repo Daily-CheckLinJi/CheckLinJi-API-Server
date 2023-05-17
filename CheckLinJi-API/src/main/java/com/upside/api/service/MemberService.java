@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -149,6 +150,7 @@ public class MemberService {
 				.joinDate(today.format(new Date()))
 				.authority("user")
 				.profile(uploadDir + "/" + "profile" + "/" + profileName) // 문자열에서 백슬래시()는 이스케이프 문자(escape character)로 사용되기 때문에 사용할려면 \\ 두개로 해야 \로 인식
+				.grade("책갈피")
 				.build();						        
 		
 		 memberRepository.save(memberEntity);
@@ -526,4 +528,45 @@ public class MemberService {
 			}
     	return result;
    }
+    
+    
+    /**
+	 * 본인 누적미션 횟수
+	 * 첼린지 미션 제출 후 조회하는것이기 때문에 무조건 0 이상이므로 0은 에러로 
+	 * @param fileUploadDto
+	 * @return
+	 */
+	public int missionCompletedSum(String email) {		
+		log.info("본인 누적미션 횟수 ------> " + "Start");						                                                 
+		int missionCompletedSum = 0 ;
+		
+        try {
+        	missionCompletedSum = memberMapper.missionCompletedSum(email);        	        	        	        	        	
+		} catch (DataAccessException e) {
+			log.info("본인 누적미션 횟수 ------> " + "Data 접근 실패");    	   
+   		 return 0 ;   		 
+		}
+        
+	  return missionCompletedSum ;				 	    			    		   
+	}
+    
+	/**
+	 * 누적미션 횟수에 따라 등급 업데이트	 
+	 * @return
+	 */
+	public int updateGrade(MemberDto memberDto) {		
+		log.info("등급 업데이트 ------> " + "Start");
+		
+		int updateGrade = 0 ;
+		
+        try {
+        	updateGrade = memberMapper.updateGrade(memberDto);        	        	        	        	        	
+		} catch (DataAccessException e) {
+			log.info("본인 누적미션 횟수 ------> " + "Data 접근 실패");    	   
+   		 return 0 ;   		 
+		}
+        
+	  return updateGrade ;				 	    			    		   
+	}
+    
 }

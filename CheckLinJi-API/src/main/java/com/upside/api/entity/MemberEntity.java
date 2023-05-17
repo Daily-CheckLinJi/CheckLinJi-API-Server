@@ -51,13 +51,16 @@ public class MemberEntity { // User 테이블: 사용자 정보를 저장하는 
  @Column(nullable = false , name = "profile")
  private String profile;
  
+ @Column(nullable = false , name = "grade")
+ private String grade;
+ 
  @Column(name = "refreshToken")
  private String refreshToken;
  
 
 @Builder
 public MemberEntity(String email, String password, String name, String nickName, String birth, String sex,
-		String joinDate, String loginDate , String authority , String profile) {
+		String joinDate, String loginDate , String authority , String profile , String grade) {
 	super();
 	this.email = email;
 	this.password = password;
@@ -69,6 +72,7 @@ public MemberEntity(String email, String password, String name, String nickName,
 	this.loginDate = loginDate;
 	this.authority = authority;
 	this.profile = profile;
+	this.grade = grade;
 	
 }
 }

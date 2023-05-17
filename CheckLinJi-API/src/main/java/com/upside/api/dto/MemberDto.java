@@ -17,5 +17,6 @@ public class MemberDto {
  private String profile;
  private String accessToken;
  private String refreshToken;
+ private String grade;
  
 }

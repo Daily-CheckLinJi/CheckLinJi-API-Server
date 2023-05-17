@@ -43,7 +43,7 @@ public class ChallengeService {
 	 private final UserChallengeRepository userChallengeRepository;
 	 private final MemberRepository memberRepository;
 	 private final ChallengeSubmissionRepository challengeSubmissionRepository;
-	 
+	 private final MemberService memberService;
 	 private final FileService fileService;
 	 	 
 	
@@ -235,7 +235,24 @@ public class ChallengeService {
 	        log.info("첼린지 제출 ------> " + Constants.SUCCESS);
 	        result.put("HttpStatus","2.00");		
 			result.put("Msg","첼린지 제출이 완료되었습니다.");	       
-			log.info("첼린지 제출 ------> " + "End");	        				
+			log.info("첼린지 제출 ------> " + "End");
+			
+			// 첼린지 미션 제출 후 누적 미션 수 체크 후 등급 업데이트 
+			int missionSum = memberService.missionCompletedSum(submissonDto.getEmail());
+			if(missionSum == 0 ) {
+				result.put("HttpStatus","2.00");		
+				result.put("Msg","첼린지 제출이 완료되었으나 예상치 못한 에러로 등급 업데이트에 실패하였습니다.");	
+				
+			}else if(missionSum >= 20 && missionSum <= 49) { // 20~49회 책린이
+											
+			}else if(missionSum >= 50 && missionSum <= 79) { // 50~79회 책벌레
+				
+			}else if(missionSum >= 80 && missionSum <= 99) { // 50~79회 책탐험가
+				
+			}else if(missionSum >= 100) { // 100회 책박사
+				
+			}
+			
 	 	} else {
 	 		 log.info("첼린지 제출 ------> " + Constants.FAIL);
 		        result.put("HttpStatus","1.00");		
