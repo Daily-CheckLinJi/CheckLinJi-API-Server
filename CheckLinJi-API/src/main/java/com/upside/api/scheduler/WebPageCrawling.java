@@ -75,10 +75,10 @@ public class WebPageCrawling {
     	
     }
    
-  @Scheduled(cron = "0 0 9 ? * MON") // 매일 새벽 1시에 전날 베스트 셀러 크롤링   
+  @Scheduled(cron = "0 0 9 ? * MON") // 매일 새벽 1시에 전날 베스트 셀러 크롤링 
   public void readWebPageWeek() {
   	
-	  	log.info("이번주 베스트 셀러 Crawling 시작 ------> " + LocalDate.now());
+	  	log.info("이번주 베스트 셀러 Crawling 시작 -------> " + LocalDate.now());
 	  	
 	  	try {
 	  		// 알라딘 전날 베스트셀러 url
