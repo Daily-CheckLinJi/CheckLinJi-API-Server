@@ -6,6 +6,8 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import com.upside.api.dto.MemberDto;
+
 @Mapper
 public interface MemberMapper {
 	
@@ -54,8 +56,24 @@ public interface MemberMapper {
 	
 	/**
 	 * 본인 미션 삭제
-	 * @param data
+	 * @param param
 	 * @return
 	 */
 	HashMap<String, Object> memberDelete (HashMap<String, String> param);
+	
+	
+	/**
+	 * 본인 누적미션 횟수
+	 * @param email
+	 * @return
+	 */
+	int missionCompletedSum (String email);
+	
+	/**
+	 * 등급 업데이트
+	 * @param memberDto
+	 * @return
+	 */
+	int updateGrade (MemberDto memberDto);
+	
 }
