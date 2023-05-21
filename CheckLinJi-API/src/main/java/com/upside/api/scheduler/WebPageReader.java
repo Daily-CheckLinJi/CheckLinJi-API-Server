@@ -40,14 +40,13 @@ public class WebPageReader  {
 		 
 		 // 반복횟수
 		 Integer seq = 1 ;
+		 Integer seq1 = 1 ;
 		
         // Jsoup을 사용하여 URL에 접속하고 웹 페이지를 파싱한다.
         Document doc = Jsoup.connect(url).get();
-              
-        Elements items = doc.select("li");
-                
         List<BestBookEntity> list = new ArrayList<>();
         
+        Elements items = doc.select("li");                               
         // li 갯수만큼 반복하면서 .bo3 옆 b 태그 값 가져오기(책이름)
         for (Element item : items) {       	
             String bookName = item.select(".bo3 > b").text();
@@ -65,6 +64,32 @@ public class WebPageReader  {
             }   
             
         }                             
+        
+//        Elements imgElements = doc.select("img.i_cover");        
+//        for (Element imgElement : imgElements) {
+//            String imageUrl = imgElement.attr("src");
+//            
+//            
+//            if(!imageUrl.equals("") && seq <= 10) { 
+//            	System.out.println("Image URL: " + imageUrl);	
+//            	seq1++;
+//            }
+//        }
+        
+        
+        // 이미지         
+        Elements imgElements = doc.select("img.front_cover");
+        int count = 0;
+        for (Element imgElement : imgElements) {
+            String imageUrl = imgElement.attr("src");
+            System.out.println("Image URL: " + imageUrl);
+            
+            count++;
+            if (count >= 10) {
+                break;
+            }
+        }
+
         
         // 전날 베스트셀러 Top 10 출력
         for (int i = 0; i < list.size(); i++) {
