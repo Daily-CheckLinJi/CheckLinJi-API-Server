@@ -268,7 +268,7 @@ public class FileService {
 	
 	
 	/**
-	 * 파일 다운로드 Base64 인코딩 방식
+	 * URL로 이미지 다운로드 Base64 인코딩 방식
 	 * @param fileUploadDto
 	 * @return
 	 */
@@ -277,6 +277,7 @@ public class FileService {
 		log.info("이미지 다운로드 (URL) ------> " + imageUrl);
 		
 		byte[] imageBytes = null;
+		
 		 try {
 		        // 호출된 URL로 연결
 		        URL url = new URL(imageUrl);

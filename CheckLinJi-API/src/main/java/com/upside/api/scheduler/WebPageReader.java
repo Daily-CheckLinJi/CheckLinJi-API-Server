@@ -68,14 +68,16 @@ public class WebPageReader  {
             
         }                             
                         
-        // 이미지         
+        // 이미지 크롤링으로 받아오기       
         Elements imgElements = doc.select("img.front_cover");
         int count = 0;
         for (Element imgElement : imgElements) {
             String imageUrl = imgElement.attr("src");
             
+            System.out.println("imageURL : " + imageUrl);
+            // 이미지 URL로 다운받아 디코딩한 값 
             byte[] image = fileService.ImageUrlDownload(imageUrl);
-//            System.out.println("Image : " + image);
+                       
             list.get(count).setImage(image);
             count++;
             if (count >= 10) {
@@ -150,6 +152,24 @@ public class WebPageReader  {
             
         }                             
         
+        // 이미지 크롤링으로 받아오기       
+        Elements imgElements = doc.select("img.i_cover");
+        int count = 0;
+        for (Element imgElement : imgElements) {
+            String imageUrl = imgElement.attr("src");
+            System.out.println("imageURL : " + imageUrl);
+            // 이미지 URL로 다운받아 디코딩한 값 
+            byte[] image = fileService.ImageUrlDownload(imageUrl);
+                       
+            list.get(count).setImage(image);
+            count++;
+            if (count >= 10) {
+                break;
+            }
+        }
+        
+        
+        
         // 전날 베스트셀러 Top 10 출력
         for (int i = 0; i < list.size(); i++) {
         	int rank = i+1;            
@@ -212,6 +232,24 @@ public class WebPageReader  {
             }   
             
         }                             
+        
+        
+        // 이미지 크롤링으로 받아오기       
+        Elements imgElements = doc.select("img.front_cover");
+        int count = 0;
+        for (Element imgElement : imgElements) {
+            String imageUrl = imgElement.attr("src");
+            
+            System.out.println("imageURL : " + imageUrl);
+            // 이미지 URL로 다운받아 디코딩한 값 
+            byte[] image = fileService.ImageUrlDownload(imageUrl);
+                       
+            list.get(count).setImage(image);
+            count++;
+            if (count >= 10) {
+                break;
+            }
+        }
         
         // 전날 베스트셀러 Top 10 출력
         for (int i = 0; i < list.size(); i++) {
