@@ -10,6 +10,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -37,20 +38,26 @@ public class BestBookEntity { // User 테이블: 사용자 정보를 저장하�
  @Column(name = "rank")
  private Integer rank;
  
+ @Lob
+ @Column(columnDefinition = "LONGBLOB")
+ private byte[] image;
+ 
  @Column(name = "updateDate")
  private LocalDate updateDate;
  
-
+ 
+ 
 
  
  
  
 @Builder
-public BestBookEntity(String name , String date , Integer rank , LocalDate updateDate) {
+public BestBookEntity(String name , String date , Integer rank , byte[] image ,LocalDate updateDate) {
 	super();
 	this.name = name;
 	this.date = date;
 	this.rank = rank;
+	this.image = image;
 	this.updateDate = updateDate;
 	
 	}

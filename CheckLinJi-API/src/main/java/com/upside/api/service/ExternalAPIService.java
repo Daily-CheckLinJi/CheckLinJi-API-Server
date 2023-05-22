@@ -46,7 +46,7 @@ public class ExternalAPIService {
 	
 	private final BestBookRepository bestBooRepository;
 	
-//	private final ApiComponent apiCoponent;
+	private final FileService fileService;
 	
 	
 	 /**
@@ -86,17 +86,31 @@ public class ExternalAPIService {
 		 Map<String,Object> result = new HashMap<String, Object>();
 		 		 		 
 		 List<BestBookEntity> existYN = bestBooRepository.findByDate(day);	     		
-	     	     
-		 if(existYN != null) {
-			 log.info("베스트셀러 확인 ------> " + Constants.SUCCESS);
-			 result.put("HttpStatus","2.00");
-			 result.put("Msg",Constants.SUCCESS);
-			 result.put("bestSeller",existYN);			 		 			 
-		 } else {
+	     
+		 if(existYN == null) {
 			 log.info("베스트셀러 확인 ------> " + Constants.FAIL);
 			 result.put("HttpStatus","1.00");
 			 result.put("Msg",Constants.FAIL);
+			 return result ;
+		 } 
+		 
+		 List<BestBookDto> list = new ArrayList<BestBookDto>();
+		 
+		 for(int i = 0; i < existYN.size(); i++) {
+			 BestBookDto bestBook = new BestBookDto();
+			 bestBook.setName(existYN.get(i).getName());
+			 bestBook.setRank(existYN.get(i).getRank());
+			 bestBook.setDate(existYN.get(i).getDate());
+			 bestBook.setUpdateDate(existYN.get(i).getUpdateDate());
+			 bestBook.setImage(fileService.encodingImageUrl(existYN.get(i).getImage()));
+			 list.add(bestBook);
+			 			
 		 }
+		 
+		 log.info("베스트셀러 확인 ------> " + Constants.SUCCESS);
+		 result.put("HttpStatus","2.00");
+		 result.put("Msg",Constants.SUCCESS);
+		 result.put("bestSeller",list);		
 	
 	        return result ;
 	    }	

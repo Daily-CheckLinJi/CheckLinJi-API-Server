@@ -13,6 +13,8 @@ import org.springframework.stereotype.Component;
 import com.upside.api.dto.BestBookDto;
 import com.upside.api.entity.BestBookEntity;
 import com.upside.api.repository.BestBookRepository;
+import com.upside.api.service.FileService;
+import com.upside.api.service.MemberService;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +25,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class WebPageReader  {
 		
-    private final BestBookRepository bookRepository;   
+    private final BestBookRepository bookRepository;
+    private final FileService fileService;
     
     
     /**
@@ -40,7 +43,7 @@ public class WebPageReader  {
 		 
 		 // 반복횟수
 		 Integer seq = 1 ;
-		 Integer seq1 = 1 ;
+		 Integer image_seq = 1 ;
 		
         // Jsoup을 사용하여 URL에 접속하고 웹 페이지를 파싱한다.
         Document doc = Jsoup.connect(url).get();
@@ -64,26 +67,16 @@ public class WebPageReader  {
             }   
             
         }                             
-        
-//        Elements imgElements = doc.select("img.i_cover");        
-//        for (Element imgElement : imgElements) {
-//            String imageUrl = imgElement.attr("src");
-//            
-//            
-//            if(!imageUrl.equals("") && seq <= 10) { 
-//            	System.out.println("Image URL: " + imageUrl);	
-//            	seq1++;
-//            }
-//        }
-        
-        
+                        
         // 이미지         
         Elements imgElements = doc.select("img.front_cover");
         int count = 0;
         for (Element imgElement : imgElements) {
             String imageUrl = imgElement.attr("src");
-            System.out.println("Image URL: " + imageUrl);
             
+            byte[] image = fileService.ImageUrlDownload(imageUrl);
+//            System.out.println("Image : " + image);
+            list.get(count).setImage(image);
             count++;
             if (count >= 10) {
                 break;

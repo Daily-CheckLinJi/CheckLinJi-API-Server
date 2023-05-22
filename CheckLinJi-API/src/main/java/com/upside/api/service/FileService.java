@@ -2,12 +2,17 @@ package com.upside.api.service;
 
 
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 import java.util.Base64;
 import java.util.HashMap;
@@ -261,4 +266,66 @@ public class FileService {
 		 return result ;				 	 	    			    		   
 	}
 	
+	
+	/**
+	 * 파일 다운로드 Base64 인코딩 방식
+	 * @param fileUploadDto
+	 * @return
+	 */
+	public byte[] ImageUrlDownload(String imageUrl) {
+		
+		log.info("이미지 다운로드 (URL) ------> " + imageUrl);
+		
+		byte[] imageBytes = null;
+		 try {
+		        // 호출된 URL로 연결
+		        URL url = new URL(imageUrl);
+		        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		        connection.setRequestMethod("GET");
+
+		        // 이미지 응답을 받아서 저장
+		        InputStream inputStream = connection.getInputStream();
+		        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		        byte[] buffer = new byte[4096];
+		        int bytesRead;
+		        while ((bytesRead = inputStream.read(buffer)) != -1) {
+		            outputStream.write(buffer, 0, bytesRead);
+		        }
+		        imageBytes = outputStream.toByteArray();
+
+		        // 이미지를 base64로 인코딩
+//		        base64Image = Base64.getEncoder().encodeToString(imageBytes);		        		        	        		        		      
+
+		        // 연결과 스트림 닫기
+		        connection.disconnect();
+		        inputStream.close();
+		        outputStream.close();
+		    } catch (IOException e) {
+		        e.printStackTrace();
+		        imageBytes = null ;
+		    }
+		 return imageBytes;
 	}
+	
+	/**
+	 * 디코딩된 blob값을 다시 인코딩
+	 * @param imageUrl
+	 * @return
+	 */
+	public String encodingImageUrl(byte[] image) {
+		
+		log.info("디코딩된 blob 값을 다시 인코딩 ------> " + image);
+		
+		String encoding_image = "N";
+		 try {		      
+		        // 이미지를 base64로 인코딩
+			 encoding_image = Base64.getEncoder().encodeToString(image);		        		        	        		        		      
+		        // 연결과 스트림 닫기		      
+		    } catch (Exception e) {
+		        e.printStackTrace();
+		        encoding_image = "N" ;
+		    }
+		 return encoding_image;
+	}
+	
+}
