@@ -67,15 +67,27 @@
 	JOIN USER_CHALLENGE UC 
 	ON UC.USER_CHALLENGE_ID = CS.USER_CHALLENGE_ID
 	WHERE CS.SUBMISSION_TIME LIKE #{date}
+	AND UC.CHALLENGE_NAME = #{challengeName}
 	AND UC.EMAIL = #{email}
 	GROUP BY CS.SUBMISSION_TIME ; 
 	</select>
 		
 	<!-- 본인 미션 상세정보 -->
 	<select id="missionAuthInfo" parameterType="MemberDto" resultType="java.util.Map" >
-		SELECT UPLOAD_DATE , FILE_ROUTE , USER_FEELING  FROM FILE_UPLOAD 
-	where UPLOAD_DATE = #{date}
-	AND EMAIL =  #{email}  
+		SELECT 	  		  EMAIL
+						, CHALLENGE_NAME
+						, SUBMISSION_TITLE 
+						, SUBMISSION_TEXT 
+						, SUBMISSION_TIME
+						, SUBMISSION_IMAGE_ROUTE 
+						, SUBMISSION_COMPLETED		
+				FROM CHALLENGE_SUBMISSION CS 
+			JOIN USER_CHALLENGE UC 
+			ON UC.USER_CHALLENGE_ID = CS.USER_CHALLENGE_ID
+			WHERE CS.SUBMISSION_TIME = #{date}
+			AND UC.CHALLENGE_NAME = #{challengeName}
+			AND UC.EMAIL = #{email}
+			GROUP BY CS.SUBMISSION_TIME ; 
 	</select>
 	
 	<!-- 본인 미션 정보 삭제 -->
@@ -103,5 +115,5 @@
 	<update id="updateGrade" parameterType="MemberDto" >
 		UPDATE MEMBER_INFO SET GRADE = #{grade} WHERE EMAIL = #{email};			 
 	</update>
-	
+	 
 </mapper>

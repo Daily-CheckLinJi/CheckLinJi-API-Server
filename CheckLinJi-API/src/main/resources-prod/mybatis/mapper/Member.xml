@@ -102,4 +102,18 @@
 		 CALL DELETE_MEMBER (#{email, mode=IN}, #{COMPLETED , mode=OUT, jdbcType=VARCHAR}) 
 	</select>	
 	 
+	 <!-- 내 미션 누적 달성 횟수 -->
+	<select id="missionCompletedSum" parameterType="String" resultType="int" >
+		SELECT count(*) as own 		
+		 FROM CHALLENGE_SUBMISSION CS 
+		  JOIN USER_CHALLENGE UC 
+		   ON CS.USER_CHALLENGE_ID = UC.USER_CHALLENGE_ID		 
+		   AND UC.EMAIL = #{email} 					 
+	</select>
+	
+	<!-- 등급 업데이트 -->
+	<update id="updateGrade" parameterType="MemberDto" >
+		UPDATE MEMBER_INFO SET GRADE = #{grade} WHERE EMAIL = #{email};			 
+	</update>
+	 
 </mapper>
