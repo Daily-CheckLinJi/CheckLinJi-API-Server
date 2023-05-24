@@ -45,6 +45,9 @@ public class ChallengeSubmissionEntity { // ChallengeSubmission 테이블: 사�
 	 @Column(nullable = true) // 내용
 	 private String  submissionText; 
 	 
+	 @Column(nullable = true) // 내용
+	 private String  nickName; 
+	 
 	 @Column(nullable = true) // 사진
 	 private String  submissionImageRoute; 
 	 
@@ -55,12 +58,13 @@ public class ChallengeSubmissionEntity { // ChallengeSubmission 테이블: 사�
 
 @Builder
 public ChallengeSubmissionEntity(UserChallengeEntity userChallenge , LocalDate submissionTime , String submissionTitle 
-		, String submissionText  , String submissionImageRoute , String submissionCompleted) {		
+		, String submissionText  , String nickName , String submissionImageRoute , String submissionCompleted) {		
 	super();
 	this.userChallenge = userChallenge;	
 	this.submissionTime = submissionTime;
 	this.submissionTitle= submissionTitle;
 	this.submissionText = submissionText;
+	this.nickName = nickName;
 	this.submissionImageRoute = submissionImageRoute ;
 	this.submissionCompleted = submissionCompleted;
 

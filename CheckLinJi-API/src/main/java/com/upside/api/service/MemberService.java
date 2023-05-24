@@ -536,12 +536,12 @@ public class MemberService {
 	 * @param fileUploadDto
 	 * @return
 	 */
-	public int missionCompletedSum(String email) {		
+	public int missionCompletedSum(MemberDto memberDto) {		
 		log.info("본인 누적미션 횟수 ------> " + "Start");						                                                 
 		int missionCompletedSum = 0 ;
 		
-        try {
-        	missionCompletedSum = memberMapper.missionCompletedSum(email);        	        	        	        	        	
+        try {        	
+        	missionCompletedSum = memberMapper.missionCompletedSum(memberDto);        	        	        	        	        	
 		} catch (DataAccessException e) {
 			log.info("본인 누적미션 횟수 ------> " + "Data 접근 실패");    	   
    		 return 0 ;   		 

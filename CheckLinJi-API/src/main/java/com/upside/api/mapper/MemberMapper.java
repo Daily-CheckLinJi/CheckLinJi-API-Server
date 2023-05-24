@@ -67,7 +67,7 @@ public interface MemberMapper {
 	 * @param email
 	 * @return
 	 */
-	int missionCompletedSum (String email);
+	int missionCompletedSum (MemberDto memberDto);
 	
 	/**
 	 * 등급 업데이트

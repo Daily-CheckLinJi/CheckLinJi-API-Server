@@ -285,7 +285,8 @@ public class ChallengeService {
 				   											.submissionTime(LocalDate.now()) // 제출 일시
 				   											.submissionTitle(submissonDto.getSubmissionTitle()) // 제목
 				   											.submissionText(submissonDto.getSubmissionText()) // 내용
-				   											.submissionImageRoute(submissionImageRoute)
+				   											.nickName(member.getNickName()) // 닉네임
+				   											.submissionImageRoute(submissionImageRoute) // 이미지 경로
 				   											.userChallenge(userChallenge) // 유저 첼린지 ID 
 				   											.submissionCompleted("Y") // 인증 성공 유무
 				   											.build();
@@ -300,8 +301,9 @@ public class ChallengeService {
 			
 			// 첼린지 미션 제출 후 누적 미션 수 체크 
 			MemberDto memberDto = new MemberDto();
-			int missionSum = memberService.missionCompletedSum(submissonDto.getEmail());						
-			memberDto.setEmail(submissonDto.getEmail());						
+			memberDto.setEmail(submissonDto.getEmail());
+			int missionSum = memberService.missionCompletedSum(memberDto);						
+									
 			int updateGrade = 0 ;
 			
 			// 누적 미션 횟수에 따른 등급 업데이트
