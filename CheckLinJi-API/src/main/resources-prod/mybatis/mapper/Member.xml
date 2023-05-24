@@ -79,6 +79,7 @@
 						, SUBMISSION_TITLE 
 						, SUBMISSION_TEXT 
 						, SUBMISSION_TIME
+						, NICK_NAME
 						, SUBMISSION_IMAGE_ROUTE 
 						, SUBMISSION_COMPLETED		
 				FROM CHALLENGE_SUBMISSION CS 
@@ -103,7 +104,7 @@
 	</select>	
 	 
 	 <!-- 내 미션 누적 달성 횟수 -->
-	<select id="missionCompletedSum" parameterType="String" resultType="int" >
+	<select id="missionCompletedSum" parameterType="MemberDto" resultType="int" >
 		SELECT count(*) as own 		
 		 FROM CHALLENGE_SUBMISSION CS 
 		  JOIN USER_CHALLENGE UC 
