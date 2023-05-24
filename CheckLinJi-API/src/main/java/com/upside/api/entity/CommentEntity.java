@@ -31,15 +31,18 @@ public class CommentEntity { // 게시글 테이블
  @GeneratedValue(strategy = GenerationType.IDENTITY)
  private Long commentSeq; // 댓글 고유 식별자
  
- @ManyToOne(fetch = FetchType.LAZY) //  Member와 다대일 관계이므로 @ManyToOne이 됩니다.
- @JoinColumn(name = "board_id") // 외래 키를 매핑할 때 사용합니다. name 속성에는 매핑 할 외래 키 이름을 지정합니다.
- private BoardEntity boardEntity; // 댓글이 달린 게시글의 식별자
+ @ManyToOne(fetch = FetchType.LAZY) //  ChallengeSubmissionEntity 와 다대일 관계이므로 @ManyToOne이 됩니다.
+ @JoinColumn(name = "challenge_submission_id") // 외래 키를 매핑할 때 사용합니다. name 속성에는 매핑 할 외래 키 이름을 지정합니다.
+ private ChallengeSubmissionEntity challengeSubmissionEntity; // 댓글이 달린 게시글의 식별자
  
  @Column(nullable = false , name = "content")
  private String content; // 댓글 내용
  
- @Column(nullable = false , name = "commentId")
- private String commentId; // 댓글 작성자의 식별자
+ @Column(nullable = false , name = "nickName")
+ private String nickName; // 댓글 작성자의 식별자
+  
+ @Column(nullable = false , name = "updateDate")
+ private LocalDate updateDate; // 댓글 최종 수정 시각
  
  /**
   * 댓글 테이블에서 parent_id 컬럼은 대댓글이 있을 때,
@@ -54,26 +57,18 @@ public class CommentEntity { // 게시글 테이블
   */
  @Column(nullable = false , name = "parentId")
  private String parentId; // 대댓글일 경우, 부모 댓글의 식별자
-  
- @Column(nullable = false , name = "createDate")
- private LocalDate createDate; // 댓글 작성 시각
- 
- @Column(nullable = false , name = "updateDate")
- private LocalDate updateDate; // 댓글 최종 수정 시각
- 
  
  
 
 @Builder
-public CommentEntity(BoardEntity boardEntity, String content, String commentId, 
-		String parentId, LocalDate createDate, LocalDate updateDate
+public CommentEntity(ChallengeSubmissionEntity challengeSubmissionEntity, String content, String nickName, 
+		String parentId , LocalDate updateDate
 		) {
 	super();
-	this.boardEntity = boardEntity;
+	this.challengeSubmissionEntity = challengeSubmissionEntity;
 	this.content = content;
-	this.commentId = commentId;
-	this.parentId = parentId;
-	this.createDate = createDate;
+	this.nickName = nickName;
+	this.parentId = parentId;	
 	this.updateDate = updateDate;		
  }
 }
