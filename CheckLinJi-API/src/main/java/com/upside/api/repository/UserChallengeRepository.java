@@ -24,6 +24,8 @@ public interface UserChallengeRepository extends JpaRepository<UserChallengeEnti
 	 */
 	List<UserChallengeEntity> findByMemberEntityAndCompleted (MemberEntity member , boolean completed);
 	
+	List<UserChallengeEntity> findByMemberEntity(MemberEntity memberEntity);
+	
 	Optional<UserChallengeEntity> findByMemberEntityAndChallengeEntity (MemberEntity member , ChallengeEntity challengeEntity);
 }
 

@@ -6,7 +6,9 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -18,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.upside.api.dto.ChallengeDto;
 import com.upside.api.dto.ChallengeSubmissionDto;
 import com.upside.api.dto.MemberDto;
+import com.upside.api.dto.UserChallengeDto;
 import com.upside.api.entity.ChallengeEntity;
 import com.upside.api.entity.ChallengeSubmissionEntity;
 import com.upside.api.entity.MemberEntity;
@@ -48,6 +51,63 @@ public class ChallengeService {
 	 	 
 	
 	
+	 
+	 
+	 
+	 /**
+		 * 첼린지 참가 내역
+		 * @param memberDto
+		 * @param challengeDto
+		 * @return
+		 */
+		@Transactional // 트랜잭션 안에서 entity를 조회해야 영속성 상태로 조회가 되고 값을 변경해면 변경 감지(dirty checking)가 일어난다.
+		public Map<String, Object> viewChallenge (String email) {
+			Map<String, Object> result = new HashMap<String, Object>();
+			
+			log.info("첼린지 참가 내역 ------> " + "Start");
+			
+						 			
+			 Optional<MemberEntity> existsMember = memberRepository.findById(email);
+					
+			
+			if(!existsMember.isPresent()) {
+				 log.info("첼린지 참가 내역 ------> " + "이메일이 존재하지 않습니다.");
+	             result.put("HttpStatus","1.00");		
+	     		 result.put("Msg","이메일이 존재하지 않습니다.");
+	     	   return result ;
+			}				
+						 
+							 
+			MemberEntity member =  existsMember.get();
+			 
+			 List<UserChallengeDto> challenge_list = new ArrayList<UserChallengeDto>() ;
+			 
+			 List<UserChallengeEntity> exsistUserChallenge = userChallengeRepository.findByMemberEntity(member);
+			 
+			 for(UserChallengeEntity as : exsistUserChallenge) {
+				 UserChallengeDto i = new UserChallengeDto();
+				 i.setChallengeName(as.getChallengeEntity().getChallengeName());
+				 challenge_list.add(i);
+			 }
+			 
+			 if(exsistUserChallenge == null) {
+				 log.info("첼린지 참가 내역 ------> " + "참가중인 첼린지가 없습니다.");
+	             result.put("HttpStatus","1.00");		
+	     		 result.put("Msg","참가중인 첼린지가 없습니다.");
+	     	   return result ;
+			 }
+			 			
+			 		 
+		         log.info("첼린지 참가 내역 ------> " + Constants.SUCCESS);
+		         result.put("HttpStatus","2.00");		
+				 result.put("Msg",Constants.SUCCESS);
+				 result.put("Challenge",challenge_list);
+				 log.info("첼린지 참가 내역 ------> " + "End");
+			  return result ;				 	    		   
+	}
+	 
+	 
+	 
 	/**
 	 * 첼린지 생성
 	 * @param challengeDTO

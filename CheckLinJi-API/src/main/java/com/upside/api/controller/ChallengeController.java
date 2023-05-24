@@ -32,7 +32,21 @@ public class ChallengeController {
 				
 	
 	
-		
+	
+	@PostMapping("/list") 
+	public ResponseEntity<Map<String, Object>> viewChallenge (@RequestBody UserChallengeDto userChallengeDto) {
+							
+		Map<String, Object> result = challengeSerivce.viewChallenge(userChallengeDto.getEmail());
+				
+		if (result.get("HttpStatus").equals("2.00")) { // 성공			
+			return new ResponseEntity<>(result,HttpStatus.OK);					
+		} else {			
+			
+			return new ResponseEntity<>(result,HttpStatus.BAD_REQUEST);
+		} 
+					
+	}
+	
 	@PostMapping("/create") // 첼린지 생성
 	public ResponseEntity<MessageDto>createChallenge (@RequestBody ChallengeDto challengeDto) {
 		
