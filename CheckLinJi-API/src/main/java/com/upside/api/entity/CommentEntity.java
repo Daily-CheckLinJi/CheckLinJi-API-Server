@@ -55,14 +55,16 @@ public class CommentEntity { // 게시글 테이블
   * 댓글의 parent_id 값은 NULL로 표시하고, 대댓글의 parent_id 값은 해당 대댓글의 부모 댓글의 식별자를 저장하면 된다.
   * 댓글 : parent_id = null | 대댓글 : parent_id = 댓글의 식별자. 
   */
- @Column(nullable = false , name = "parentId")
- private String parentId; // 대댓글일 경우, 부모 댓글의 식별자
+ 
+ @ManyToOne
+ @JoinColumn(name = "parent_id")
+ private CommentEntity parentId; // 대댓글일 경우, 부모 댓글의 식별자
  
  
 
 @Builder
 public CommentEntity(ChallengeSubmissionEntity challengeSubmissionEntity, String content, String nickName, 
-		String parentId , LocalDate updateDate
+		CommentEntity parentId , LocalDate updateDate
 		) {
 	super();
 	this.challengeSubmissionEntity = challengeSubmissionEntity;

@@ -53,8 +53,8 @@ public class WebPageCrawling {
   	
    		} 
     
-  @Scheduled(fixedDelay = 4000000)    
-//    @Scheduled(cron = "0 0 1 * * ?") // 매일 새벽 1시에 전날 베스트 셀러 크롤링
+//  @Scheduled(fixedDelay = 4000000)    
+    @Scheduled(cron = "0 0 1 * * ?") // 매일 새벽 1시에 전날 베스트 셀러 크롤링
     public void readWebPageYesterDay() {
     	
     	log.info("전날 베스트 셀러 Crawling 시작 ------> " + LocalDate.now());

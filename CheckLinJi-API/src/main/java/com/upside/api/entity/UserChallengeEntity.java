@@ -1,7 +1,6 @@
 package com.upside.api.entity;
 
 import java.time.LocalDate;
-import java.util.Optional;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
