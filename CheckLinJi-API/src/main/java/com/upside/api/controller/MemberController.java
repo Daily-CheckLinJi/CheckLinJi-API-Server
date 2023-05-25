@@ -55,9 +55,9 @@ public class MemberController {
 	public ResponseEntity<Map<String , Object>> selectMember(@RequestHeader("Authorization") String authHeader) {				
 		Map<String , Object> result = new HashMap<String, Object>();	
 			
-		    String token = jwtTokenProvider.getEmail(authHeader); // email을 얻기위해 헤더에서 토큰을 디코딩하는 부분이다.
+		    String userEmail = jwtTokenProvider.getEmail(authHeader); // email을 얻기위해 헤더에서 토큰을 디코딩하는 부분이다.
 		
-			result = memberService.selectMember(token);
+			result = memberService.selectMember(userEmail);
 		
 		if (result.get("HttpStatus").equals("2.00")) { // 성공
 			
@@ -195,9 +195,11 @@ public class MemberController {
 	
 	 // 프로필 업데이트
 		@PostMapping("/update/profile")
-		public ResponseEntity<MessageDto> updateProfile (@RequestParam("file") MultipartFile file ,  MemberDto memberDto) {							 
-
-			 Map<String, String> result = memberService.updateProfile(file,memberDto.getEmail());
+		public ResponseEntity<MessageDto> updateProfile (@RequestParam("file") MultipartFile file , @RequestHeader("Authorization") String authHeader) {							 
+			 
+			 String userEmail = jwtTokenProvider.getEmail(authHeader); // email을 얻기위해 헤더에서 토큰을 디코딩하는 부분이다.
+			 
+			 Map<String, String> result = memberService.updateProfile(file,userEmail);
 			 
 			 MessageDto message = new MessageDto();
 			 

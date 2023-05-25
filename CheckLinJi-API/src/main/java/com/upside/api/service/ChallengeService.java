@@ -230,7 +230,7 @@ public class ChallengeService {
 	 * @throws IOException 
 	 */
 	@Transactional // 트랜잭션 안에서 entity를 조회해야 영속성 상태로 조회가 되고 값을 변경해면 변경 감지(dirty checking)가 일어난다.
-	public Map<String, String> submitChallenge (@RequestParam("file") MultipartFile file , ChallengeSubmissionDto submissonDto) throws IOException {
+	public Map<String, String> submitChallenge (@RequestParam("file") MultipartFile file , ChallengeSubmissionDto submissonDto , String userEmail) throws IOException {
 		Map<String, String> result = new HashMap<String, String>();
 		
 	    log.info("첼린지 제출 ------> " + "Start");
@@ -239,7 +239,7 @@ public class ChallengeService {
 	    
 		Optional<ChallengeEntity> existsChallenge = challengeRepository.findById(submissonDto.getChallengeName());
 		
-		Optional<MemberEntity> existsMember = memberRepository.findById(submissonDto.getEmail());
+		Optional<MemberEntity> existsMember = memberRepository.findById(userEmail);
 						
 		if(!existsChallenge.isPresent() || !existsMember.isPresent()) {
 			 log.info("첼린지 참가 ------> " + "첼린지 혹은 이메일이 존재하지 않습니다.");
@@ -272,12 +272,9 @@ public class ChallengeService {
      	   return result ; 
 		 	}
 		 	
-//	 	FileUploadDto fileUploadDto = new FileUploadDto();
-//	 	fileUploadDto.setEmail(submissonDto.getEmail());
-//	 	fileUploadDto.setUserFeeling(submissonDto.getSubmissionText());
 	 	
 	 	// 파일 업로드 
-	 	String submissionImageRoute = fileService.uploadFile(file, submissonDto.getEmail());
+	 	String submissionImageRoute = fileService.uploadFile(file, userEmail);
 	 	
 	 	// 파일 업로드 성공시 첼린지 인증 성공
 	 	if(!submissionImageRoute.equals("N")) {	 			 	
@@ -301,7 +298,7 @@ public class ChallengeService {
 			
 			// 첼린지 미션 제출 후 누적 미션 수 체크 
 			MemberDto memberDto = new MemberDto();
-			memberDto.setEmail(submissonDto.getEmail());
+			memberDto.setEmail(userEmail);
 			int missionSum = memberService.missionCompletedSum(memberDto);						
 									
 			int updateGrade = 0 ;

@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.upside.api.dto.ChallengeSubmissionDto;
-import com.upside.api.dto.MemberDto;
 import com.upside.api.mapper.MemberMapper;
 import com.upside.api.repository.MemberRepository;
 import com.upside.api.util.Constants;
@@ -48,7 +47,7 @@ public class MissionService {
 	  * @param memberDto
 	  * @return
 	  */
-	public Map<String, String> missionCompletedCnt (MemberDto memberDto) {
+	public Map<String, String> missionCompletedCnt (String userEmail) {
 		Map<String, String> result = new HashMap<String, String>();
 						
 		 // 현재 날짜와 시간을 LocalDateTime 객체로 가져옵니다.
@@ -62,7 +61,7 @@ public class MissionService {
         
         data.put("year", String.valueOf(year));
         data.put("month", String.valueOf(month));
-        data.put("email", memberDto.getEmail());
+        data.put("email", userEmail);
         
         result = memberMapper.missionCompletedCnt(data);
         
@@ -85,7 +84,7 @@ public class MissionService {
 	  * @param memberDto
 	  * @return
 	  */
-	public Map<String, Object> missionRanking (MemberDto memberDto) {
+	public Map<String, Object> missionRanking (String userEmail) {
 		
 	   Map<String, Object> result = new HashMap<String, Object>();
 	   
@@ -93,7 +92,7 @@ public class MissionService {
               		
        Map<String, String> data = new HashMap<String, String>();              
        
-       data.put("email", memberDto.getEmail());
+       data.put("email", userEmail);
        
        ArrayList<Map<String, Object>> missionRankingTop = memberMapper.missionRankingTop(data);
        
@@ -129,7 +128,7 @@ public class MissionService {
 	 * @param fileUploadDto
 	 * @return
 	 */
-	public Map<String, Object> myAuth(ChallengeSubmissionDto challengeSubmissionDto) {
+	public Map<String, Object> myAuth(ChallengeSubmissionDto challengeSubmissionDto , String userEmail) {
 		
 		log.info("본인 미션 달력 ------> " + "Start");
 		Map<String, Object> result = new HashMap<String, Object>();
@@ -145,7 +144,7 @@ public class MissionService {
         
         data.put("challengeName", challengeSubmissionDto.getChallengeName());
         data.put("date", date);
-        data.put("email", challengeSubmissionDto.getEmail());
+        data.put("email", userEmail);
         
         try {
         	ArrayList<Map<String, Object>> missionCalendarOwn = memberMapper.missionCalendarOwn(data);
@@ -178,7 +177,7 @@ public class MissionService {
 	 * @throws JsonProcessingException 
 	 * @throws ParseException 
 	 */
-	public Map<String, Object> myAuthInfo(ChallengeSubmissionDto challengeSubmissionDto) throws JsonProcessingException, ParseException {
+	public Map<String, Object> myAuthInfo(ChallengeSubmissionDto challengeSubmissionDto , String userEmail) throws JsonProcessingException, ParseException {
 		
 		log.info("본인 미션 상세보기 ------> " + "Start");
 		Map<String, Object> result = new HashMap<String, Object>();
@@ -197,7 +196,7 @@ public class MissionService {
         
         data.put("challengeName", challengeSubmissionDto.getChallengeName());
         data.put("date", date);
-        data.put("email", challengeSubmissionDto.getEmail());
+        data.put("email", userEmail);
         
         try {
         	Map<String, String> missionAuthInfo = memberMapper.missionAuthInfo(data); // 해당날짜에 해당하는 본인 데이터
@@ -259,7 +258,7 @@ public class MissionService {
 	 * @throws JsonProcessingException 
 	 * @throws ParseException 
 	 */
-	public Map<String, Object> myAuthDelete(ChallengeSubmissionDto challengeSubmissionDto)  {
+	public Map<String, Object> myAuthDelete(ChallengeSubmissionDto challengeSubmissionDto , String userEmail)  {
 		
 		log.info("본인 미션 삭제 ------> " + "Start");
 		Map<String, Object> result = new HashMap<String, Object>();
@@ -274,7 +273,7 @@ public class MissionService {
         Map<String, String> data = new HashMap<String, String>();
         
         data.put("date", date);
-        data.put("email", challengeSubmissionDto.getEmail());
+        data.put("email", userEmail);
         
         try {
         	int missionAuthInfo = memberMapper.missionAuthDelete(data); // 해당날짜에 해당하는 본인 데이터
