@@ -90,7 +90,7 @@ public class ChallengeController {
 	}
 	
 	@PostMapping("/submit") // 첼린지 제출
-	public ResponseEntity<MessageDto> submitChallenge (ChallengeSubmissionDto submissonDto , @RequestHeader("Authorization") String authHeader ) throws IOException {
+	public ResponseEntity<MessageDto> submitChallenge (@RequestBody ChallengeSubmissionDto submissonDto , @RequestHeader("Authorization") String authHeader ) throws IOException {
 			
 		MessageDto message = new MessageDto();
 		

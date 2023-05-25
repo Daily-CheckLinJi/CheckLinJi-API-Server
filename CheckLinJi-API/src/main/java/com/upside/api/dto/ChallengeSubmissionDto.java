@@ -13,7 +13,8 @@ public class ChallengeSubmissionDto { // ChallengeSubmission 테이블: 사용�
  private LocalDate submissionTime;
  private String submissionTitle;
  private String  submissionText; 
- private String  nickName; 
+ private String  nickName;
+ private String  submissionImageName;
  private String  submissionImageRoute; 
  private String year ; 
  private String month ;

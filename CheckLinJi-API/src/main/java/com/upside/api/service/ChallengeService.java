@@ -234,7 +234,8 @@ public class ChallengeService {
 		Map<String, String> result = new HashMap<String, String>();
 		
 	    log.info("첼린지 제출 ------> " + "Start");
-	    
+	    System.out.println("Email " + userEmail); 
+	    System.out.println("ssss " + submissonDto.getSubmissionImageRoute());
 	    System.out.println(submissonDto.getChallengeName());
 	    
 		Optional<ChallengeEntity> existsChallenge = challengeRepository.findById(submissonDto.getChallengeName());
@@ -274,7 +275,7 @@ public class ChallengeService {
 		 	
 	 	
 	 	// 파일 업로드 
-	 	String submissionImageRoute = fileService.uploadFile(submissonDto.getSubmissionImageRoute(), userEmail);
+	 	String submissionImageRoute = fileService.uploadFile(submissonDto.getSubmissionImageRoute(),submissonDto.getSubmissionImageName() ,userEmail);
 	 	
 	 	// 파일 업로드 성공시 첼린지 인증 성공
 	 	if(!submissionImageRoute.equals("N")) {	 			 	

@@ -53,34 +53,35 @@ public class FileService {
 		 * @return
 		 * @throws IOException
 		 */
-		public String uploadFile(String image , String email) throws IOException {
+		public String uploadFile(String image ,String imageName ,String email) throws IOException {
 			
 			String result = "N";
-		  	LocalDateTime now = LocalDateTime.now();  
+		  	LocalDate now = LocalDate.now();  
 		  	
-		 	try {
-		 		
-		 		byte[] decodedData = Base64.getDecoder().decode(image); // base64로 인코딩되어 올라온 파일 다시 디코딩
-		 		
-		 		
-		        String fileName = email+"_"+now ; // 파일이름 : email_날짜
+		  	try {
+		  	    byte[] decodedData = Base64.getDecoder().decode(image); // base64로 인코딩된 파일을 디코딩
 
-		        // 파일 저장 경로 생성
-		        Path uploadPath = Paths.get(uploadDir,fileName);
-		        	        
-		        // 파일 저장 경로가 없을 경우 생성
-		        if (!Files.exists(uploadPath)) {
-		            Files.createDirectories(uploadPath);
-		        }
-		        
-		        Files.write(uploadPath, decodedData, StandardOpenOption.CREATE);
-		        
-			    return result;
-			        
-				} catch (IOException e) {
-					result = "N";
-					return result;
-				}	 	
+		  	    String fileName = email + "_" + now + "_" + imageName; // 파일 이름: email_날짜
+
+		  	    Path uploadPath = Path.of(uploadDir); // 저장할 파일 경로
+
+		  	    // 파일 저장 경로가 없을 경우 생성
+		  	    if (!Files.exists(uploadPath)) {
+		  	        Files.createDirectories(uploadPath);
+		  	    }
+
+		  	    Path filePath = uploadPath.resolve(fileName).normalize(); // 파일 경로 이름과 함께 지정
+		  	    
+		  	    Files.write(filePath, decodedData, StandardOpenOption.CREATE_NEW); // 새로운 파일 생성
+
+		  	    result = filePath.toString(); // DB에 저장될 경로
+
+		  	    return result;
+		  	} catch (IOException e) {
+		  	    e.printStackTrace();
+		  	    result = "N";
+		  	    return result;
+		  	}
 	    }
 	 
 	 
@@ -197,6 +198,7 @@ public class FileService {
 			log.info("본인 인증 이미지  ------> " + "실패");
 			e.printStackTrace();
 		}
+		log.info("본인 인증 이미지  ------> " + "성공");
 		 return encoded ;				 	 	    			    		   
 	}
 	
