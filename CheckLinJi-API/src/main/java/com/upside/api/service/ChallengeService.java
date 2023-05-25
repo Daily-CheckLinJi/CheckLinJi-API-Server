@@ -230,7 +230,7 @@ public class ChallengeService {
 	 * @throws IOException 
 	 */
 	@Transactional // 트랜잭션 안에서 entity를 조회해야 영속성 상태로 조회가 되고 값을 변경해면 변경 감지(dirty checking)가 일어난다.
-	public Map<String, String> submitChallenge (@RequestParam("file") MultipartFile file , ChallengeSubmissionDto submissonDto , String userEmail) throws IOException {
+	public Map<String, String> submitChallenge (ChallengeSubmissionDto submissonDto , String userEmail) throws IOException {
 		Map<String, String> result = new HashMap<String, String>();
 		
 	    log.info("첼린지 제출 ------> " + "Start");
@@ -274,7 +274,7 @@ public class ChallengeService {
 		 	
 	 	
 	 	// 파일 업로드 
-	 	String submissionImageRoute = fileService.uploadFile(file, userEmail);
+	 	String submissionImageRoute = fileService.uploadFile(submissonDto.getSubmissionImageRoute(), userEmail);
 	 	
 	 	// 파일 업로드 성공시 첼린지 인증 성공
 	 	if(!submissionImageRoute.equals("N")) {	 			 	

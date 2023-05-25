@@ -12,7 +12,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Base64;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -44,48 +46,86 @@ public class FileService {
 	 private String profileDir;
 	
 	
-	/**
-	 *  파일 업로드 ( 외부에다 저장 )
-	 * @param file
-	 * @param fileUploadDto
-	 * @return
-	 * @throws IOException
-	 */
-	public String uploadFile(@RequestParam("file") MultipartFile file , String email) throws IOException {
-		
-		String result = "N";
-	  	LocalDate now = LocalDate.now();  
-	  	
-	 	try {
-	 		// 업로드된 파일 이름 가져오기
-	        String fileName = email+"_"+now+"_"+StringUtils.cleanPath(file.getOriginalFilename());
+	 /**
+		 *  파일 업로드 ( 외부에다 저장 ) - 인증 이미지 , 프로필 이미지
+		 * @param file
+		 * @param fileUploadDto
+		 * @return
+		 * @throws IOException
+		 */
+		public String uploadFile(String image , String email) throws IOException {
+			
+			String result = "N";
+		  	LocalDateTime now = LocalDateTime.now();  
+		  	
+		 	try {
+		 		
+		 		byte[] decodedData = Base64.getDecoder().decode(image); // base64로 인코딩되어 올라온 파일 다시 디코딩
+		 		
+		 		
+		        String fileName = email+"_"+now ; // 파일이름 : email_날짜
 
-	        // 파일 저장 경로 생성
-	        Path uploadPath = Paths.get(uploadDir);
-	        	        
-	        // 파일 저장 경로가 없을 경우 생성
-	        if (!Files.exists(uploadPath)) {
-	            Files.createDirectories(uploadPath);
-	        }
-
-	        // 파일 저장 경로와 파일 이름을 조합한 경로 생성
-	        Path filePath = uploadPath.resolve(fileName).normalize();		        		        
-	        
-	        // 문자열에서 백슬래시()는 이스케이프 문자(escape character)로 사용되기 때문에 사용할려면 \\ 두개로 해야 \로 인식
-	        String fileRoute = uploadPath.toString() + "/" + fileName ; 
-
-	        
-	        result = fileRoute;
-	        
-	        Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-	        	        
-		    return result;
+		        // 파일 저장 경로 생성
+		        Path uploadPath = Paths.get(uploadDir,fileName);
+		        	        
+		        // 파일 저장 경로가 없을 경우 생성
+		        if (!Files.exists(uploadPath)) {
+		            Files.createDirectories(uploadPath);
+		        }
 		        
-			} catch (IOException e) {
-				result = "N";
-				return result;
-			}	 	
-    }
+		        Files.write(uploadPath, decodedData, StandardOpenOption.CREATE);
+		        
+			    return result;
+			        
+				} catch (IOException e) {
+					result = "N";
+					return result;
+				}	 	
+	    }
+	 
+	 
+//	/**
+//	 *  파일 업로드 ( 외부에다 저장 ) - 인증 이미지 , 프로필 이미지
+//	 * @param file
+//	 * @param fileUploadDto
+//	 * @return
+//	 * @throws IOException
+//	 */
+//	public String uploadFile(@RequestParam("file") MultipartFile file , String email) throws IOException {
+//		
+//		String result = "N";
+//	  	LocalDate now = LocalDate.now();  
+//	  	
+//	 	try {
+//	 		// 업로드된 파일 이름 가져오기
+//	        String fileName = email+"_"+now+"_"+StringUtils.cleanPath(file.getOriginalFilename());
+//
+//	        // 파일 저장 경로 생성
+//	        Path uploadPath = Paths.get(uploadDir);
+//	        	        
+//	        // 파일 저장 경로가 없을 경우 생성
+//	        if (!Files.exists(uploadPath)) {
+//	            Files.createDirectories(uploadPath);
+//	        }
+//
+//	        // 파일 저장 경로와 파일 이름을 조합한 경로 생성
+//	        Path filePath = uploadPath.resolve(fileName).normalize();		        		        
+//	        
+//	        // 문자열에서 백슬래시()는 이스케이프 문자(escape character)로 사용되기 때문에 사용할려면 \\ 두개로 해야 \로 인식
+//	        String fileRoute = uploadPath.toString() + "/" + fileName ; 
+//
+//	        
+//	        result = fileRoute;
+//	        
+//	        Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+//	        	        
+//		    return result;
+//		        
+//			} catch (IOException e) {
+//				result = "N";
+//				return result;
+//			}	 	
+//    }
 	
 	/**
 	 * 프로필 사진 업로드

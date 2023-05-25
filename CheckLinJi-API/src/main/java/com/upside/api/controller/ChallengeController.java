@@ -90,13 +90,13 @@ public class ChallengeController {
 	}
 	
 	@PostMapping("/submit") // 첼린지 제출
-	public ResponseEntity<MessageDto> submitChallenge (@RequestParam("file") MultipartFile file ,  ChallengeSubmissionDto submissonDto , @RequestHeader("Authorization") String authHeader ) throws IOException {
+	public ResponseEntity<MessageDto> submitChallenge (ChallengeSubmissionDto submissonDto , @RequestHeader("Authorization") String authHeader ) throws IOException {
 			
 		MessageDto message = new MessageDto();
 		
 		String userEmail = jwtTokenProvider.getEmail(authHeader); // email을 얻기위해 헤더에서 토큰을 디코딩하는 부분이다.
 		
-		Map<String, String> result = challengeSerivce.submitChallenge(file , submissonDto , userEmail);
+		Map<String, String> result = challengeSerivce.submitChallenge(submissonDto , userEmail);
 				
 		if (result.get("HttpStatus").equals("2.00")) { // 성공
 			message.setMsg(result.get("Msg"));
