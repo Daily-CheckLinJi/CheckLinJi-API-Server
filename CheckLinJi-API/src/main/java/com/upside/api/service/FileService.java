@@ -60,7 +60,7 @@ public class FileService {
 		  	LocalDate now = LocalDate.now();  
 		  	
 		  	try {
-		  	    byte[] decodedData = Base64.getDecoder().decode(image); // base64로 인코딩된 파일을 디코딩
+		  	    byte[] decodedData = Base64.getDecoder().decode(image); // base64로 인코딩된 문자열을 디코딩
 
 		  	    String fileName = email + "_" + now + "_" + imageName; // 파일 이름: email_날짜
 

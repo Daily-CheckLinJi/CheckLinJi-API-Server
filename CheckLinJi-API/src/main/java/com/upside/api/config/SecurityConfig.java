@@ -40,18 +40,13 @@ public class SecurityConfig {
         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS); // jwt로 인증하므로 세션 미사용        
         http.authorizeHttpRequests() // HTTP 요청에 대한 인가 규칙을 설정        		
         		.requestMatchers("/api/members/sign/**").permitAll()  // login 없이 접근 허용 하는 URL
-        		.requestMatchers("/api/members/login/**").permitAll()
-        		.requestMatchers("/api/members/email/**").permitAll()        		
+        		.requestMatchers("/api/members/login/**").permitAll()        		       	
         		.requestMatchers("/api/members/validateDuplicated/**").permitAll()
         		.requestMatchers("/api/social/login/**").permitAll()
         		.requestMatchers("/api/members/refreshToken/**").permitAll()          		
         		.requestMatchers("/api/external/**").permitAll()
         		.requestMatchers("/api/send/**").permitAll()
-//        		.requestMatchers("/api/challenge/join/**").permitAll()
-//        		.requestMatchers("/api/challenge/submit/**").permitAll()        		
-//                .requestMatchers("/api/admin/**").hasRole("ADMIN") // admin 의 경우 ADMIN 권한이 있는 사용자만 접근이 가능
                 .anyRequest().authenticated() // 그 외 모든 요청은 인증과정 필요 
-//        		.anyRequest().permitAll() // 모든 요청에 대해 인증 생략
                 .and()                
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class); // UsernamePassword 필터전에 JWT 인증 필터를 추가합니다.
 
