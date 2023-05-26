@@ -46,13 +46,14 @@ public class FileService {
 	 private String profileDir;
 	
 	
-	 /**
-		 *  파일 업로드 ( 외부에다 저장 ) - 인증 이미지 , 프로필 이미지
-		 * @param file
-		 * @param fileUploadDto
-		 * @return
-		 * @throws IOException
-		 */
+	 	/**
+	 	 * 파일 업로드 ( 외부에다 저장 ) - 인증 이미지 , 프로필 이미지
+	 	 * @param image
+	 	 * @param imageName
+	 	 * @param email
+	 	 * @return
+	 	 * @throws IOException
+	 	 */
 		public String uploadFile(String image ,String imageName ,String email) throws IOException {
 			
 			String result = "N";
@@ -129,38 +130,40 @@ public class FileService {
 //    }
 	
 	/**
-	 * 프로필 사진 업로드
-	 * @param file
+	 * 프로필 사진 업로드 
+	 * @param profile
+	 * @param profileName
 	 * @param email
 	 * @return
 	 * @throws IOException
 	 */
-	public String uploadProfile (@RequestParam("file") MultipartFile file , String email) throws IOException {
+	public String uploadProfile (String profile , String profileName , String email) throws IOException {
 		
 		String result = "N";
 	  	LocalDate now = LocalDate.now();  
 	  	
 	 	try {	 			 		
 	 		
-	 		// 파일이름 : 현재날짜 + 이메일 + profile + 사진 이름
-	        String fileName = now+"_"+email+"_"+"profile_"+StringUtils.cleanPath(file.getOriginalFilename());	        	        	        	       
-	                
-	        File uploadProfileDir = new File(profileDir);
-	        if (!uploadProfileDir.exists()) {
-	        	uploadProfileDir.mkdirs();
-	        }
-	        
-	        // 파일 경로 설정 
-	        String uploadedFilePath = uploadProfileDir + "/" + fileName;	       	        
+	 		byte[] decodedData = Base64.getDecoder().decode(profile); // base64로 인코딩된 파일을 디코딩
+	 		
+	 		
+	 		String fileName = email + "_" + now + "_" + profileName; // 파일 이름: email_날짜_파일이름  
+	 		
+	 		
+	 		Path uploadPath = Path.of(profileDir); // 저장할 파일 경로
+	 			                	        
+	  	    // 파일 저장 경로가 없을 경우 생성
+	  	    if (!Files.exists(uploadPath)) {
+	  	        Files.createDirectories(uploadPath);
+	  	    }
 	        	        
-	        // 파일 저장 경로 생성
-	        Path uploadPath = Paths.get(uploadedFilePath);
+	  	    Path filePath = uploadPath.resolve(fileName).normalize(); // 파일 경로 이름과 함께 지정       	        
+	        	        
+	  	    // 저장경로에 파일 생성
+	  	  	Files.write(filePath, decodedData, StandardOpenOption.CREATE_NEW); // 새로운 파일 생성
 	        
 	        // 반환 값 저장경로 스트링으로 변환 
-	        result = uploadPath.toString();
-	        
-	        // 저장경로에 파일 생성
-	        Files.copy(file.getInputStream(), uploadPath, StandardCopyOption.REPLACE_EXISTING);
+	  	  	result = filePath.toString(); // DB에 저장될 경로	        	      
 	        	        
 		    return result;
 		        

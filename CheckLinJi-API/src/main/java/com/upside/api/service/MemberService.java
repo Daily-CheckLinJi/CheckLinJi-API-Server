@@ -471,7 +471,7 @@ public class MemberService {
     * @return
     */
     @Transactional // 트랜잭션 안에서 entity를 조회해야 영속성 상태로 조회가 되고 값을 변경해면 변경 감지(dirty checking)가 일어난다.
-    public Map<String, String> updateProfile (MultipartFile file , String email) {
+    public Map<String, String> updateProfile (String profile , String profileName , String email) {
     	
     	Map<String, String> result = new HashMap<String, String>();
     	log.info("프로필 사진 업데이트 ------> Start ");
@@ -502,7 +502,7 @@ public class MemberService {
     		}    		    		    		
     		
     		// 파일 업로드 
-    	 	String submissionImageRoute = fileService.uploadProfile(file, email);
+    	 	String submissionImageRoute = fileService.uploadProfile(profile, profileName ,email);
     		
     	 	if(submissionImageRoute.equals("N")) {
     	 		log.info("프로필 사진 업데이트 실패 ------> 파일 에러");

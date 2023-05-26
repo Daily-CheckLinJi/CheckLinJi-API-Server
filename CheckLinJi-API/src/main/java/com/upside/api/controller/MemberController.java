@@ -195,11 +195,12 @@ public class MemberController {
 	
 	 // 프로필 업데이트
 		@PostMapping("/update/profile")
-		public ResponseEntity<MessageDto> updateProfile (@RequestParam("file") MultipartFile file , @RequestHeader("Authorization") String authHeader) {							 
+		public ResponseEntity<MessageDto> updateProfile (@RequestBody MemberDto memberDto , @RequestHeader("Authorization") String authHeader) {							 
 			 
+			
 			 String userEmail = jwtTokenProvider.getEmail(authHeader); // email을 얻기위해 헤더에서 토큰을 디코딩하는 부분이다.
 			 
-			 Map<String, String> result = memberService.updateProfile(file,userEmail);
+			 Map<String, String> result = memberService.updateProfile(memberDto.getProfile(),memberDto.getProfileName(),userEmail);
 			 
 			 MessageDto message = new MessageDto();
 			 
