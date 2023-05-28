@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,11 +24,15 @@ import com.upside.api.dto.MemberDto;
 import com.upside.api.dto.UserChallengeDto;
 import com.upside.api.entity.ChallengeEntity;
 import com.upside.api.entity.ChallengeSubmissionEntity;
+import com.upside.api.entity.HashTagEntity;
 import com.upside.api.entity.MemberEntity;
+import com.upside.api.entity.SubmissionHashTagEntity;
 import com.upside.api.entity.UserChallengeEntity;
 import com.upside.api.repository.ChallengeRepository;
 import com.upside.api.repository.ChallengeSubmissionRepository;
+import com.upside.api.repository.HashTagRepository;
 import com.upside.api.repository.MemberRepository;
+import com.upside.api.repository.SubmissionHashTagRepository;
 import com.upside.api.repository.UserChallengeRepository;
 import com.upside.api.util.Constants;
 
@@ -46,6 +51,8 @@ public class ChallengeService {
 	 private final UserChallengeRepository userChallengeRepository;
 	 private final MemberRepository memberRepository;
 	 private final ChallengeSubmissionRepository challengeSubmissionRepository;
+	 private final SubmissionHashTagRepository submissionHashTagRepository;
+	 private final HashTagRepository hashTagRepository;
 	 private final MemberService memberService;
 	 private final FileService fileService;
 	 	 
@@ -197,9 +204,10 @@ public class ChallengeService {
 						 
 		 MemberEntity member =  existsMember.get();
 		 
-		 boolean exsistUserChallenge = userChallengeRepository.findByMemberEntityAndChallengeEntity(member,challenge).isPresent();
+		 Optional<UserChallengeEntity> exsistUserChallenge = userChallengeRepository.findByMemberEntityAndChallengeEntity(member,challenge);
+		 		 
 		 		 		 
-		 if(exsistUserChallenge) {
+		 if(exsistUserChallenge.isPresent()) {
 			 log.info("첼린지 참가 ------> " + "이미 참여하였습니다.");
              result.put("HttpStatus","1.00");		
      		 result.put("Msg","이미 참여하였습니다.");
@@ -233,10 +241,7 @@ public class ChallengeService {
 	public Map<String, String> submitChallenge (ChallengeSubmissionDto submissonDto , String userEmail) throws IOException {
 		Map<String, String> result = new HashMap<String, String>();
 		
-	    log.info("첼린지 제출 ------> " + "Start");
-	    System.out.println("Email " + userEmail); 
-	    System.out.println("ssss " + submissonDto.getSubmissionImageRoute());
-	    System.out.println(submissonDto.getChallengeName());
+	    log.info("첼린지 제출 ------> " + "Start");	    
 	    
 		Optional<ChallengeEntity> existsChallenge = challengeRepository.findById(submissonDto.getChallengeName());
 		
@@ -288,15 +293,36 @@ public class ChallengeService {
 				   											.userChallenge(userChallenge) // 유저 첼린지 ID 
 				   											.submissionCompleted("Y") // 인증 성공 유무
 				   											.build();
-	        challengeSubmissionRepository.save(challengeSubmission);
-	        userChallenge.setCompleted(true);	        	        
+	        challengeSubmissionRepository.save(challengeSubmission);	                	       
 	        
-	        log.info("첼린지 제출 ------> " + Constants.SUCCESS);
-	        result.put("HttpStatus","2.00");		
-			result.put("Msg","첼린지 제출이 완료되었습니다.");	       
-			log.info("첼린지 제출 ------> " + "End");
+	        	             
+			log.info("첼린지 제출 ------> " + Constants.SUCCESS);
 			
 			
+			Optional<ChallengeSubmissionEntity> successYn = challengeSubmissionRepository.findByUserChallengeAndSubmissionTime(userChallenge, LocalDate.now());
+				
+			String tagExistN = "" ; // 태그 존재 유무
+			
+			if(successYn.isPresent()) {								
+				
+		    	List<String> list = Arrays.asList(submissonDto.getHashTag().split("\\|")); // hashTag | 기준으로 잘라서 리스트에 넣기    	
+		    	    	    
+		    	
+		    	for(int i = 0 ; list.size() > i; i++) { // 리스트 사이즈만큼 돌면서 map에 담기
+		    		Optional<HashTagEntity> tagExistYn = hashTagRepository.findByTagName(list.get(i));
+		    		if(tagExistYn.isPresent()) {		    			
+		    			SubmissionHashTagEntity hashTagEntity = SubmissionHashTagEntity.builder()
+								.challengeSubmissionId(successYn.get())
+								.hashTagId(tagExistYn.get())						
+								.build();
+			    		submissionHashTagRepository.save(hashTagEntity);
+			    		log.info("미션인증 해쉬태그 저장 ------> "+list.size() +" 중 " +i+ "번째 " + Constants.SUCCESS);
+		    		}else {
+		    			tagExistN += list.get(i)+ "," ;  
+		    		}		
+		    	}
+
+			}
 			// 첼린지 미션 제출 후 누적 미션 수 체크 
 			MemberDto memberDto = new MemberDto();
 			memberDto.setEmail(userEmail);
@@ -331,8 +357,16 @@ public class ChallengeService {
 			if(updateGrade == 0 ) {
 				result.put("HttpStatus","2.00");		
 				result.put("Msg","첼린지 제출이 완료되었으나 예상치 못한 에러로 등급 업데이트에 실패하였습니다.");	
+				return result ;
 			}
 			
+			if(!tagExistN.equals("")) {
+				tagExistN += " -- 등록된 태그가 아니기 때문에 추가에서 제외 되었습니다."; 				
+				result.put("tagExistN",tagExistN);	
+			}
+			 result.put("HttpStatus","2.00");		
+			 result.put("Msg","첼린지 제출이 완료되었습니다.");	 
+						
 	 	} else {
 	 		 log.info("첼린지 제출 ------> " + Constants.FAIL);
 		        result.put("HttpStatus","1.00");		
