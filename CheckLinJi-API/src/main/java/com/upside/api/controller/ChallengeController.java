@@ -51,6 +51,20 @@ public class ChallengeController {
 					
 	}
 	
+	@PostMapping("/list/detail") 
+	public ResponseEntity<Map<String, Object>> detail (@RequestBody ChallengeSubmissionDto submissionDto) {		
+											
+		Map<String, Object> result = challengeSerivce.detail(submissionDto);
+				
+		if (result.get("HttpStatus").equals("2.00")) { // 성공			
+			return new ResponseEntity<>(result,HttpStatus.OK);					
+		} else {			
+			
+			return new ResponseEntity<>(result,HttpStatus.BAD_REQUEST);
+		} 
+					
+	}
+	
 	
 	@PostMapping("/myList") 
 	public ResponseEntity<Map<String, Object>> viewChallenge (@RequestHeader("Authorization") String authHeader) {

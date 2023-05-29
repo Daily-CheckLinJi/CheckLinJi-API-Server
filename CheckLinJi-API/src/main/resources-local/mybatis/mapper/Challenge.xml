@@ -22,5 +22,39 @@
 			ORDER BY SUBMISSION_TIME DESC 
 			limit #{startPage} , #{endPage} ;			 
 	</select>	
+	
+	
+	<!--첼린지 인증글 상세페이지-->
+	<select id="detail" parameterType="ChallengeSubmissionDto" resultType="java.util.Map" >
+			SELECT   CHALLENGE_SUBMISSION_ID 
+					,SUBMISSION_TITLE
+					,SUBMISSION_TEXT 
+					,SUBMISSION_IMAGE_ROUTE 
+					,SUBMISSION_TIME 
+					,NICK_NAME 
+					FROM CHALLENGE_SUBMISSION CS 
+					WHERE CHALLENGE_SUBMISSION_ID = #{challengeSubmissionId} ; 
+	</select>	
+	
+	<!--첼린지 인증글 상세페이지 좋아요 개수 -->
+	<select id="likesCount" parameterType="ChallengeSubmissionDto" resultType="int" >
+			SELECT COUNT(*)  FROM CHALLENGE_SUBMISSION CS
+				JOIN LIKES 
+				ON CS.CHALLENGE_SUBMISSION_ID = LIKES.CHALLENGE_SUBMISSION_ID 			
+			WHERE CS.CHALLENGE_SUBMISSION_ID  = #{challengeSubmissionId} ;
+	</select>	
+	
+	<!--첼린지 인증글 상세페이지 댓글 -->
+	<select id="commentList" parameterType="ChallengeSubmissionDto" resultType="java.util.Map" >
+			SELECT   CM.COMMENT_SEQ 
+					,CM.CONTENT
+					,CM.NICK_NAME
+					,CM.UPDATE_DATE			
+					FROM CHALLENGE_SUBMISSION CS
+							JOIN COMMENT CM  
+							ON CS.CHALLENGE_SUBMISSION_ID = CM.CHALLENGE_SUBMISSION_ID 			
+						WHERE CS.CHALLENGE_SUBMISSION_ID  = #{challengeSubmissionId}  
+					ORDER BY COMMENT_SEQ ;
+	</select>	
 	 
 </mapper>

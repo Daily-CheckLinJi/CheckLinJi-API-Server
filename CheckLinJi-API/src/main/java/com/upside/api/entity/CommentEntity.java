@@ -1,6 +1,7 @@
 package com.upside.api.entity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -42,7 +43,7 @@ public class CommentEntity { // 게시글 테이블
  private String nickName; // 댓글 작성자의 식별자
   
  @Column(nullable = false , name = "updateDate")
- private LocalDate updateDate; // 댓글 최종 수정 시각
+ private LocalDateTime updateDate; // 댓글 최종 수정 시각
  
  /**
   * 댓글 테이블에서 parent_id 컬럼은 대댓글이 있을 때,
@@ -64,7 +65,7 @@ public class CommentEntity { // 게시글 테이블
 
 @Builder
 public CommentEntity(ChallengeSubmissionEntity challengeSubmissionEntity, String content, String nickName, 
-		CommentEntity parentId , LocalDate updateDate
+		CommentEntity parentId , LocalDateTime updateDate
 		) {
 	super();
 	this.challengeSubmissionEntity = challengeSubmissionEntity;

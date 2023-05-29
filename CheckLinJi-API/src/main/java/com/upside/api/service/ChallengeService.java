@@ -16,6 +16,7 @@ import java.util.Optional;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import com.upside.api.dto.ChallengeDto;
 import com.upside.api.dto.ChallengeSubmissionDto;
@@ -102,6 +103,56 @@ public class ChallengeService {
 			  return result ;					 	    		   
 	}
 	 
+		
+		
+		 /**
+		 * 첼린지 인증글 상세페이지
+		 * @param memberDto
+		 * @param challengeDto
+		 * @return
+		 */
+		@Transactional // 트랜잭션 안에서 entity를 조회해야 영속성 상태로 조회가 되고 값을 변경해면 변경 감지(dirty checking)가 일어난다.
+		public Map<String, Object> detail (ChallengeSubmissionDto submissionDto) {
+			Map<String, Object> result = new HashMap<String, Object>();
+			
+			log.info("첼린지 인증글 상세페이지 ------> " + "Start");
+									 						 					
+			  try {
+				  HashMap<String,String> submissionDetail = challengeMapper.detail(submissionDto);
+			
+		        	if (submissionDetail.size() != 0 ) { 		        	
+		        		String image = fileService.myAuthImage(submissionDetail.get("SUBMISSION_IMAGE_ROUTE"));
+		        		if(image.equals("N")) {
+		        			submissionDetail.put("SUBMISSION_IMAGE_ROUTE", "파일을 표시할 수 없습니다...");
+		        		}else {
+		        			submissionDetail.put("SUBMISSION_IMAGE_ROUTE", image);
+		        		}
+		        		
+		        		int likesCount = challengeMapper.likesCount(submissionDto);
+		        		ArrayList<Map<String, Object>> commentList = challengeMapper.commentList(submissionDto);
+		        		
+		        	 	log.info("첼린지 인증글 상세페이지 ------> " + Constants.SUCCESS);
+		        	   	result.put("HttpStatus","2.00");		
+		      			result.put("Msg",Constants.SUCCESS);
+		      			result.put("submissionDetail",submissionDetail);
+		      			result.put("likesCount",likesCount);
+		      			result.put("commentList",commentList);
+		       		 
+		           } else {
+		        	   log.info("첼린지 인증글 상세페이지 ------> " + "게시글이 없습니다.");
+		        	    result.put("HttpStatus","1.00");		
+		       			result.put("Msg","게시글이 없습니다.");
+		       			return result ;
+		           }
+		        	
+				} catch (DataAccessException e) {
+					log.info("첼린지 인증글 상세페이지 ------> " + "Data 접근 실패");
+		    	    result.put("HttpStatus","1.00");		
+		   			result.put("Msg","Data 접근 실패");
+		   		 return result ;			
+				}               		 
+			  return result ;					 	    		   
+	}
 	 
 	 /**
 		 * 본인 첼린지 참가 내역

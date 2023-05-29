@@ -1,10 +1,12 @@
 package com.upside.api.mapper;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import com.upside.api.dto.ChallengeSubmissionDto;
 import com.upside.api.dto.PageDto;
 
 @Mapper
@@ -17,4 +19,25 @@ public interface ChallengeMapper {
 	 * @return
 	 */
 	ArrayList<Map<String, Object>> viewChallengeList (PageDto pageDto);
+	
+	/**
+	 * 첼린지 인증글 상세페이지
+	 * @param submissionDto
+	 * @return
+	 */
+	HashMap<String,String> detail (ChallengeSubmissionDto submissionDto);
+	
+	/**
+	 * 첼린지 인증글 상세페이지 좋아요 갯수 
+	 * @param submissionDto
+	 * @return
+	 */
+	int likesCount (ChallengeSubmissionDto submissionDto);
+	
+	/**
+	 * 첼린지 인증글 상세페이지 댓글
+	 * @param submissionDto
+	 * @return
+	 */
+	ArrayList<Map<String, Object>> commentList (ChallengeSubmissionDto submissionDto);
 }
