@@ -19,6 +19,7 @@ import com.upside.api.config.JwtTokenProvider;
 import com.upside.api.dto.ChallengeDto;
 import com.upside.api.dto.ChallengeSubmissionDto;
 import com.upside.api.dto.MessageDto;
+import com.upside.api.dto.PageDto;
 import com.upside.api.dto.UserChallengeDto;
 import com.upside.api.service.ChallengeService;
 
@@ -34,7 +35,24 @@ public class ChallengeController {
 	
 	
 	
+	
+	
 	@PostMapping("/list") 
+	public ResponseEntity<Map<String, Object>> viewChallengeList (@RequestBody PageDto pageDto) {
+											
+		Map<String, Object> result = challengeSerivce.viewChallengeList(pageDto);
+				
+		if (result.get("HttpStatus").equals("2.00")) { // 성공			
+			return new ResponseEntity<>(result,HttpStatus.OK);					
+		} else {			
+			
+			return new ResponseEntity<>(result,HttpStatus.BAD_REQUEST);
+		} 
+					
+	}
+	
+	
+	@PostMapping("/myList") 
 	public ResponseEntity<Map<String, Object>> viewChallenge (@RequestHeader("Authorization") String authHeader) {
 		
 		String userEmail = jwtTokenProvider.getEmail(authHeader); // email을 얻기위해 헤더에서 토큰을 디코딩하는 부분이다.
@@ -49,7 +67,7 @@ public class ChallengeController {
 		} 
 					
 	}
-	
+			
 	@PostMapping("/create") // 첼린지 생성
 	public ResponseEntity<MessageDto>createChallenge (@RequestBody ChallengeDto challengeDto) {
 		

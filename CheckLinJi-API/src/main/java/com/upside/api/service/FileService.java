@@ -86,49 +86,6 @@ public class FileService {
 	    }
 	 
 	 
-//	/**
-//	 *  파일 업로드 ( 외부에다 저장 ) - 인증 이미지 , 프로필 이미지
-//	 * @param file
-//	 * @param fileUploadDto
-//	 * @return
-//	 * @throws IOException
-//	 */
-//	public String uploadFile(@RequestParam("file") MultipartFile file , String email) throws IOException {
-//		
-//		String result = "N";
-//	  	LocalDate now = LocalDate.now();  
-//	  	
-//	 	try {
-//	 		// 업로드된 파일 이름 가져오기
-//	        String fileName = email+"_"+now+"_"+StringUtils.cleanPath(file.getOriginalFilename());
-//
-//	        // 파일 저장 경로 생성
-//	        Path uploadPath = Paths.get(uploadDir);
-//	        	        
-//	        // 파일 저장 경로가 없을 경우 생성
-//	        if (!Files.exists(uploadPath)) {
-//	            Files.createDirectories(uploadPath);
-//	        }
-//
-//	        // 파일 저장 경로와 파일 이름을 조합한 경로 생성
-//	        Path filePath = uploadPath.resolve(fileName).normalize();		        		        
-//	        
-//	        // 문자열에서 백슬래시()는 이스케이프 문자(escape character)로 사용되기 때문에 사용할려면 \\ 두개로 해야 \로 인식
-//	        String fileRoute = uploadPath.toString() + "/" + fileName ; 
-//
-//	        
-//	        result = fileRoute;
-//	        
-//	        Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-//	        	        
-//		    return result;
-//		        
-//			} catch (IOException e) {
-//				result = "N";
-//				return result;
-//			}	 	
-//    }
-	
 	/**
 	 * 프로필 사진 업로드 
 	 * @param profile
@@ -175,13 +132,13 @@ public class FileService {
     }
 		
 	/**
-	 * 파일 다운로드 Base64 인코딩 방식
+	 * 저장된 파일을 Base64로 인코딩해서 클라이언트에게 응답 - 첼린지 인증글 리스트 , 본인 미션 상세 페이지
 	 * @param fileUploadDto
 	 * @return
 	 */
 	public String myAuthImage(String fileRoute) {
 		
-		log.info("본인 인증 이미지  ------> " + fileRoute);
+		log.info("저장된 파일을 Base64로 인코딩  ------> " + fileRoute);
 		
 		
 		String encoded="N";
@@ -198,10 +155,10 @@ public class FileService {
 		
 		} catch (IOException e) {			
 			encoded = "N";
-			log.info("본인 인증 이미지  ------> " + "실패");
+			log.info("저장된 파일을 Base64로 인코딩  ------> " + "실패");
 			e.printStackTrace();
 		}
-		log.info("본인 인증 이미지  ------> " + "성공");
+		log.info("저장된 파일을 Base64로 인코딩  ------> " + "성공");
 		 return encoded ;				 	 	    			    		   
 	}
 	

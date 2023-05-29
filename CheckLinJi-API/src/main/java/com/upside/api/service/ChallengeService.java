@@ -13,14 +13,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.upside.api.dto.ChallengeDto;
 import com.upside.api.dto.ChallengeSubmissionDto;
 import com.upside.api.dto.MemberDto;
+import com.upside.api.dto.PageDto;
 import com.upside.api.dto.UserChallengeDto;
 import com.upside.api.entity.ChallengeEntity;
 import com.upside.api.entity.ChallengeSubmissionEntity;
@@ -28,6 +28,7 @@ import com.upside.api.entity.HashTagEntity;
 import com.upside.api.entity.MemberEntity;
 import com.upside.api.entity.SubmissionHashTagEntity;
 import com.upside.api.entity.UserChallengeEntity;
+import com.upside.api.mapper.ChallengeMapper;
 import com.upside.api.repository.ChallengeRepository;
 import com.upside.api.repository.ChallengeSubmissionRepository;
 import com.upside.api.repository.HashTagRepository;
@@ -55,14 +56,55 @@ public class ChallengeService {
 	 private final HashTagRepository hashTagRepository;
 	 private final MemberService memberService;
 	 private final FileService fileService;
+	 private final ChallengeMapper challengeMapper;
 	 	 
-	
-	
-	 
+		 
+	 /**
+		 * 첼린지 인증글 리스트
+		 * @param memberDto
+		 * @param challengeDto
+		 * @return
+		 */
+		@Transactional // 트랜잭션 안에서 entity를 조회해야 영속성 상태로 조회가 되고 값을 변경해면 변경 감지(dirty checking)가 일어난다.
+		public Map<String, Object> viewChallengeList (PageDto pageDto) {
+			Map<String, Object> result = new HashMap<String, Object>();
+			
+			log.info("첼린지 인증글 리스트 ------> " + "Start");
+									 						 					
+			  try {
+		        	ArrayList<Map<String, Object>> viewChallengeList = challengeMapper.viewChallengeList(pageDto);
+		        	        	        	
+		        	if (viewChallengeList.size() != 0 ) { 
+		        		for(int i = 0; i < viewChallengeList.size(); i++) { // 리스트 사이즈만큼 돌면서 DB에 저장된 이미지 경로로 이미지를 base64로 인코딩해서 값 덮어씌우기
+		        			String image = fileService.myAuthImage((String) viewChallengeList.get(i).get("SUBMISSION_IMAGE"));
+		        				if(!image.equals("N")) {
+		        					viewChallengeList.get(i).put("SUBMISSION_IMAGE", image);
+		        				}
+		        		}
+		        	 	log.info("첼린지 인증글 리스트 ------> " + Constants.SUCCESS);
+		        	   	result.put("HttpStatus","2.00");		
+		      			result.put("Msg",Constants.SUCCESS);
+		      			result.put("viewChallengeList",viewChallengeList);		        		
+		       		 
+		           } else {
+		        	   log.info("첼린지 인증글 리스트 ------> " + "게시글이 없습니다.");
+		        	    result.put("HttpStatus","1.00");		
+		       			result.put("Msg","게시글이 없습니다.");
+		       			return result ;
+		           }
+		        	
+				} catch (DataAccessException e) {
+					log.info("본인 미션 달력 ------> " + "Data 접근 실패");
+		    	    result.put("HttpStatus","1.00");		
+		   			result.put("Msg","Data 접근 실패");
+		   		 return result ;			
+				}               		 
+			  return result ;					 	    		   
+	}
 	 
 	 
 	 /**
-		 * 첼린지 참가 내역
+		 * 본인 첼린지 참가 내역
 		 * @param memberDto
 		 * @param challengeDto
 		 * @return

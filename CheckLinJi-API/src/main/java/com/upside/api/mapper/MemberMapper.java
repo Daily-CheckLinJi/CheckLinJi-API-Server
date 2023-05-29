@@ -10,7 +10,7 @@ import com.upside.api.dto.MemberDto;
 
 @Mapper
 public interface MemberMapper {
-	
+				
 	
 	/**
 	 * 내 미션 달성 횟수 , 참가자 평균

@@ -21,7 +21,6 @@ import lombok.NoArgsConstructor;
 public class MemberEntity { // User 테이블: 사용자 정보를 저장하는 테이블
 
  @Id
-// @GeneratedValue(strategy = GenerationType.IDENTITY)
  private String email;
  
  @Column(nullable = false , name = "password")
