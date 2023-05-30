@@ -109,6 +109,28 @@ public class MemberController {
 		} 					
 	}
 	
+	/**
+	 * 서비스 이용 날짜
+	 * @param authHeader
+	 * @param pageDto
+	 * @return
+	 */
+	@GetMapping("/joinDate") 
+	public ResponseEntity<Map<String, Object>> joinDate (@RequestHeader("Authorization") String authHeader ) {				
+				
+				String userEmail = jwtTokenProvider.getEmail(authHeader); // email을 얻기위해 헤더에서 토큰을 디코딩하는 부분이다.
+				
+				Map<String, Object> result = memberService.joinDate(userEmail);
+						
+				if (result.get("HttpStatus").equals("2.00")) { // 성공					
+					return new ResponseEntity<>(result,HttpStatus.OK);					
+				} else {							
+					return new ResponseEntity<>(result,HttpStatus.BAD_REQUEST);
+				} 
+					
+	}
+	
+	
 	@PostMapping("/update")
 	public ResponseEntity<MessageDto> updateMember(@RequestBody MemberDto memberDto) {
 		

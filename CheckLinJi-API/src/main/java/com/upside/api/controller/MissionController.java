@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -33,7 +34,7 @@ public class MissionController {
 	  * @param memberDto
 	  * @return
 	  */	
-	@PostMapping("/completed") // 첼린지 생성
+	@GetMapping("/completed") // 첼린지 생성
 	public ResponseEntity<RankingMessageDto> missionCompletedCnt (@RequestHeader("Authorization") String authHeader) {
 		
 		RankingMessageDto message = new RankingMessageDto();		

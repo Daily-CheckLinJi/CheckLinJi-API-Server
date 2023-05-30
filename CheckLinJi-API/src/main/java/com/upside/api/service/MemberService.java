@@ -2,6 +2,9 @@ package com.upside.api.service;
 
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,7 +22,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.upside.api.config.JwtTokenProvider;
 import com.upside.api.dto.MemberDto;
@@ -568,5 +570,59 @@ public class MemberService {
         
 	  return updateGrade ;				 	    			    		   
 	}
-    
+ 
+	
+	/**
+	 * 서비스 이용 날짜
+	 * @param userEmail
+	 * @return
+	 */
+	public Map<String, Object> joinDate (String userEmail) {
+		Map<String, Object> result = new HashMap<String, Object>();
+		
+		
+		log.info("회원 가입 날짜 ------> " + Constants.SUCCESS);
+		 // 현재 날짜와 시간을 LocalDateTime 객체로 가져옵니다.
+       LocalDateTime now = LocalDateTime.now();
+       
+       try {
+					
+  
+	   result = memberMapper.joinDate(userEmail);	        
+       
+    	 if(result.get("joinDate") == null ) {
+    		 result.put("HttpStatus","1.00");		
+			 result.put("Msg",Constants.FAIL); 
+			 return result ;	
+    	 }
+    	 
+    	Date joinDate  =  (Date) result.get("joinDate");
+    	Date currentDate = new Date();
+    	
+    	
+    	long differenceInMillis = currentDate.getTime() - joinDate.getTime();
+    	long differenceInDays = differenceInMillis / (24 * 60 * 60 * 1000);
+    	    	
+    	System.out.println(differenceInDays);
+    	
+
+    	
+    	result.put("joinDate", differenceInDays);
+    	
+    	
+        result.put("HttpStatus","2.00");		
+		result.put("Msg",Constants.SUCCESS);
+		
+		
+		log.info("회원 가입 날짜 ------> " + Constants.SUCCESS);
+		
+		} catch (Exception e) {
+			 result.put("HttpStatus","1.00");		
+			 result.put("Msg","Data 접근 실패");
+			 e.printStackTrace();
+		}
+       
+	    return result ;			    		   
+	}
+	
 }

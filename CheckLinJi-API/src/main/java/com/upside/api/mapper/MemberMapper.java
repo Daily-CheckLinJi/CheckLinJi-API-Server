@@ -76,4 +76,11 @@ public interface MemberMapper {
 	 */
 	int updateGrade (MemberDto memberDto);
 	
+	/**
+	 * 서비스 이용 날짜
+	 * @param data
+	 * @return
+	 */
+	HashMap<String,Object> joinDate (String userEmail);
+	
 }

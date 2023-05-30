@@ -79,7 +79,6 @@
 						, SUBMISSION_TITLE 
 						, SUBMISSION_TEXT 
 						, SUBMISSION_TIME
-						, NICK_NAME
 						, SUBMISSION_IMAGE_ROUTE 
 						, SUBMISSION_COMPLETED		
 				FROM CHALLENGE_SUBMISSION CS 
@@ -102,9 +101,9 @@
 	<select id="memberDelete" statementType="CALLABLE" resultType="hashmap"> 
 		 CALL DELETE_MEMBER (#{email, mode=IN}, #{COMPLETED , mode=OUT, jdbcType=VARCHAR}) 
 	</select>	
-	 
-	 <!-- 내 미션 누적 달성 횟수 -->
-	<select id="missionCompletedSum" parameterType="MemberDto" resultType="int" >
+	
+	<!-- 내 미션 누적 달성 횟수 -->
+	<select id="missionCompletedSum" parameterType="String" resultType="int" >
 		SELECT count(*) as own 		
 		 FROM CHALLENGE_SUBMISSION CS 
 		  JOIN USER_CHALLENGE UC 
@@ -116,5 +115,12 @@
 	<update id="updateGrade" parameterType="MemberDto" >
 		UPDATE MEMBER_INFO SET GRADE = #{grade} WHERE EMAIL = #{email};			 
 	</update>
+	 
+	 <!-- 회원가입 날짜 -->
+	<select id="joinDate" parameterType="String" resultType="java.util.Map" >
+		 SELECT DATE(JOIN_DATE) as joinDate FROM MEMBER_INFO MI 
+			WHERE EMAIL = #{email} ; 
+	</select>
+	 
 	 
 </mapper>

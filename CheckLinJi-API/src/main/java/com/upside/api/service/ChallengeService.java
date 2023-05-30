@@ -95,9 +95,10 @@ public class ChallengeService {
 		           }
 		        	
 				} catch (DataAccessException e) {
-					log.info("본인 미션 달력 ------> " + "Data 접근 실패");
+					log.info("첼린지 인증글 리스트 ------> " + "Data 접근 실패");					
 		    	    result.put("HttpStatus","1.00");		
 		   			result.put("Msg","Data 접근 실패");
+		   			e.printStackTrace();
 		   		 return result ;			
 				}               		 
 			  return result ;					 	    		   
@@ -206,7 +207,46 @@ public class ChallengeService {
 			  return result ;				 	    		   
 	}
 	 
-	 
+	
+		/**
+		  * 본인 미션 성공 총 횟수 (월)
+		  * @param memberDto
+		  * @return
+		  */
+		public Map<String, String> missionCompletedCnt (String userEmail) {
+			Map<String, String> result = new HashMap<String, String>();
+							
+			 // 현재 날짜와 시간을 LocalDateTime 객체로 가져옵니다.
+	        LocalDateTime now = LocalDateTime.now();
+	        
+	        try {
+						
+	        // 현재 년도와 월을 가져옵니다.
+	        int year = now.getYear();
+	        int month = now.getMonthValue();
+	                                                 		
+	        Map<String, String> data = new HashMap<String, String>();
+	        
+	        data.put("year", String.valueOf(year));
+	        data.put("month", String.valueOf(month));
+	        data.put("email", userEmail);
+	        
+	        int completedCnt = challengeMapper.missionCompletedCnt(data);	        
+	        
+	        result.put("HttpStatus","2.00");		
+			result.put("Msg",Constants.SUCCESS);
+			result.put("completedCnt",String.valueOf(completedCnt));
+			
+			log.info("미션 성공 총 횟수 (월) ------> " + Constants.SUCCESS);
+			
+			} catch (Exception e) {
+				 result.put("HttpStatus","1.00");		
+				 result.put("Msg","Data 접근 실패");			
+			}
+	        
+		    return result ;			    		   
+		}
+		
 	 
 	/**
 	 * 첼린지 생성

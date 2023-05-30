@@ -40,4 +40,11 @@ public interface ChallengeMapper {
 	 * @return
 	 */
 	ArrayList<Map<String, Object>> commentList (ChallengeSubmissionDto submissionDto);
+	
+	/**
+	 * 본인 미션 달성 횟수 
+	 * @param data
+	 * @return
+	 */
+	int missionCompletedCnt (Map<String, String> data);
 }
