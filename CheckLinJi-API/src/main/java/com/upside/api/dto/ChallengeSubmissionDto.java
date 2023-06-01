@@ -1,6 +1,6 @@
 package com.upside.api.dto;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import lombok.Data;
 
@@ -11,8 +11,7 @@ public class ChallengeSubmissionDto { // ChallengeSubmission 테이블: 사용�
  private String challengeName;
  private String email;
  private String hashTag;
- private LocalDate submissionTime;
- private String submissionTitle;
+ private LocalDateTime submissionTime; 
  private String  submissionText; 
  private String  nickName;
  private String  submissionImageName;

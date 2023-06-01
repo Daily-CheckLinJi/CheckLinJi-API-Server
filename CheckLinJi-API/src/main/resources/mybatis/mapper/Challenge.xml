@@ -31,8 +31,7 @@
 	
 	<!--첼린지 인증글 상세페이지-->
 	<select id="detail" parameterType="ChallengeSubmissionDto" resultType="java.util.Map" >
-			SELECT   CHALLENGE_SUBMISSION_ID 
-					,SUBMISSION_TITLE
+			SELECT   CHALLENGE_SUBMISSION_ID 					
 					,SUBMISSION_TEXT 
 					,SUBMISSION_IMAGE_ROUTE 
 					,SUBMISSION_TIME 

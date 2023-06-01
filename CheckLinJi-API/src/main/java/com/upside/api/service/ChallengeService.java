@@ -350,7 +350,7 @@ public class ChallengeService {
 		 UserChallengeEntity userChallenge =  UserChallengeEntity.builder()
 				 							   .memberEntity(member)
 				 							   .challengeEntity(challenge)
-				 							   .registrationTime(LocalDate.now())
+				 							   .registrationTime(LocalDateTime.now())
 				 							   .completed(false)
 				 							   .build();
 		 
@@ -402,7 +402,7 @@ public class ChallengeService {
 	 	 		 	
 	 	UserChallengeEntity userChallenge = exsistUserChallenge.get();		 			 	
 	 	
-	 	boolean submitYn = challengeSubmissionRepository.findByUserChallengeAndSubmissionTime(userChallenge, LocalDate.now()).isPresent();
+	 	boolean submitYn = challengeSubmissionRepository.findByUserChallengeAndSubmissionTime(userChallenge, LocalDateTime.now()).isPresent();
 	 	 
 	 	if(submitYn) {
 	 		 log.info("첼린지 제출 ------> " + "오늘은 이미 제출이 완료되었습니다.");
@@ -418,8 +418,7 @@ public class ChallengeService {
 	 	// 파일 업로드 성공시 첼린지 인증 성공
 	 	if(!submissionImageRoute.equals("N")) {	 			 	
 		 	ChallengeSubmissionEntity challengeSubmission = ChallengeSubmissionEntity.builder()
-				   											.submissionTime(LocalDate.now()) // 제출 일시
-				   											.submissionTitle(submissonDto.getSubmissionTitle()) // 제목
+				   											.submissionTime(LocalDateTime.now()) // 제출 일시				   											
 				   											.submissionText(submissonDto.getSubmissionText()) // 내용
 				   											.nickName(member.getNickName()) // 닉네임
 				   											.submissionImageRoute(submissionImageRoute) // 이미지 경로
@@ -432,7 +431,7 @@ public class ChallengeService {
 			log.info("첼린지 제출 ------> " + Constants.SUCCESS);
 			
 			
-			Optional<ChallengeSubmissionEntity> successYn = challengeSubmissionRepository.findByUserChallengeAndSubmissionTime(userChallenge, LocalDate.now());
+			Optional<ChallengeSubmissionEntity> successYn = challengeSubmissionRepository.findByUserChallengeAndSubmissionTime(userChallenge, LocalDateTime.now());
 				
 			String tagExistN = "" ; // 태그 존재 유무
 			

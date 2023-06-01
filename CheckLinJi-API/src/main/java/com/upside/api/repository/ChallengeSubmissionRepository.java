@@ -3,7 +3,7 @@ package com.upside.api.repository;
 
 
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,7 +22,7 @@ public interface ChallengeSubmissionRepository extends JpaRepository<ChallengeSu
 	 */
 	 List<ChallengeSubmissionEntity> findByUserChallengeOrderBySubmissionTimeDesc (UserChallengeEntity userChallenge);
 	 
-	 Optional<ChallengeSubmissionEntity> findByUserChallengeAndSubmissionTime (UserChallengeEntity userChallenge , LocalDate submissionTime);
+	 Optional<ChallengeSubmissionEntity> findByUserChallengeAndSubmissionTime (UserChallengeEntity userChallenge , LocalDateTime submissionTime);
 	 	 
 }
 

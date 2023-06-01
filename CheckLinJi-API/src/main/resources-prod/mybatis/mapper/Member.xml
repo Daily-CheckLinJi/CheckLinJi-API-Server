@@ -75,8 +75,7 @@
 	<!-- 본인 미션 상세정보 -->
 	<select id="missionAuthInfo" parameterType="MemberDto" resultType="java.util.Map" >
 		SELECT 	  		  EMAIL
-						, CHALLENGE_NAME
-						, SUBMISSION_TITLE 
+						, CHALLENGE_NAME						
 						, SUBMISSION_TEXT 
 						, SUBMISSION_TIME
 						, SUBMISSION_IMAGE_ROUTE 
@@ -84,7 +83,7 @@
 				FROM CHALLENGE_SUBMISSION CS 
 			JOIN USER_CHALLENGE UC 
 			ON UC.USER_CHALLENGE_ID = CS.USER_CHALLENGE_ID
-			WHERE CS.SUBMISSION_TIME = #{date}
+			WHERE CS.SUBMISSION_TIME LIKE  CONCAT(#{date}, '%')
 			AND UC.CHALLENGE_NAME = #{challengeName}
 			AND UC.EMAIL = #{email}
 			GROUP BY CS.SUBMISSION_TIME ; 
