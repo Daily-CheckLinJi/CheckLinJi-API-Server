@@ -45,7 +45,7 @@ public interface MemberMapper {
 	 * @param data
 	 * @return
 	 */
-	HashMap<String,String> missionAuthInfo (Map<String, String> data);
+	HashMap<String,Object> missionAuthInfo (Map<String, String> data);
 	
 	/**
 	 * 본인 미션 삭제

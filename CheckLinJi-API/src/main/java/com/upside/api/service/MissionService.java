@@ -3,10 +3,8 @@ package com.upside.api.service;
 
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -164,7 +162,7 @@ public class MissionService {
         	   		Timestamp dbTimestamp = (Timestamp) missionCalendarOwn.get(i).get("SUBMISSION_TIME");
         	   		LocalDateTime nowDate = dbTimestamp.toLocalDateTime();
         	   		        	   	        	   		        	   		
-            	   	missionCalendarOwn.get(i).put("SUBMISSION_DAY", nowDate.getYear()+"-"+String.format("%02d", nowDate.getMonthValue())+"-"+nowDate.getDayOfMonth());
+            	   	missionCalendarOwn.get(i).put("SUBMISSION_DAY", nowDate.getYear()+"-"+String.format("%02d", nowDate.getMonthValue())+"-"+String.format("%02d", nowDate.getDayOfMonth()));
             	   	missionCalendarOwn.get(i).put("SUBMISSION_TIME",nowDate.getHour()+":"+nowDate.getMinute());
         	   	}
         	   	        	   	
@@ -211,7 +209,7 @@ public class MissionService {
         data.put("email", userEmail);
         
         try {
-        	Map<String, String> missionAuthInfo = memberMapper.missionAuthInfo(data); // 해당날짜에 해당하는 본인 데이터
+        	Map<String, Object> missionAuthInfo = memberMapper.missionAuthInfo(data); // 해당날짜에 해당하는 본인 데이터
         	        	        	
         	if (missionAuthInfo == null ) {
         		log.info("본인 미션 상세보기 ------> " + "참여중이 아니거나 이력이 없습니다.");
@@ -220,6 +218,14 @@ public class MissionService {
        		 return result ;
        		 
            } else { // 해당날짜에 해당하는 본인 데이터가 있을 시
+        	   
+        	   Timestamp dbTimestamp = (Timestamp) missionAuthInfo.get("SUBMISSION_TIME");
+   	   			LocalDateTime nowDate = dbTimestamp.toLocalDateTime();
+   	   		
+   	   			missionAuthInfo.put("SUBMISSION_DAY", nowDate.getYear()+"-"+String.format("%02d", nowDate.getMonthValue())+"-"+String.format("%02d", nowDate.getDayOfMonth()));
+   	   			missionAuthInfo.put("SUBMISSION_TIME",nowDate.getHour()+":"+nowDate.getMinute());
+   	   		
+        	   
         	   
         	    ObjectMapper objectMapper = new ObjectMapper();
 				
