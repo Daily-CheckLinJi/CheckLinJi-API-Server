@@ -247,6 +247,46 @@ public class ChallengeService {
 		    return result ;			    		   
 		}
 		
+		
+		/**
+		  * 본인 미션 성공 총 횟수
+		  * @param memberDto
+		  * @return
+		  */
+		public Map<String, String> missionCompletedCntAll (String userEmail) {
+			Map<String, String> result = new HashMap<String, String>();
+							
+			 // 현재 날짜와 시간을 LocalDateTime 객체로 가져옵니다.
+	        LocalDateTime now = LocalDateTime.now();
+	        
+	        try {
+						
+	        // 현재 년도와 월을 가져옵니다.
+	        int year = now.getYear();
+	        int month = now.getMonthValue();
+	                                                 		
+	        Map<String, String> data = new HashMap<String, String>();
+	        
+	        data.put("year", String.valueOf(year));
+	        data.put("month", String.valueOf(month));
+	        data.put("email", userEmail);
+	        
+	        int completedCnt = challengeMapper.missionCompletedCntAll(data);	        
+	        
+	        result.put("HttpStatus","2.00");		
+			result.put("Msg",Constants.SUCCESS);
+			result.put("completedCnt",String.valueOf(completedCnt));
+			
+			log.info("미션 성공 총 횟수 (월) ------> " + Constants.SUCCESS);
+			
+			} catch (Exception e) {
+				 result.put("HttpStatus","1.00");		
+				 result.put("Msg","Data 접근 실패");			
+			}
+	        
+		    return result ;			    		   
+		}
+		
 	 
 	/**
 	 * 첼린지 생성

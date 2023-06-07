@@ -101,7 +101,7 @@ public class ChallengeController {
 	}
 	
 	/**
-	 * 본인 첼린지 인증 성공 횟수
+	 * 본인 첼린지 인증 성공 횟수 (월)
 	 * @param authHeader
 	 * @param pageDto
 	 * @return
@@ -112,6 +112,27 @@ public class ChallengeController {
 				String userEmail = jwtTokenProvider.getEmail(authHeader); // email을 얻기위해 헤더에서 토큰을 디코딩하는 부분이다.
 				
 				Map<String, String> result = challengeSerivce.missionCompletedCnt(userEmail);
+						
+				if (result.get("HttpStatus").equals("2.00")) { // 성공					
+					return new ResponseEntity<>(result,HttpStatus.OK);					
+				} else {							
+					return new ResponseEntity<>(result,HttpStatus.BAD_REQUEST);
+				} 
+					
+	}
+	
+	/**
+	 * 본인 첼린지 인증 성공 횟수 (월)
+	 * @param authHeader
+	 * @param pageDto
+	 * @return
+	 */
+	@GetMapping("/missionCompletedCntAll") 
+	public ResponseEntity<Map<String, String>> missionCompletedCntAll (@RequestHeader("Authorization") String authHeader ) {				
+				
+				String userEmail = jwtTokenProvider.getEmail(authHeader); // email을 얻기위해 헤더에서 토큰을 디코딩하는 부분이다.
+				
+				Map<String, String> result = challengeSerivce.missionCompletedCntAll(userEmail);
 						
 				if (result.get("HttpStatus").equals("2.00")) { // 성공					
 					return new ResponseEntity<>(result,HttpStatus.OK);					
