@@ -75,11 +75,13 @@ public class MissionController {
 			message.setMsg((String) result.get("Msg"));
 			message.setStatusCode((String) result.get("HttpStatus"));
 			message.setUserList(result.get("missionRankingTop"));
-			message.setOwnList(result.get("missionRankingOwn"));													
+			message.setOwnList(result.get("missionRankingOwn"));
+			return new ResponseEntity<>(message,HttpStatus.OK);	
 		} else if (result.get("HttpStatus").equals("2.01")) { // 본인이 참여중이 아닐때			
 			message.setMsg((String) result.get("Msg"));
 			message.setStatusCode((String) result.get("HttpStatus"));
-			message.setUserList(result.get("missionRankingTop"));			
+			message.setUserList(result.get("missionRankingTop"));
+			return new ResponseEntity<>(message,HttpStatus.OK);
 		} else {			
 			message.setMsg((String) result.get("Msg"));
 			message.setStatusCode((String) result.get("HttpStatus"));			
