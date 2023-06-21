@@ -216,6 +216,8 @@ public class MissionService {
         
         try {
         	Map<String, Object> missionAuthInfo = memberMapper.missionAuthInfo(data); // 해당날짜에 해당하는 본인 데이터
+        	
+        	ArrayList<Map<String, Object>> missionComment = memberMapper.missionComment(data);
         	        	        	
         	if (missionAuthInfo == null ) {
         		log.info("본인 미션 상세보기 ------> " + "참여중이 아니거나 이력이 없습니다.");
@@ -230,9 +232,20 @@ public class MissionService {
    	   		
    	   			missionAuthInfo.put("SUBMISSION_DAY", nowDate.getYear()+"-"+String.format("%02d", nowDate.getMonthValue())+"-"+String.format("%02d", nowDate.getDayOfMonth()));
    	   			missionAuthInfo.put("SUBMISSION_TIME",nowDate.getHour()+":"+nowDate.getMinute());
-   	   		
-        	   
-        	   
+   	   			
+   	   			if(missionComment.size() > 0) { 
+   	   				for(int i = 0 ; i < missionComment.size(); i++) {
+	   	   				Timestamp timestamp_1 = (Timestamp) missionComment.get(i).get("USER_REGIST_DATE");
+	   	   	   			LocalDateTime regist_date = timestamp_1.toLocalDateTime();
+	   	   	   			
+	   	   	   			Timestamp timestamp_2 = (Timestamp) missionComment.get(i).get("USER_UPDATE_DATE");
+	   	   	   			LocalDateTime update_date = timestamp_2.toLocalDateTime();
+   	   				   	   					
+   	   					missionComment.get(i).put("USER_REGIST_DATE",regist_date.getYear()+"-"+String.format("%02d", regist_date.getMonthValue())+"-"+String.format("%02d", regist_date.getDayOfMonth()) + " " + regist_date.getHour()+":"+regist_date.getMinute());
+   	   					missionComment.get(i).put("USER_UPDATE_DATE",update_date.getYear()+"-"+String.format("%02d", update_date.getMonthValue())+"-"+String.format("%02d", update_date.getDayOfMonth()) + " " + update_date.getHour()+":"+update_date.getMinute());   	   					
+   	   				}   	   			
+   	   			}
+   	   			
         	    ObjectMapper objectMapper = new ObjectMapper();
 				
         	    // MAP 객체를 JSON으로 변환
@@ -262,7 +275,8 @@ public class MissionService {
 	        	   	missionAuthInfo.put("SUBMISSION_IMAGE_ROUTE", file);
 	        	   	result.put("HttpStatus","2.00");		
 	      			result.put("Msg",Constants.SUCCESS);
-	      			result.put("missionAuthInfo",missionAuthInfo);	      			
+	      			result.put("missionAuthInfo",missionAuthInfo);
+	      			result.put("missionComment",missionComment);
 			    }
            }
 		} catch (DataAccessException e) {

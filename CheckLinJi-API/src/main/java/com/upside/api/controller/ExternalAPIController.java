@@ -53,7 +53,7 @@ public class ExternalAPIController {
 	 * 베스트셀러 Top 10 
 	 * @return
 	 */
-	@GetMapping("/bestSeller") 						  	
+	@PostMapping("/bestSeller") 						  	
 	public ResponseEntity<Map<String,Object>> bestSeller (@RequestBody BestBookDto bestBookDto) {
 						
 		String day = bestBookDto.getDate();

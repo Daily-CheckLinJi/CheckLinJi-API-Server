@@ -86,20 +86,44 @@
 		
 	<!-- 본인 미션 상세정보 -->
 	<select id="missionAuthInfo" parameterType="MemberDto" resultType="java.util.Map" >
-		SELECT 	  		  EMAIL
+				SELECT 	  UC.EMAIL
 						, CHALLENGE_NAME						
 						, SUBMISSION_TEXT 
 						, SUBMISSION_TIME
 						, SUBMISSION_IMAGE_ROUTE 
-						, SUBMISSION_COMPLETED		
+						, SUBMISSION_COMPLETED
+						, MI.NICK_NAME
+						, MI.GRADE
+						, (select count(*) from likes where challenge_submission_id = CS.challenge_submission_id) as LIKES
 				FROM CHALLENGE_SUBMISSION CS 
 			JOIN USER_CHALLENGE UC 
-			ON UC.USER_CHALLENGE_ID = CS.USER_CHALLENGE_ID
+				ON UC.USER_CHALLENGE_ID = CS.USER_CHALLENGE_ID
+			JOIN MEMBER_INFO MI 
+			    ON UC.EMAIL = MI.EMAIL
 			WHERE CS.SUBMISSION_TIME LIKE  CONCAT(#{date}, '%')
 			AND UC.CHALLENGE_NAME = #{challengeName}
 			AND UC.EMAIL = #{email}
 			GROUP BY CS.SUBMISSION_TIME ; 
 	</select>
+	
+	<!-- 본인 미션 상세정보 댓글-->
+	<select id="missionComment" parameterType="MemberDto" resultType="java.util.Map" >
+		SELECT 	 CM.comment_seq as USER_SEQ 
+				,CM.content as USER_CONTENT
+				,CM.nick_name as USER_NICK_NAME 
+				,CM.parent_id as PARENT_ID
+				,CM.update_date as USER_UPDATE_DATE
+				,CM.regist_date as USER_REGIST_DATE				 
+				FROM COMMENT CM 		 
+			JOIN CHALLENGE_SUBMISSION CS 
+				ON CM.CHALLENGE_SUBMISSION_ID = CS.CHALLENGE_SUBMISSION_ID
+			JOIN USER_CHALLENGE UC 
+				ON UC.USER_CHALLENGE_ID = CS.USER_CHALLENGE_ID						
+		WHERE CS.SUBMISSION_TIME LIKE  CONCAT(#{date}, '%') 
+			AND UC.CHALLENGE_NAME = #{challengeName}
+			AND UC.EMAIL =  #{email}
+		ORDER BY COMMENT_SEQ
+	</select>	
 	
 	<!-- 본인 미션 정보 삭제 -->
 	<delete id="missionAuthDelete" parameterType="MemberDto" >

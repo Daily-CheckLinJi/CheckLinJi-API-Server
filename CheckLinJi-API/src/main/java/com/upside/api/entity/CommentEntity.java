@@ -41,7 +41,10 @@ public class CommentEntity { // 게시글 테이블
  
  @Column(nullable = false , name = "nickName")
  private String nickName; // 댓글 작성자의 식별자
-  
+ 
+ @Column(nullable = false , name = "registDate")
+ private LocalDateTime registDate; // 댓글 등록 시각
+ 
  @Column(nullable = false , name = "updateDate")
  private LocalDateTime updateDate; // 댓글 최종 수정 시각
  
@@ -65,13 +68,14 @@ public class CommentEntity { // 게시글 테이블
 
 @Builder
 public CommentEntity(ChallengeSubmissionEntity challengeSubmissionEntity, String content, String nickName, 
-		CommentEntity parentId , LocalDateTime updateDate
+		CommentEntity parentId , LocalDateTime registDate , LocalDateTime updateDate
 		) {
 	super();
 	this.challengeSubmissionEntity = challengeSubmissionEntity;
 	this.content = content;
 	this.nickName = nickName;
-	this.parentId = parentId;	
+	this.parentId = parentId;
+	this.registDate = registDate;
 	this.updateDate = updateDate;		
  }
 }

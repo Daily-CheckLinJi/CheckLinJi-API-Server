@@ -48,6 +48,13 @@ public interface MemberMapper {
 	HashMap<String,Object> missionAuthInfo (Map<String, String> data);
 	
 	/**
+	 * 본인 미션 상세보기 댓글
+	 * @param data
+	 * @return
+	 */
+	ArrayList<Map<String, Object>> missionComment (Map<String, String> data);
+	
+	/**
 	 * 본인 미션 삭제
 	 * @param data
 	 * @return
