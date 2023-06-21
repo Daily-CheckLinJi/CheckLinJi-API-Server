@@ -115,6 +115,12 @@ public class MissionService {
   		 return result ;
        }
        
+       for(int i =0; i < missionRankingTop.size(); i++) {    	   
+    	   missionRankingTop.get(i).put("profile",fileService.myAuthImage((String) missionRankingTop.get(i).get("profile")));
+       }
+       
+       missionRankingOwn.put("profile",fileService.myAuthImage((String) missionRankingOwn.get("profile")));
+       
        result.put("HttpStatus","2.00");		
 	   result.put("Msg",Constants.SUCCESS);
 	   result.put("missionRankingTop",missionRankingTop);
