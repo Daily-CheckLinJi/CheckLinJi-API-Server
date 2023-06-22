@@ -218,6 +218,8 @@ public class MissionService {
         	Map<String, Object> missionAuthInfo = memberMapper.missionAuthInfo(data); // 해당날짜에 해당하는 본인 데이터
         	
         	ArrayList<Map<String, Object>> missionComment = memberMapper.missionComment(data);
+        	
+        	ArrayList<Map<String, Object>> missionHashTag = memberMapper.missionHashTag(data);
         	        	        	
         	if (missionAuthInfo == null ) {
         		log.info("본인 미션 상세보기 ------> " + "참여중이 아니거나 이력이 없습니다.");
@@ -244,7 +246,7 @@ public class MissionService {
    	   					missionComment.get(i).put("USER_REGIST_DATE",regist_date.getYear()+"-"+String.format("%02d", regist_date.getMonthValue())+"-"+String.format("%02d", regist_date.getDayOfMonth()) + " " + regist_date.getHour()+":"+regist_date.getMinute());
    	   					missionComment.get(i).put("USER_UPDATE_DATE",update_date.getYear()+"-"+String.format("%02d", update_date.getMonthValue())+"-"+String.format("%02d", update_date.getDayOfMonth()) + " " + update_date.getHour()+":"+update_date.getMinute());   	   					
    	   				}   	   			
-   	   			}
+   	   			}   	   			   	   	   	   			
    	   			
         	    ObjectMapper objectMapper = new ObjectMapper();
 				
@@ -277,6 +279,7 @@ public class MissionService {
 	      			result.put("Msg",Constants.SUCCESS);
 	      			result.put("missionAuthInfo",missionAuthInfo);
 	      			result.put("missionComment",missionComment);
+	      			result.put("missionHashTag",missionHashTag);
 			    }
            }
 		} catch (DataAccessException e) {

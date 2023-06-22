@@ -19,6 +19,7 @@ public class ChallengeSubmissionDto { // ChallengeSubmission 테이블: 사용�
  private String year ; 
  private String month ;
  private String day ;
+ 
   
  
 }
