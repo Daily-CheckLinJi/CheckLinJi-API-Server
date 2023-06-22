@@ -442,7 +442,7 @@ public class ChallengeService {
 	 	 		 	
 	 	UserChallengeEntity userChallenge = exsistUserChallenge.get();		 			 	
 	 	
-	 	boolean submitYn = challengeSubmissionRepository.findByUserChallengeAndSubmissionTime(userChallenge, LocalDateTime.now()).isPresent();
+	 	boolean submitYn = challengeSubmissionRepository.findByUserChallengeAndSubmissionTime(userChallenge, LocalDate.now()).isPresent();
 	 	 
 	 	if(submitYn) {
 	 		 log.info("첼린지 제출 ------> " + "오늘은 이미 제출이 완료되었습니다.");
@@ -471,9 +471,11 @@ public class ChallengeService {
 			log.info("첼린지 제출 ------> " + Constants.SUCCESS);
 			
 			
-			Optional<ChallengeSubmissionEntity> successYn = challengeSubmissionRepository.findByUserChallengeAndSubmissionTime(userChallenge, LocalDateTime.now());
+			Optional<ChallengeSubmissionEntity> successYn = challengeSubmissionRepository.findByUserChallengeAndSubmissionTime(userChallenge, LocalDate.now());
 				
 			String tagExistN = "" ; // 태그 존재 유무
+			
+			System.out.println("successYn.isPresent() "+ successYn.isPresent());
 			
 			if(successYn.isPresent()) {								
 				

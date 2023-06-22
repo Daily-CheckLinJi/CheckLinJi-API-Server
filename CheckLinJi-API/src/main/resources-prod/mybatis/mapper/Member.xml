@@ -94,6 +94,7 @@
 						, SUBMISSION_COMPLETED
 						, MI.NICK_NAME
 						, MI.GRADE
+						, MI.PROFILE
 						, (select count(*) from likes where challenge_submission_id = CS.challenge_submission_id) as LIKES
 				FROM CHALLENGE_SUBMISSION CS 
 			JOIN USER_CHALLENGE UC 

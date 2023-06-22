@@ -260,21 +260,29 @@ public class MissionService {
 			    JSONObject jsonObject = (JSONObject) parser.parse(json);
 			    			    			    			    
 			    // SUBMISSION_IMAGE_ROUTE 컬럼 값 가져오기
-			    String fileRoute = (String) jsonObject.get("SUBMISSION_IMAGE_ROUTE");			    			   
+			    String missionImageRoute = (String) jsonObject.get("SUBMISSION_IMAGE_ROUTE");
+			    String profileImageRoute = (String) jsonObject.get("PROFILE");
 			    
 			    // Base64로 인코딩된 이미지 파일 문자열로 가져옴
-			    String file = fileService.myAuthImage(fileRoute); 
+			    String missionImage = fileService.myAuthImage(missionImageRoute);
+			    String profileImage = fileService.myAuthImage(profileImageRoute);
         	   
-			    if(file.equals("N")) {
+			    if(missionImage.equals("N")) {
 			    	log.info("본인 미션 상세보기 ------> " + "이미지를 표시할 수 없습니다.");
 			    	missionAuthInfo.put("SUBMISSION_IMAGE_ROUTE", "이미지를 표시할 수 없습니다.");			    	
 			    	result.put("HttpStatus","2.00");		
 	      			result.put("Msg","이미지를 표시할 수 없습니다.");
 	      			result.put("missionAuthInfo",missionAuthInfo);	      			
 	      			
-			    } else {
+			    } else {	        	   		        	   	
+	        	   	if(profileImage.equals("N")) {
+	        	   		missionAuthInfo.put("PROFILE", "이미지를 표시할 수 없습니다.");
+	        	   	} else {
+	        	   		missionAuthInfo.put("PROFILE", profileImage);
+	        	   	}
+	        	   	
 	        	   	log.info("본인 미션 상세보기 ------> " + Constants.SUCCESS);	        	   		        	   	
-	        	   	missionAuthInfo.put("SUBMISSION_IMAGE_ROUTE", file);
+	        	   	missionAuthInfo.put("SUBMISSION_IMAGE_ROUTE", missionImage);	        	   	
 	        	   	result.put("HttpStatus","2.00");		
 	      			result.put("Msg",Constants.SUCCESS);
 	      			result.put("missionAuthInfo",missionAuthInfo);
