@@ -9,7 +9,7 @@
 	<select id="viewChallengeList" parameterType="PageDto" resultType="java.util.Map" >
 		SELECT   CS.CHALLENGE_SUBMISSION_ID AS SUBMISSION_ID
 				,CS.SUBMISSION_IMAGE_ROUTE AS SUBMISSION_IMAGE
-				,CS.SUBMISSION_TIME	
+				,CS.SUBMISSION_DATE	
 				,(SELECT COUNT(*)  FROM LIKES 
 					JOIN CHALLENGE_SUBMISSION CS 
 					ON LIKES.CHALLENGE_SUBMISSION_ID = CS.CHALLENGE_SUBMISSION_ID 
@@ -24,7 +24,7 @@
 				<if test="!email.equals('') and email != null">
 					WHERE UC.EMAIL = #{email} 
 				</if>
-				ORDER BY SUBMISSION_TIME DESC 
+				ORDER BY SUBMISSION_DATE DESC 
 				LIMIT #{startPage} , #{endPage} ;		 
 	</select>	
 	
@@ -34,7 +34,7 @@
 			SELECT   CHALLENGE_SUBMISSION_ID 					
 					,SUBMISSION_TEXT 
 					,SUBMISSION_IMAGE_ROUTE 
-					,SUBMISSION_TIME 
+					,SUBMISSION_DATE 
 					,NICK_NAME 
 					FROM CHALLENGE_SUBMISSION CS 
 					WHERE CHALLENGE_SUBMISSION_ID = #{challengeSubmissionId} ; 
@@ -69,11 +69,12 @@
 		 FROM CHALLENGE_SUBMISSION CS 
 		  JOIN USER_CHALLENGE UC 
 		   ON CS.USER_CHALLENGE_ID = UC.USER_CHALLENGE_ID
-		 WHERE year(CS.submission_time) = #{year} AND MONTH(CS.submission_time) = #{month} 
+			  WHERE YEAR(STR_TO_DATE(CS.submission_date, '%Y-%m-%d')) = #{year} 
+			  	AND MONTH(STR_TO_DATE(CS.submission_date, '%Y-%m-%d')) = #{month}
 		   AND UC.EMAIL = #{email}					 
 	</select>
-	 
-	  <!-- 내 미션 달성 횟수 -->
+	
+	 <!-- 내 미션 달성 횟수 -->
 	<select id="missionCompletedCntAll" parameterType="MemberDto" resultType="int" >
 		SELECT count(*) as own 
 		 FROM CHALLENGE_SUBMISSION CS 
@@ -81,5 +82,5 @@
 		   ON CS.USER_CHALLENGE_ID = UC.USER_CHALLENGE_ID
 		 WHERE UC.EMAIL = #{email}					 
 	</select>
-	 
+	
 </mapper>

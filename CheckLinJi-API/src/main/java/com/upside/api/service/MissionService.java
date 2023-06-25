@@ -229,11 +229,6 @@ public class MissionService {
        		 
            } else { // 해당날짜에 해당하는 본인 데이터가 있을 시
         	   
-        	   Timestamp dbTimestamp = (Timestamp) missionAuthInfo.get("SUBMISSION_TIME");
-   	   			LocalDateTime nowDate = dbTimestamp.toLocalDateTime();
-   	   		
-   	   			missionAuthInfo.put("SUBMISSION_DAY", nowDate.getYear()+"-"+String.format("%02d", nowDate.getMonthValue())+"-"+String.format("%02d", nowDate.getDayOfMonth()));
-   	   			missionAuthInfo.put("SUBMISSION_TIME",nowDate.getHour()+":"+nowDate.getMinute());
    	   			
    	   			if(missionComment.size() > 0) { 
    	   				for(int i = 0 ; i < missionComment.size(); i++) {

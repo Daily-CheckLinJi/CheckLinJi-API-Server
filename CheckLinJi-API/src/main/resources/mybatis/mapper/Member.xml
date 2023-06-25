@@ -13,13 +13,15 @@
 		 	 FROM CHALLENGE_SUBMISSION CS 
 			  JOIN USER_CHALLENGE UC 
 			   ON CS.USER_CHALLENGE_ID = UC.USER_CHALLENGE_ID
-			  WHERE year(CS.submission_time) = #{year} AND MONTH(CS.submission_time) = #{month} 
+			  WHERE YEAR(STR_TO_DATE(CS.submission_date, '%Y-%m-%d')) = #{year} 
+			  	AND MONTH(STR_TO_DATE(CS.submission_date, '%Y-%m-%d')) = #{month}
 			  GROUP BY UC.EMAIL ) AS counts) as userAvg
 		 FROM CHALLENGE_SUBMISSION CS 
 		  JOIN USER_CHALLENGE UC 
 		   ON CS.USER_CHALLENGE_ID = UC.USER_CHALLENGE_ID
-		 WHERE year(CS.submission_time) = #{year} AND MONTH(CS.submission_time) = #{month} 
-		   AND UC.EMAIL = #{email}					 
+		  WHERE YEAR(STR_TO_DATE(CS.submission_date, '%Y-%m-%d')) = #{year} 
+			  	AND MONTH(STR_TO_DATE(CS.submission_date, '%Y-%m-%d')) = #{month} 
+		   		AND UC.EMAIL = #{email}					 
 	</select>
 
 	<!-- 실시간 랭킹 TOP 3 -->
@@ -73,15 +75,15 @@
 		SELECT 	  EMAIL
 				, CHALLENGE_NAME
 				, SUBMISSION_TEXT 
-				, SUBMISSION_TIME
+				, SUBMISSION_DATE
 				, SUBMISSION_COMPLETED		
 		FROM CHALLENGE_SUBMISSION CS 
 	JOIN USER_CHALLENGE UC 
 	ON UC.USER_CHALLENGE_ID = CS.USER_CHALLENGE_ID
-	WHERE CS.SUBMISSION_TIME LIKE #{date}
+	WHERE CS.SUBMISSION_DATE LIKE #{date}
 	AND UC.CHALLENGE_NAME = #{challengeName}
 	AND UC.EMAIL = #{email}
-	GROUP BY CS.SUBMISSION_TIME ; 
+	GROUP BY CS.SUBMISSION_DATE ; 
 	</select>
 		
 	<!-- 본인 미션 상세정보 -->
@@ -89,6 +91,7 @@
 				SELECT 	  UC.EMAIL
 						, CHALLENGE_NAME						
 						, SUBMISSION_TEXT 
+						, SUBMISSION_DATE as SUBMISSION_DAY
 						, SUBMISSION_TIME
 						, SUBMISSION_IMAGE_ROUTE 
 						, SUBMISSION_COMPLETED
@@ -101,10 +104,10 @@
 				ON UC.USER_CHALLENGE_ID = CS.USER_CHALLENGE_ID
 			JOIN MEMBER_INFO MI 
 			    ON UC.EMAIL = MI.EMAIL
-			WHERE CS.SUBMISSION_TIME LIKE  CONCAT(#{date}, '%')
+			WHERE CS.SUBMISSION_DATE LIKE  CONCAT(#{date}, '%')
 			AND UC.CHALLENGE_NAME = #{challengeName}
 			AND UC.EMAIL = #{email}
-			GROUP BY CS.SUBMISSION_TIME ; 
+			GROUP BY CS.SUBMISSION_DATE ; 
 	</select>
 	
 	<!-- 본인 미션 상세정보 댓글-->
@@ -120,7 +123,7 @@
 				ON CM.CHALLENGE_SUBMISSION_ID = CS.CHALLENGE_SUBMISSION_ID
 			JOIN USER_CHALLENGE UC 
 				ON UC.USER_CHALLENGE_ID = CS.USER_CHALLENGE_ID						
-		WHERE CS.SUBMISSION_TIME LIKE  CONCAT(#{date}, '%') 
+		WHERE CS.SUBMISSION_DATE LIKE  CONCAT(#{date}, '%') 
 			AND UC.CHALLENGE_NAME = #{challengeName}
 			AND UC.EMAIL =  #{email}
 		ORDER BY COMMENT_SEQ
@@ -136,7 +139,7 @@
 				ON SUT.CHALLENGE_SUBMISSION_ID = CS.CHALLENGE_SUBMISSION_ID
 			JOIN USER_CHALLENGE UC 
 				ON UC.USER_CHALLENGE_ID = CS.USER_CHALLENGE_ID						
-		WHERE CS.SUBMISSION_TIME LIKE  CONCAT(#{date}, '%') 
+		WHERE CS.SUBMISSION_DATE LIKE  CONCAT(#{date}, '%') 
 			AND UC.CHALLENGE_NAME = #{challengeName}
 			AND UC.EMAIL =  #{email}
 	</select>		

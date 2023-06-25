@@ -36,8 +36,11 @@ public class ChallengeSubmissionEntity { // ChallengeSubmission 테이블: 사�
 	 @JoinColumn(name = "user_challenge_id") // 외래 키를 매핑할 때 사용합니다. name 속성에는 매핑 할 외래 키 이름을 지정합니다.
 	 private UserChallengeEntity  userChallenge;
 		 
-	 @Column(nullable = false) // 제출 일시
-	 private LocalDateTime submissionTime;
+	 @Column(nullable = false) // 제출 일시 (일)
+	 private String submissionDate;
+	 
+	 @Column(nullable = false) // 제출 일시 (시간)
+	 private String submissionTime;
 	 	 
 	 @Column(nullable = true) // 내용
 	 private String  submissionText; 
@@ -54,10 +57,11 @@ public class ChallengeSubmissionEntity { // ChallengeSubmission 테이블: 사�
 
 
 @Builder
-public ChallengeSubmissionEntity(UserChallengeEntity userChallenge , LocalDateTime submissionTime 
+public ChallengeSubmissionEntity(UserChallengeEntity userChallenge , String submissionDate , String submissionTime 
 		, String submissionText  , String nickName , String submissionImageRoute , String submissionCompleted) {		
 	super();
 	this.userChallenge = userChallenge;	
+	this.submissionDate = submissionDate;
 	this.submissionTime = submissionTime;
 	this.submissionText = submissionText;
 	this.nickName = nickName;

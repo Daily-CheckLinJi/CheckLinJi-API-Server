@@ -5,7 +5,9 @@ package com.upside.api.service;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -16,7 +18,6 @@ import java.util.Optional;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import com.upside.api.dto.ChallengeDto;
 import com.upside.api.dto.ChallengeSubmissionDto;
@@ -416,6 +417,20 @@ public class ChallengeService {
 		
 	    log.info("첼린지 제출 ------> " + "Start");	    
 	    
+	    // 예시로 현재 LocalDateTime 생성
+        LocalDateTime dateTime = LocalDateTime.now();
+
+        // LocalDateTime을 LocalDate와 LocalTime으로 분리
+        LocalDate date = dateTime.toLocalDate();
+        LocalTime time = dateTime.toLocalTime();
+
+        // LocalDate와 LocalTime을 문자열 형식으로 포맷팅
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+        String submissionDate = date.format(dateFormatter);
+        String submissionTime = time.format(timeFormatter);
+	    
+	    
 		Optional<ChallengeEntity> existsChallenge = challengeRepository.findById(submissonDto.getChallengeName());
 		
 		Optional<MemberEntity> existsMember = memberRepository.findById(userEmail);
@@ -442,8 +457,8 @@ public class ChallengeService {
 	 	 		 	
 	 	UserChallengeEntity userChallenge = exsistUserChallenge.get();		 			 	
 	 	
-	 	boolean submitYn = challengeSubmissionRepository.findByUserChallengeAndSubmissionTime(userChallenge, LocalDate.now()).isPresent();
-	 	 
+	 	boolean submitYn = challengeSubmissionRepository.findByUserChallengeAndSubmissionDate(userChallenge, submissionDate).isPresent();
+	 					   
 	 	if(submitYn) {
 	 		 log.info("첼린지 제출 ------> " + "오늘은 이미 제출이 완료되었습니다.");
              result.put("HttpStatus","1.00");		
@@ -458,7 +473,8 @@ public class ChallengeService {
 	 	// 파일 업로드 성공시 첼린지 인증 성공
 	 	if(!submissionImageRoute.equals("N")) {	 			 	
 		 	ChallengeSubmissionEntity challengeSubmission = ChallengeSubmissionEntity.builder()
-				   											.submissionTime(LocalDateTime.now()) // 제출 일시				   											
+		 													.submissionDate(submissionDate)
+				   											.submissionTime(submissionTime) // 제출 일시				   											
 				   											.submissionText(submissonDto.getSubmissionText()) // 내용
 				   											.nickName(member.getNickName()) // 닉네임
 				   											.submissionImageRoute(submissionImageRoute) // 이미지 경로
@@ -471,7 +487,7 @@ public class ChallengeService {
 			log.info("첼린지 제출 ------> " + Constants.SUCCESS);
 			
 			
-			Optional<ChallengeSubmissionEntity> successYn = challengeSubmissionRepository.findByUserChallengeAndSubmissionTime(userChallenge, LocalDate.now());
+			Optional<ChallengeSubmissionEntity> successYn = challengeSubmissionRepository.findByUserChallengeAndSubmissionDate(userChallenge, submissionDate);
 				
 			String tagExistN = "" ; // 태그 존재 유무
 			
