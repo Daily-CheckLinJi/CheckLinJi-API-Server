@@ -164,14 +164,7 @@ public class MissionService {
        		 return result ;
            } else {
         	   	log.info("본인 미션 달력 ------> " + Constants.SUCCESS);
-        	   	for(int i = 0; i < missionCalendarOwn.size(); i++) {
-        	   		Timestamp dbTimestamp = (Timestamp) missionCalendarOwn.get(i).get("SUBMISSION_TIME");
-        	   		LocalDateTime nowDate = dbTimestamp.toLocalDateTime();
-        	   		        	   	        	   		        	   		
-            	   	missionCalendarOwn.get(i).put("SUBMISSION_DAY", nowDate.getYear()+"-"+String.format("%02d", nowDate.getMonthValue())+"-"+String.format("%02d", nowDate.getDayOfMonth()));
-            	   	missionCalendarOwn.get(i).put("SUBMISSION_TIME",nowDate.getHour()+":"+nowDate.getMinute());
-        	   	}
-        	   	        	   	
+        	    	   	
         	   	result.put("HttpStatus","2.00");		
       			result.put("Msg",Constants.SUCCESS);
       			result.put("missionCalendarOwn",missionCalendarOwn);
