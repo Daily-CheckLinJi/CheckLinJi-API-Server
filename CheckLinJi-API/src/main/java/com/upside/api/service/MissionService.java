@@ -223,18 +223,7 @@ public class MissionService {
            } else { // 해당날짜에 해당하는 본인 데이터가 있을 시
         	   
    	   			
-   	   			if(missionComment.size() > 0) { 
-   	   				for(int i = 0 ; i < missionComment.size(); i++) {
-	   	   				Timestamp timestamp_1 = (Timestamp) missionComment.get(i).get("USER_REGIST_DATE");
-	   	   	   			LocalDateTime regist_date = timestamp_1.toLocalDateTime();
-	   	   	   			
-	   	   	   			Timestamp timestamp_2 = (Timestamp) missionComment.get(i).get("USER_UPDATE_DATE");
-	   	   	   			LocalDateTime update_date = timestamp_2.toLocalDateTime();
-   	   				   	   					
-   	   					missionComment.get(i).put("USER_REGIST_DATE",regist_date.getYear()+"-"+String.format("%02d", regist_date.getMonthValue())+"-"+String.format("%02d", regist_date.getDayOfMonth()) + " " + regist_date.getHour()+":"+regist_date.getMinute());
-   	   					missionComment.get(i).put("USER_UPDATE_DATE",update_date.getYear()+"-"+String.format("%02d", update_date.getMonthValue())+"-"+String.format("%02d", update_date.getDayOfMonth()) + " " + update_date.getHour()+":"+update_date.getMinute());   	   					
-   	   				}   	   			
-   	   			}   	   			   	   	   	   			
+   	   	   	   			
    	   			
         	    ObjectMapper objectMapper = new ObjectMapper();
 				

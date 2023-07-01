@@ -36,6 +36,9 @@ public class CommentEntity { // 게시글 테이블
  @JoinColumn(name = "challenge_submission_id") // 외래 키를 매핑할 때 사용합니다. name 속성에는 매핑 할 외래 키 이름을 지정합니다.
  private ChallengeSubmissionEntity challengeSubmissionEntity; // 댓글이 달린 게시글의 식별자
  
+ @Column(nullable = false , name = "email")
+ private String email; // 댓글 내용
+ 
  @Column(nullable = false , name = "content")
  private String content; // 댓글 내용
  
@@ -43,10 +46,10 @@ public class CommentEntity { // 게시글 테이블
  private String nickName; // 댓글 작성자의 식별자
  
  @Column(nullable = false , name = "registDate")
- private LocalDateTime registDate; // 댓글 등록 시각
+ private String registDate; // 댓글 등록 시각
  
- @Column(nullable = false , name = "updateDate")
- private LocalDateTime updateDate; // 댓글 최종 수정 시각
+ @Column(name = "updateDate")
+ private String updateDate; // 댓글 최종 수정 시각
  
  /**
   * 댓글 테이블에서 parent_id 컬럼은 대댓글이 있을 때,
@@ -68,7 +71,7 @@ public class CommentEntity { // 게시글 테이블
 
 @Builder
 public CommentEntity(ChallengeSubmissionEntity challengeSubmissionEntity, String content, String nickName, 
-		CommentEntity parentId , LocalDateTime registDate , LocalDateTime updateDate
+		CommentEntity parentId , String registDate , String updateDate
 		) {
 	super();
 	this.challengeSubmissionEntity = challengeSubmissionEntity;

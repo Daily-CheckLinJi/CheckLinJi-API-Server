@@ -90,7 +90,8 @@
 	<!-- 본인 미션 상세정보 -->
 	<select id="missionAuthInfo" parameterType="MemberDto" resultType="java.util.Map" >
 				SELECT 	  UC.EMAIL
-						, CHALLENGE_NAME						
+						, CHALLENGE_NAME
+						, CS.CHALLENGE_SUBMISSION_ID						
 						, SUBMISSION_TEXT 
 						, SUBMISSION_DATE as SUBMISSION_DAY
 						, SUBMISSION_TIME
@@ -113,7 +114,8 @@
 	
 	<!-- 본인 미션 상세정보 댓글-->
 	<select id="missionComment" parameterType="MemberDto" resultType="java.util.Map" >
-		SELECT 	 CM.comment_seq as USER_SEQ 
+		SELECT 	 CM.comment_seq as USER_SEQ
+				,CM.email as USER_EMAIL
 				,CM.content as USER_CONTENT
 				,CM.nick_name as USER_NICK_NAME 
 				,CM.parent_id as PARENT_ID
