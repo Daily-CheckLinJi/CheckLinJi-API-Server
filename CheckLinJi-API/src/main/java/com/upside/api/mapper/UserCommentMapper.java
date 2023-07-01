@@ -21,5 +21,12 @@ public interface UserCommentMapper {
 	 * @return
 	 */
 	int userCommentUpdate (CommentDto commentDto);
+	
+	/**
+	 * 유저 코멘트 삭제
+	 * @param memberDto
+	 * @return
+	 */
+	int userCommentDelete (CommentDto commentDto);
 		
 }

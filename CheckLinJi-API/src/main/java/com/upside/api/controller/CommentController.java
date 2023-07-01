@@ -33,8 +33,8 @@ public class CommentController {
 	
 	
 	/**
-	  * 미션 성공 총 횟수 (월)
-	  * @param memberDto
+	  * 유저 댓글 등록
+	  * @param commentDto
 	  * @return
 	  */	
 	@PostMapping("/submit") // 첼린지 생성
@@ -59,12 +59,12 @@ public class CommentController {
 	}
 
 	/**
-	  * 미션 성공 총 횟수 (월)
-	  * @param memberDto
+	  * 유저 댓글 수정
+	  * @param commentDto
 	  * @return
 	  */	
 	@PostMapping("/update") // 첼린지 생성
-	public ResponseEntity<Map<String,String>> userCommentUpdate (@RequestHeader("Authorization") String authHeader , @RequestBody CommentDto commentDto) {
+	public ResponseEntity<Map<String,String>> userCommentUpdate (@RequestBody CommentDto commentDto) {
 							
 		commentDto.setUpdateDate(DateTime.nowDate());
 		
@@ -80,4 +80,24 @@ public class CommentController {
 					
 	}
 
+	
+	/**
+	  * 유저 댓글 삭제
+	  * @param commentDto
+	  * @return
+	  */	
+	@PostMapping("/delete") // 첼린지 생성
+	public ResponseEntity<Map<String,String>> userCommentDelete (@RequestBody CommentDto commentDto) {
+							
+		Map<String, String> result = commentService.userCommentDelete(commentDto);
+				
+		if (result.get("HttpStatus").equals("2.00")) { // 성공
+		
+			return new ResponseEntity<>(result,HttpStatus.OK);					
+		} else {			
+		
+			return new ResponseEntity<>(result,HttpStatus.BAD_REQUEST);
+		} 
+					
+	}
 }

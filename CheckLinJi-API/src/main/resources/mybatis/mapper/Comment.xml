@@ -20,10 +20,15 @@
     		</choose>	
 	</insert>
 
-	 <!-- 유저 댓글 등록 -->
-	<insert id="userCommentUpdate" parameterType="CommentDto" >
+	 <!-- 유저 댓글 수정 -->
+	<update id="userCommentUpdate" parameterType="CommentDto" >
 		UPDATE COMMENT
 			SET content=#{content}, update_date=#{updateDate}
 		WHERE comment_seq=#{commentSeq}
-	</insert>
+	</update>
+	
+	 <!-- 유저 댓글 삭제 -->
+	<delete id="userCommentDelete" parameterType="CommentDto" >
+		DELETE FROM COMMENT	WHERE comment_seq=#{commentSeq}					
+	</delete>
 </mapper>

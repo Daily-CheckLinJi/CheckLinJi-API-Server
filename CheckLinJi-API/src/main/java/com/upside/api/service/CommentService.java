@@ -88,7 +88,33 @@ public class CommentService {
 	    return result ;			    		   
 	}
 		
+
+	 /**
+	  * 유저 댓글 삭제 
+	  * @param memberDto
+	  * @return
+	  */
+	public Map<String, String> userCommentDelete (CommentDto commentDto) {
 		
+		log.info("유저 댓글 삭제  ------> " + "Start");
+		
+		Map<String, String> result = new HashMap<String, String>();
+						
+      int insertYn = userCommentMapper.userCommentDelete(commentDto);
+      
+      if (insertYn == 0) {
+      	result.put("HttpStatus","1.00");		
+  		result.put("Msg",Constants.FAIL);
+  		return result ;
+      }
+      
+      result.put("HttpStatus","2.00");		
+		result.put("Msg",Constants.SUCCESS);
+		
+		log.info("유저 댓글 삭제  ------> " + Constants.SUCCESS);
+		
+	    return result ;			    		   
+	}
 	
 	
 }
