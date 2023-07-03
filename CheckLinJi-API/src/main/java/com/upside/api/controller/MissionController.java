@@ -115,8 +115,7 @@ public class MissionController {
 			message.setStatusCode((String) result.get("HttpStatus"));
 			return new ResponseEntity<>(message,HttpStatus.BAD_REQUEST);
 		}
-		
-				
+						
 	} 
  
 	
@@ -128,6 +127,31 @@ public class MissionController {
 	 */
 	@PostMapping("/myAuth/info")
     public ResponseEntity<Map<String,Object>> myAuthInfo(@RequestHeader("Authorization") String authHeader , @RequestBody ChallengeSubmissionDto challengeSubmissionDto) throws Exception {
+	 	
+			
+		String userEmail = jwtTokenProvider.getEmail(authHeader); // email을 얻기위해 헤더에서 토큰을 디코딩하는 부분이다.
+		
+		Map<String, Object > result = rankingSerivce.myAuthInfo(challengeSubmissionDto , userEmail);
+	  	
+		if (result.get("HttpStatus").equals("2.00")) { // 성공											
+				    
+		return new ResponseEntity<>(result,HttpStatus.OK);
+			
+		} else {			
+					
+		}
+		
+		return new ResponseEntity<>(result,HttpStatus.BAD_REQUEST);		
+	} 
+	
+	/**
+	 * 본인 미션 상세보기
+	 * @param challengeSubmissionDto
+	 * @return
+	 * @throws Exception
+	 */
+	@PostMapping("/update")
+    public ResponseEntity<Map<String,Object>> missionUpdate(@RequestHeader("Authorization") String authHeader , @RequestBody ChallengeSubmissionDto challengeSubmissionDto) throws Exception {
 	 	
 			
 		String userEmail = jwtTokenProvider.getEmail(authHeader); // email을 얻기위해 헤더에서 토큰을 디코딩하는 부분이다.
