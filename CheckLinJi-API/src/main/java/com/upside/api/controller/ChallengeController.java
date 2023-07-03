@@ -45,7 +45,7 @@ public class ChallengeController {
 	 */
 	@GetMapping("/list") 
 	public ResponseEntity<Map<String, Object>> viewChallengeList (@RequestBody PageDto pageDto) {
-											
+															
 		Map<String, Object> result = challengeSerivce.viewChallengeList(pageDto);
 				
 		if (result.get("HttpStatus").equals("2.00")) { // 성공			

@@ -21,9 +21,9 @@
 		 		FROM CHALLENGE_SUBMISSION CS
 			 		JOIN USER_CHALLENGE UC 
 						ON CS.USER_CHALLENGE_ID  = UC.USER_CHALLENGE_ID
-				<if test="!email.equals('') and email != null">
-					WHERE UC.EMAIL = #{email} 
-				</if>
+<!-- 				<if test="!email.equals('') and email != null"> -->
+<!-- 					WHERE UC.EMAIL = #{email}  -->
+<!-- 				</if> -->
 				ORDER BY SUBMISSION_DATE DESC 
 				LIMIT #{startPage} , #{endPage} ;		 
 	</select>	

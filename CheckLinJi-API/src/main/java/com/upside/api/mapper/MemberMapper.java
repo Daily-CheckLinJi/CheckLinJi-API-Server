@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import com.upside.api.dto.ChallengeSubmissionDto;
 import com.upside.api.dto.MemberDto;
 
 @Mapper
@@ -18,6 +19,14 @@ public interface MemberMapper {
 	 * @return
 	 */
 	HashMap<String,String> missionCompletedCnt (Map<String, String> data);
+	
+	/**
+	 * 내 미션 수정
+	 * @param data
+	 * @return
+	 */
+	int missionUpdate (ChallengeSubmissionDto challengeSubmissionDto);
+	
 	
 	/**
 	 * 실시간 TOP3 랭킹
@@ -45,21 +54,28 @@ public interface MemberMapper {
 	 * @param data
 	 * @return
 	 */
-	HashMap<String,Object> missionAuthInfo (Map<String, String> data);
+	HashMap<String,Object> missionAuthInfo (ChallengeSubmissionDto challengeSubmissionDto);
 	
 	/**
 	 * 본인 미션 상세보기 댓글
 	 * @param data
 	 * @return
 	 */
-	ArrayList<Map<String, Object>> missionComment (Map<String, String> data);
+	ArrayList<Map<String, Object>> missionComment (ChallengeSubmissionDto challengeSubmissionDto);
+	
+	/**
+	 * 본인 미션 상세보기 좋아요
+	 * @param data
+	 * @return
+	 */
+	ArrayList<Map<String, Object>> missionLikes (ChallengeSubmissionDto challengeSubmissionDto);
 	
 	/**
 	 * 본인 미션 상세정보 해쉬태그
 	 * @param data
 	 * @return
 	 */
-	ArrayList<Map<String, Object>> missionHashTag (Map<String, String> data);
+	ArrayList<Map<String, Object>> missionHashTag (ChallengeSubmissionDto challengeSubmissionDto);
 	
 	/**
 	 * 본인 미션 삭제

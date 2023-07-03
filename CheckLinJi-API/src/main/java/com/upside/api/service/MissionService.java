@@ -36,6 +36,7 @@ public class MissionService {
 	
 	private final MemberMapper memberMapper ;
 	
+	
 	private final MemberRepository memberRepository ;
 	
 	private final FileService fileService ;
@@ -186,7 +187,7 @@ public class MissionService {
 	 * @throws JsonProcessingException 
 	 * @throws ParseException 
 	 */
-	public Map<String, Object> myAuthInfo(ChallengeSubmissionDto challengeSubmissionDto , String userEmail) throws JsonProcessingException, ParseException {
+	public Map<String, Object> myAuthInfo(ChallengeSubmissionDto challengeSubmissionDto) throws JsonProcessingException, ParseException {
 		
 		log.info("본인 미션 상세보기 ------> " + "Start");
 		Map<String, Object> result = new HashMap<String, Object>();
@@ -198,21 +199,23 @@ public class MissionService {
         String day = challengeSubmissionDto.getDay();
         String date = year+"-"+ month+"-"+day;                                
         
-        System.out.println(userEmail);
-        System.out.println(date);
+        
+        
         
         Map<String, String> data = new HashMap<String, String>();
         
         data.put("challengeName", challengeSubmissionDto.getChallengeName());
         data.put("date", date);
-        data.put("email", userEmail);
+        
         
         try {
-        	Map<String, Object> missionAuthInfo = memberMapper.missionAuthInfo(data); // 해당날짜에 해당하는 본인 데이터
+        	Map<String, Object> missionAuthInfo = memberMapper.missionAuthInfo(challengeSubmissionDto); // 해당날짜에 해당하는 본인 데이터
         	
-        	ArrayList<Map<String, Object>> missionComment = memberMapper.missionComment(data);
+        	ArrayList<Map<String, Object>> missionComment = memberMapper.missionComment(challengeSubmissionDto);
         	
-        	ArrayList<Map<String, Object>> missionHashTag = memberMapper.missionHashTag(data);
+        	ArrayList<Map<String, Object>> missionLikes = memberMapper.missionLikes(challengeSubmissionDto);
+        	
+        	ArrayList<Map<String, Object>> missionHashTag = memberMapper.missionHashTag(challengeSubmissionDto);
         	        	        	
         	if (missionAuthInfo == null ) {
         		log.info("본인 미션 상세보기 ------> " + "참여중이 아니거나 이력이 없습니다.");
@@ -265,6 +268,7 @@ public class MissionService {
 	      			result.put("missionAuthInfo",missionAuthInfo);
 	      			result.put("missionComment",missionComment);
 	      			result.put("missionHashTag",missionHashTag);
+	      			result.put("missionLikes",missionLikes);
 			    }
            }
 		} catch (DataAccessException e) {
@@ -275,7 +279,33 @@ public class MissionService {
 		}               		 
 	  return result ;				 	    			    		   
 	}
+
 	
+	 /**
+	  * 본인 미션 수정
+	  * @param memberDto
+	  * @return
+	  */
+	public Map<String, String> missionUpdate (ChallengeSubmissionDto chaSubmissionDto) {
+		
+		  Map<String, String> result = new HashMap<String, String>();
+		
+		  log.info("본인 미션 수정 ------> " + "Start");
+  		   
+		   int updateYN = memberMapper.missionUpdate(chaSubmissionDto);
+		   
+		   if (updateYN > 0) {
+			 result.put("HttpStatus","2.00");		
+			 result.put("Msg",Constants.SUCCESS);       		
+		   } else {
+			 result.put("HttpStatus","1.00");		
+		  	 result.put("Msg",Constants.FAIL);   
+		   }
+		  
+		   log.info("본인 미션 수정 결과 ------> " + updateYN);
+		   
+		    return result ;			    		   
+		}
 	
 	/**
 	 * 본인 미션 삭제

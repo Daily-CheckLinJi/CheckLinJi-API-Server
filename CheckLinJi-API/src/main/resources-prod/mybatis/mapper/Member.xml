@@ -73,6 +73,7 @@
 	<!-- 본인 미션 달력 -->
 	<select id="missionCalendarOwn" parameterType="MemberDto" resultType="java.util.Map" >
 		SELECT 	  EMAIL
+				, CHALLENGE_SUBMISSION_ID
 				, CHALLENGE_NAME
 				, SUBMISSION_TEXT 
 				, SUBMISSION_DATE
@@ -88,7 +89,7 @@
 	</select>
 		
 	<!-- 본인 미션 상세정보 -->
-	<select id="missionAuthInfo" parameterType="MemberDto" resultType="java.util.Map" >
+	<select id="missionAuthInfo" parameterType="ChallengeSubmissionDto" resultType="java.util.Map" >
 				SELECT 	  UC.EMAIL
 						, CHALLENGE_NAME
 						, CS.CHALLENGE_SUBMISSION_ID						
@@ -98,22 +99,24 @@
 						, SUBMISSION_IMAGE_ROUTE 
 						, SUBMISSION_COMPLETED
 						, MI.NICK_NAME
-						, MI.GRADE
-						, (select count(*) from likes where challenge_submission_id = CS.challenge_submission_id) as LIKES
+						, MI.GRADE						
 						, MI.PROFILE
 				FROM CHALLENGE_SUBMISSION CS 
 			JOIN USER_CHALLENGE UC 
 				ON UC.USER_CHALLENGE_ID = CS.USER_CHALLENGE_ID
 			JOIN MEMBER_INFO MI 
 			    ON UC.EMAIL = MI.EMAIL
-			WHERE CS.SUBMISSION_DATE LIKE  CONCAT(#{date}, '%')
-			AND UC.CHALLENGE_NAME = #{challengeName}
-			AND UC.EMAIL = #{email}
-			GROUP BY CS.SUBMISSION_DATE ; 
+			WHERE CS.CHALLENGE_SUBMISSION_ID = #{challengeSubmissionId}				
+				GROUP BY CS.SUBMISSION_DATE  
 	</select>
 	
+	<!-- 본인 미션 수정 -->
+	<update id="missionUpdate" parameterType="ChallengeSubmissionDto">
+		UPDATE CHALLENGE_SUBMISSION SET SUBMISSION_TEXT = #{submissionText} WHERE CHALLENGE_SUBMISSION_ID = #{challengeSubmissionId}
+	</update>
+	
 	<!-- 본인 미션 상세정보 댓글-->
-	<select id="missionComment" parameterType="MemberDto" resultType="java.util.Map" >
+	<select id="missionComment" parameterType="ChallengeSubmissionDto" resultType="java.util.Map" >
 		SELECT 	 CM.comment_seq as USER_SEQ
 				,CM.email as USER_EMAIL
 				,CM.content as USER_CONTENT
@@ -126,25 +129,29 @@
 				ON CM.CHALLENGE_SUBMISSION_ID = CS.CHALLENGE_SUBMISSION_ID
 			JOIN USER_CHALLENGE UC 
 				ON UC.USER_CHALLENGE_ID = CS.USER_CHALLENGE_ID						
-		WHERE CS.SUBMISSION_DATE LIKE  CONCAT(#{date}, '%') 
-			AND UC.CHALLENGE_NAME = #{challengeName}
-			AND UC.EMAIL =  #{email}
+		WHERE CS.CHALLENGE_SUBMISSION_ID = #{challengeSubmissionId} 					
 		ORDER BY COMMENT_SEQ
 	</select>
 	
+	<!-- 본인 미션 상세정보 좋아요-->
+	<select id="missionLikes" parameterType="ChallengeSubmissionDto" resultType="java.util.Map" >
+		SELECT email FROM LIKES WHERE CHALLENGE_SUBMISSION_ID = #{challengeSubmissionId} 					
+		 			
+			
+	</select>		
+
 	<!-- 본인 미션 상세정보 해쉬태그-->
-	<select id="missionHashTag" parameterType="MemberDto" resultType="java.util.Map" >
+	<select id="missionHashTag" parameterType="ChallengeSubmissionDto" resultType="java.util.Map" >
 		SELECT TAG_NAME as HASH_TAG	 
 		  FROM SUBMISSION_HASH_TAG SUT
 			JOIN HASH_TAG HT 
-				ON SUT.HASH_TAG_ID  = HT.HASH_TAG_ID
+				ON SUT.HASH_TAG_ID = HT.HASH_TAG_ID
 			JOIN CHALLENGE_SUBMISSION CS 
 				ON SUT.CHALLENGE_SUBMISSION_ID = CS.CHALLENGE_SUBMISSION_ID
 			JOIN USER_CHALLENGE UC 
 				ON UC.USER_CHALLENGE_ID = CS.USER_CHALLENGE_ID						
-		WHERE CS.SUBMISSION_DATE LIKE  CONCAT(#{date}, '%') 
-			AND UC.CHALLENGE_NAME = #{challengeName}
-			AND UC.EMAIL =  #{email}
+		WHERE CS.CHALLENGE_SUBMISSION_ID = #{challengeSubmissionId} 			
+			
 	</select>		
 	
 	<!-- 본인 미션 정보 삭제 -->

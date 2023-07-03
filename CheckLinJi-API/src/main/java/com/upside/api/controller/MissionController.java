@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/mission")
 public class MissionController {
 	
-	private final MissionService rankingSerivce ;
+	private final MissionService missionSerivce ;
 	private final JwtTokenProvider jwtTokenProvider;				
 	
 	
@@ -41,7 +41,7 @@ public class MissionController {
 		
 		String userEmail = jwtTokenProvider.getEmail(authHeader); // email을 얻기위해 헤더에서 토큰을 디코딩하는 부분이다.
 		
-		Map<String, String> result = rankingSerivce.missionCompletedCnt(userEmail);
+		Map<String, String> result = missionSerivce.missionCompletedCnt(userEmail);
 				
 		if (result.get("HttpStatus").equals("2.00")) { // 성공
 			message.setMsg(result.get("Msg"));
@@ -69,7 +69,7 @@ public class MissionController {
 		
 		String userEmail = jwtTokenProvider.getEmail(authHeader); // email을 얻기위해 헤더에서 토큰을 디코딩하는 부분이다.
 		
-		Map<String, Object > result = rankingSerivce.missionRanking(userEmail);				
+		Map<String, Object > result = missionSerivce.missionRanking(userEmail);				
 				
 		if (result.get("HttpStatus").equals("2.00")) { // 성공
 			message.setMsg((String) result.get("Msg"));
@@ -103,7 +103,7 @@ public class MissionController {
 		
 		String userEmail = jwtTokenProvider.getEmail(authHeader); // email을 얻기위해 헤더에서 토큰을 디코딩하는 부분이다.
 		
-		Map<String, Object > result = rankingSerivce.myAuth(challengeSubmissionDto , userEmail);
+		Map<String, Object > result = missionSerivce.myAuth(challengeSubmissionDto , userEmail);
 	  	
 		if (result.get("HttpStatus").equals("2.00")) { // 성공
 			message.setMsg((String) result.get("Msg"));
@@ -125,13 +125,13 @@ public class MissionController {
 	 * @return
 	 * @throws Exception
 	 */
-	@PostMapping("/myAuth/info")
+	@PostMapping("/info")
     public ResponseEntity<Map<String,Object>> myAuthInfo(@RequestHeader("Authorization") String authHeader , @RequestBody ChallengeSubmissionDto challengeSubmissionDto) throws Exception {
 	 	
 			
 		String userEmail = jwtTokenProvider.getEmail(authHeader); // email을 얻기위해 헤더에서 토큰을 디코딩하는 부분이다.
 		
-		Map<String, Object > result = rankingSerivce.myAuthInfo(challengeSubmissionDto , userEmail);
+		Map<String, Object > result = missionSerivce.myAuthInfo(challengeSubmissionDto);
 	  	
 		if (result.get("HttpStatus").equals("2.00")) { // 성공											
 				    
@@ -145,28 +145,28 @@ public class MissionController {
 	} 
 	
 	/**
-	 * 본인 미션 상세보기
+	 * 본인 미션 수정
 	 * @param challengeSubmissionDto
 	 * @return
 	 * @throws Exception
 	 */
 	@PostMapping("/update")
-    public ResponseEntity<Map<String,Object>> missionUpdate(@RequestHeader("Authorization") String authHeader , @RequestBody ChallengeSubmissionDto challengeSubmissionDto) throws Exception {
+    public ResponseEntity<Map<String,String>> missionUpdate(@RequestHeader("Authorization") String authHeader , @RequestBody ChallengeSubmissionDto challengeSubmissionDto) throws Exception {
 	 	
 			
 		String userEmail = jwtTokenProvider.getEmail(authHeader); // email을 얻기위해 헤더에서 토큰을 디코딩하는 부분이다.
 		
-		Map<String, Object > result = rankingSerivce.myAuthInfo(challengeSubmissionDto , userEmail);
+		challengeSubmissionDto.setEmail(userEmail);
+		
+		Map<String, String > result = missionSerivce.missionUpdate(challengeSubmissionDto);
 	  	
-		if (result.get("HttpStatus").equals("2.00")) { // 성공											
-				    
-		return new ResponseEntity<>(result,HttpStatus.OK);
-			
-		} else {			
-					
+		if (result.get("HttpStatus").equals("2.00")) { // 성공															    
+			return new ResponseEntity<>(result,HttpStatus.OK);			
+		} else {
+			return new ResponseEntity<>(result,HttpStatus.BAD_REQUEST);
 		}
 		
-		return new ResponseEntity<>(result,HttpStatus.BAD_REQUEST);		
+				
 	} 
 	
 	/**
@@ -182,7 +182,7 @@ public class MissionController {
 		
 		String userEmail = jwtTokenProvider.getEmail(authHeader); // email을 얻기위해 헤더에서 토큰을 디코딩하는 부분이다.
 		
-		Map<String, Object > result = rankingSerivce.myAuthDelete(challengeSubmissionDto , userEmail);
+		Map<String, Object > result = missionSerivce.myAuthDelete(challengeSubmissionDto , userEmail);
 	  	
 		if (result.get("HttpStatus").equals("2.00")) { // 성공											
 			    message.setMsg((String) result.get("Msg"));
