@@ -52,11 +52,15 @@
 	<select id="commentList" parameterType="ChallengeSubmissionDto" resultType="java.util.Map" >
 			SELECT   CM.COMMENT_SEQ 
 					,CM.CONTENT
-					,CM.NICK_NAME
-					,CM.UPDATE_DATE			
+					,MI.NICK_NAME
+					,CM.UPDATE_DATE
+					,MI.PROFILE
+					,MI.GRADE			
 					FROM CHALLENGE_SUBMISSION CS
 							JOIN COMMENT CM  
-							ON CS.CHALLENGE_SUBMISSION_ID = CM.CHALLENGE_SUBMISSION_ID 			
+							ON CS.CHALLENGE_SUBMISSION_ID = CM.CHALLENGE_SUBMISSION_ID
+							JOIN MEMBER_INFO MI
+							ON MI.EMAIL = CM.EMAIL 			
 						WHERE CS.CHALLENGE_SUBMISSION_ID  = #{challengeSubmissionId}  
 					ORDER BY COMMENT_SEQ ;
 	</select>	

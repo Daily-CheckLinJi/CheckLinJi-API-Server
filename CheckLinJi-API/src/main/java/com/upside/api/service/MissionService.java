@@ -212,6 +212,9 @@ public class MissionService {
         	Map<String, Object> missionAuthInfo = memberMapper.missionAuthInfo(challengeSubmissionDto); // 해당날짜에 해당하는 본인 데이터
         	
         	ArrayList<Map<String, Object>> missionComment = memberMapper.missionComment(challengeSubmissionDto);
+		    	for(int i = 0 ; i < missionComment.size(); i++) {
+		    		missionComment.get(i).put("PROFILE", fileService.myAuthImage((String) missionComment.get(i).get("PROFILE")));		        			
+		    	}
         	
         	ArrayList<Map<String, Object>> missionLikes = memberMapper.missionLikes(challengeSubmissionDto);
         	

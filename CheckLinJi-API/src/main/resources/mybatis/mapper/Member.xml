@@ -120,15 +120,19 @@
 		SELECT 	 CM.comment_seq as USER_SEQ
 				,CM.email as USER_EMAIL
 				,CM.content as USER_CONTENT
-				,CM.nick_name as USER_NICK_NAME 
+				,MI.nick_name as USER_NICK_NAME 
 				,CM.parent_id as PARENT_ID
 				,CM.update_date as USER_UPDATE_DATE
-				,CM.regist_date as USER_REGIST_DATE				 
+				,CM.regist_date as USER_REGIST_DATE
+				,MI.PROFILE
+				,MI.GRADE				 
 				FROM COMMENT CM 		 
 			JOIN CHALLENGE_SUBMISSION CS 
 				ON CM.CHALLENGE_SUBMISSION_ID = CS.CHALLENGE_SUBMISSION_ID
 			JOIN USER_CHALLENGE UC 
-				ON UC.USER_CHALLENGE_ID = CS.USER_CHALLENGE_ID						
+				ON UC.USER_CHALLENGE_ID = CS.USER_CHALLENGE_ID
+			JOIN MEMBER_INFO MI
+				ON MI.EMAIL = CM.EMAIL						
 		WHERE CS.CHALLENGE_SUBMISSION_ID = #{challengeSubmissionId} 					
 		ORDER BY COMMENT_SEQ
 	</select>

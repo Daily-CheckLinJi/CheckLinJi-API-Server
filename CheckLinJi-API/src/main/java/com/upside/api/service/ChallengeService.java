@@ -133,6 +133,10 @@ public class ChallengeService {
 		        		int likesCount = challengeMapper.likesCount(submissionDto);
 		        		ArrayList<Map<String, Object>> commentList = challengeMapper.commentList(submissionDto);
 		        		
+		        		for(int i = 0 ; i < commentList.size(); i++) {
+		        			 commentList.get(i).put("PROFILE", fileService.myAuthImage((String) commentList.get(i).get("PROFILE")));		        			
+		        		}
+		        		
 		        	 	log.info("첼린지 인증글 상세페이지 ------> " + Constants.SUCCESS);
 		        	   	result.put("HttpStatus","2.00");		
 		      			result.put("Msg",Constants.SUCCESS);
