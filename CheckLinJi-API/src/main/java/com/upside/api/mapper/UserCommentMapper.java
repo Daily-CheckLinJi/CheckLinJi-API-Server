@@ -28,5 +28,20 @@ public interface UserCommentMapper {
 	 * @return
 	 */
 	int userCommentDelete (CommentDto commentDto);
+	
+	
+	/**
+	 * 유저 좋아요 등록
+	 * @param memberDto
+	 * @return
+	 */
+	int insertLike (CommentDto commentDto);	
+	
+	/**
+	 * 유저 좋아요 취소
+	 * @param memberDto
+	 * @return
+	 */
+	int deleteLike (CommentDto commentDto);	
 		
 }

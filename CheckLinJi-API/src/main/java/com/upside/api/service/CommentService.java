@@ -2,16 +2,13 @@ package com.upside.api.service;
 
 
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
 import com.upside.api.dto.CommentDto;
-import com.upside.api.mapper.MemberMapper;
 import com.upside.api.mapper.UserCommentMapper;
-import com.upside.api.repository.MemberRepository;
 import com.upside.api.util.Constants;
 
 import lombok.RequiredArgsConstructor;
@@ -117,4 +114,67 @@ public class CommentService {
 	}
 	
 	
+	 /**
+	  * 유저 좋아요 등록
+	  * @param memberDto
+	  * @return
+	  */
+	public Map<String, String> insertLike (CommentDto commentDto) {
+		
+	   log.info("유저 좋아요 등록  ------> " + "Start");
+		
+	   Map<String, String> result = new HashMap<String, String>();
+	   
+	   int insertYn = 0 ;
+	   
+	   try {
+			   	   					
+	   insertYn = userCommentMapper.insertLike(commentDto);
+	   
+	   if (insertYn == 0) {
+	   	result.put("HttpStatus","1.00");		
+		result.put("Msg",Constants.FAIL);   		
+	   } else {
+		result.put("HttpStatus","2.00");		
+		result.put("Msg",Constants.SUCCESS);   
+	   }
+              			    		
+	   } catch (Exception e) {
+		result.put("HttpStatus","1.00");		
+   		result.put("Msg",Constants.FAIL);	   		
+	   }
+	    return result ;			    		   
+	}
+	
+	 /**
+	  * 유저 좋아요 취소
+	  * @param memberDto
+	  * @return
+	  */
+	public Map<String, String> deleteLike (CommentDto commentDto) {
+		
+	   log.info("유저 좋아요 취소  ------> " + "Start");
+		
+	   Map<String, String> result = new HashMap<String, String>();
+	   
+	   int insertYn = 0 ;
+	   
+	   try {
+			   	   					
+	   insertYn = userCommentMapper.deleteLike(commentDto);
+	   
+	   if (insertYn == 0) {
+	   	result.put("HttpStatus","1.00");		
+		result.put("Msg",Constants.FAIL);   		
+	   } else {
+		result.put("HttpStatus","2.00");		
+		result.put("Msg",Constants.SUCCESS);   
+	   }
+             			    		
+	   } catch (Exception e) {
+		result.put("HttpStatus","1.00");		
+  		result.put("Msg",Constants.FAIL);	   		
+	   }
+	    return result ;			    		   
+	}
 }

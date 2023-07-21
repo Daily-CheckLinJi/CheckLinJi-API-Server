@@ -31,4 +31,16 @@
 	<delete id="userCommentDelete" parameterType="CommentDto" >
 		DELETE FROM COMMENT	WHERE comment_seq=#{commentSeq}					
 	</delete>
+	
+	 <!-- 유저 좋아요 등록 -->
+	<insert id="insertLike" parameterType="CommentDto" >
+		INSERT INTO LIKES
+			(CREATE_DATE, CHALLENGE_SUBMISSION_ID, EMAIL)
+		VALUES(#{registDate}, #{challengeSubmissionId}, #{email});
+	</insert>
+	
+	 <!-- 유저 좋아요 취소 -->
+	<delete id="deleteLike" parameterType="CommentDto" >
+		DELETE FROM LIKES WHERE CHALLENGE_SUBMISSION_ID = #{challengeSubmissionId} and EMAIL = #{email}
+	</delete>
 </mapper>

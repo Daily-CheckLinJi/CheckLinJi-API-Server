@@ -198,16 +198,12 @@ public class MissionService {
         String month = challengeSubmissionDto.getMonth();
         String day = challengeSubmissionDto.getDay();
         String date = year+"-"+ month+"-"+day;                                
-        
-        
-        
-        
+
         Map<String, String> data = new HashMap<String, String>();
         
         data.put("challengeName", challengeSubmissionDto.getChallengeName());
         data.put("date", date);
-        
-        
+                
         try {
         	Map<String, Object> missionAuthInfo = memberMapper.missionAuthInfo(challengeSubmissionDto); // 해당날짜에 해당하는 본인 데이터
         	
