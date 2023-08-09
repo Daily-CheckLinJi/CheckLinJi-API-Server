@@ -625,4 +625,40 @@ public class MemberService {
 	    return result ;			    		   
 	}
 	
+	
+	
+	/**
+	 * 총 사용자 수 
+	 * @param userEmail
+	 * @return
+	 */
+	public Map<String, String> findMemCnt () {
+		
+		Map<String, String> result = new HashMap<String, String>();
+				
+		log.info("총 사용자 수 -----------------> Start " );
+	
+       
+       try {
+					  
+	    int memCnt = memberMapper.findMemCnt();
+	    
+	    
+	    result.put("memberCnt",String.valueOf(memCnt));
+        result.put("HttpStatus","2.00");		
+		result.put("Msg",Constants.SUCCESS);
+		
+		
+		log.info("총 사용자 수 -----------------> " + Constants.SUCCESS);
+		
+		} catch (Exception e) {
+			 result.put("HttpStatus","1.00");		
+			 result.put("Msg","Data 접근 실패");
+			 e.printStackTrace();
+			 log.error("총 사용자 수 -----------------> " + Constants.FAIL);
+		}
+       
+	    return result ;			    		   
+	}
+	
 }

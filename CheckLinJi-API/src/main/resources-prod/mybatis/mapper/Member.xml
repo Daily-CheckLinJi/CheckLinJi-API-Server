@@ -189,6 +189,12 @@
 		 SELECT DATE(JOIN_DATE) as joinDate FROM MEMBER_INFO MI 
 			WHERE EMAIL = #{email} ; 
 	</select>
+	
+	<!-- 총 사용자 수 -->
+	<select id="findMemCnt" parameterType="MemberDto" resultType="int" >
+		SELECT COUNT(*) FROM MEMBER_INFO
+	</select>	 
+	 
 	 
 	 
 </mapper>

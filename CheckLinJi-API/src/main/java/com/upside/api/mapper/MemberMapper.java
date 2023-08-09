@@ -113,4 +113,11 @@ public interface MemberMapper {
 	 */
 	HashMap<String,Object> joinDate (String userEmail);
 	
+	/**
+	 * 총 사용자 수 
+	 * @param data
+	 * @return
+	 */
+	int findMemCnt ();
+	
 }
