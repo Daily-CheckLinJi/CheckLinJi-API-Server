@@ -214,6 +214,10 @@ public class MissionService {
         	
         	ArrayList<Map<String, Object>> missionLikes = memberMapper.missionLikes(challengeSubmissionDto);
         	
+	        	for(int i = 0 ; i < missionLikes.size(); i++) {
+	        		missionLikes.get(i).put("PROFILE", fileService.myAuthImage((String) missionLikes.get(i).get("PROFILE")));		        			
+		    	}
+        	
         	ArrayList<Map<String, Object>> missionHashTag = memberMapper.missionHashTag(challengeSubmissionDto);
         	        	        	
         	if (missionAuthInfo == null ) {

@@ -2,9 +2,7 @@ package com.upside.api.service;
 
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,7 +28,6 @@ import com.upside.api.mapper.MemberMapper;
 import com.upside.api.repository.MemberRepository;
 import com.upside.api.util.Constants;
 
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -44,8 +41,7 @@ public class MemberService {
 	
 	private final MemberRepository memberRepository;		
 	private final JwtTokenProvider jwtTokenProvider;		
-	private final PasswordEncoder passwordEncoder;
-	private final EntityManager entityManager;
+	private final PasswordEncoder passwordEncoder;	
 	private final MemberMapper memberMapper ;
 	private final RedisTemplate<String, String> redisTemplate;
 	private final FileService fileService ;
@@ -63,20 +59,32 @@ public class MemberService {
 	
 	@Transactional(readOnly = true)
 	public Map<String, Object> selectMember(String email) {	
+		
 		Map<String, Object> result = new HashMap<String, Object>();
 		
 		// Base64로 인코딩된 이미지 파일 문자열로 가져옴
 	     
 		Optional<MemberEntity> data = memberRepository.findById(email);
 		
-		 if(data.isPresent()) {		
+		 if(data.isPresent()) {
+			 
+			 MemberDto memberDto = new MemberDto();
+			 memberDto.setEmail(email);
+			 
 			 String file = fileService.myAuthImage(data.get().getProfile());
 			 data.get().setPassword(""); // 조회시 패스워드는 공백 처리
 			 data.get().setProfile(file); // 프로필은 base64로 인코딩해서 넘겨줌
 			 log.info("회원목록 조회 ------> " + Constants.SUCCESS);
 			 result.put("HttpStatus","2.00");
 			 result.put("Msg",Constants.SUCCESS);
-			 result.put("selectMember",data.get());			 			 			 
+			 result.put("selectMember",data.get());
+			 
+			 if(memberMapper.missionYn(email) == 0) {
+				 result.put("missionSuccess","N");
+			 }else {
+				 result.put("missionSuccess","Y");
+			 }
+			 
 		 } else {
 			 log.info("회원목록 조회 ------> " + Constants.FAIL);
 			 result.put("HttpStatus","1.00");
@@ -640,11 +648,8 @@ public class MemberService {
 	
        
        try {
-					  
-	    int memCnt = memberMapper.findMemCnt();
-	    
-	    
-	    result.put("memberCnt",String.valueOf(memCnt));
+					  	    	    	    
+	    result.put("memberCnt",String.valueOf(memberRepository.count()));
         result.put("HttpStatus","2.00");		
 		result.put("Msg",Constants.SUCCESS);
 		

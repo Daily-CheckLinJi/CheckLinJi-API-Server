@@ -16,5 +16,7 @@ public interface MemberRepository extends JpaRepository<MemberEntity, String> {
 	Page<MemberEntity> findAll(Pageable pageable);		
 		
 	Optional<MemberEntity> findByNickName (String nickName);
+	
+	long count();
 }
 
