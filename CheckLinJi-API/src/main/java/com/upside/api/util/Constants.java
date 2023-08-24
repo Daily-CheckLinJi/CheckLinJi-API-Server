@@ -28,4 +28,7 @@ public static final String DUPLICATE_EMAIL = "중복된 이메일 입니다.";
 public static final String INBALID_EMAIL_PASSWORD = "이메일 혹은 패스워드가 올바르지않습니다";
 public static final String EXPIRATION_TOKEN = "만료되었거나 올바르지 않은 토큰입니다.";
 public static final String INBALID_TOKEN = "올바르지 않은 토큰입니다.";
+public static final String INBALID_EMAIL = "이메일이 올바르지않습니다";
+public static final String INBALID_PASSWORD = "패스워드가 올바르지않습니다";
+public static final String SYSTEM_ERROR = "시스템 에러로 인해 처리가 완료 되지않았습니다.";
 }

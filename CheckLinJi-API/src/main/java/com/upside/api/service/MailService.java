@@ -81,6 +81,52 @@ public class MailService {
 	}
 	
 	/**
+	 * 패스워드 찾기 인증코드 와 함께 메일 발송 
+	 * @param email
+	 * @return
+	 */
+	public Map<String,String> sendPasswordCode(String email){
+		
+		log.info("비밀번호 찾기 이메일 전송 ------> " + "Start");
+		
+	    SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+	    
+	    Map<String, String> result = new HashMap<String, String>();
+	    
+	    String authCode = "" ; 
+	    
+	    try{
+	    
+	        // 1. 메일 수신자 설정	    	
+	    	String[] receiveList = {email};
+	    	
+//	        String[] receiveList = {"kyky7852@naver.com", "thswhdrnr12@naver.com"};
+	        	      	        
+	        simpleMailMessage.setTo(receiveList);
+	       
+	        // 2. 메일 제목 설정
+	        simpleMailMessage.setSubject("데일리 첵린지 비밀번호 찾기");
+
+	        // 3. 메일 내용 설정
+	        authCode = AuthCode(); // 인증코드 발급       
+	        simpleMailMessage.setText("인증 번호 6자리를 입력해주세요. " + authCode);       
+	       	        
+	        // 4. 메일 전송
+	        javaMailSender.send(simpleMailMessage);
+	        
+	    	log.info("비밀번호 찾기 이메일 전송 ------> " + Constants.SUCCESS);
+	        result.put("HttpStatus","2.00");		
+ 			result.put("Msg",Constants.SUCCESS);	        
+	    } catch(Exception e){
+	    	 log.info("비밀번호 찾기 이메일 전송 ------> " + Constants.FAIL);
+	         result.put("HttpStatus","1.00");		
+	  		 result.put("Msg", Constants.SYSTEM_ERROR);
+	  		 log.error(e.getMessage());	  		 
+	    }	 			    		 		
+			return result;					
+	}
+	
+	/**
 	 * 회원가입 authCode 발급
 	 * @return
 	 */

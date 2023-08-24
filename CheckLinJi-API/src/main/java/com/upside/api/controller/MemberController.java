@@ -12,23 +12,19 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.upside.api.config.JwtTokenProvider;
-import com.upside.api.dto.ChallengeSubmissionDto;
 import com.upside.api.dto.MemberDto;
 import com.upside.api.dto.MessageDto;
 import com.upside.api.entity.MemberEntity;
+import com.upside.api.service.MailService;
 import com.upside.api.service.MemberService;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -37,6 +33,8 @@ import lombok.RequiredArgsConstructor;
 public class MemberController {
 	
 	private final MemberService memberService ;
+	
+	private final MailService mailService ;
 	
 	private final JwtTokenProvider jwtTokenProvider;
 	
@@ -237,4 +235,35 @@ public class MemberController {
 			 }
 		}
 	
+	
+		
+	@PostMapping("/changePassword")
+	public ResponseEntity<Map<String, String>> changePassword (@RequestBody MemberDto memberDto , @RequestHeader("Authorization") String authHeader) {			
+		
+		 String userEmail = jwtTokenProvider.getEmail(authHeader); // email을 얻기위해 헤더에서 토큰을 디코딩하는 부분이다.
+		 
+		 memberDto.setEmail(userEmail);
+		 
+		 Map<String, String> result = memberService.changePassword(memberDto);
+		 		 		 
+		 if(result.get("HttpStatus").equals("2.00")) {			 		 
+			 return new ResponseEntity<>(result, HttpStatus.OK);
+		 } else {			 
+			 return new ResponseEntity<>(result,HttpStatus.BAD_REQUEST); 
+		 }
+	}
+	
+	@PostMapping("/changePasswordMail")
+	public ResponseEntity<Map<String, String>> changePasswordMail (@RequestBody MemberDto memberDto) {			
+		
+		 		 		 
+		 Map<String, String> result = memberService.changePasswordMail(memberDto);
+		 		 		 
+		 if(result.get("HttpStatus").equals("2.00")) {			 		 
+			 return new ResponseEntity<>(result, HttpStatus.OK);
+		 } else {			 
+			 return new ResponseEntity<>(result,HttpStatus.BAD_REQUEST); 
+		 }
+	}
+
   }

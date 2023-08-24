@@ -19,5 +19,6 @@ public class MemberDto {
  private String accessToken;
  private String refreshToken;
  private String grade;
+ private String afterPassword;
  
 }

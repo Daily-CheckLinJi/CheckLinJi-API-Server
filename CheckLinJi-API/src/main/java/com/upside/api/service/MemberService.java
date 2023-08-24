@@ -22,6 +22,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import com.upside.api.config.JwtTokenProvider;
 import com.upside.api.dto.MemberDto;
@@ -337,11 +338,12 @@ public class MemberService {
 			    
 			    log.info("회원 로그인 ------> " + Constants.SUCCESS);
 		    }
-		    return result ;	
-		    
-		    
-
+		    return result ;			    	
 }
+	
+	
+
+	
 	  /**
      * 토큰 재발행
      * Token은 스프링 시큐리티 필터링 단계에서 해당 로직을 타고,
@@ -625,4 +627,85 @@ public class MemberService {
 	    return result ;			    		   
 	}
 	
+	
+	/**
+	 * 패스워드 변경 ( 로그인 한 상태 ) 
+	 * @param memberDto
+	 * @return
+	 */
+	@Transactional // 트랜잭션 안에서 entity를 조회해야 영속성 상태로 조회가 되고 값을 변경해면 변경 감지(dirty checking)가 일어난다.
+	public Map<String, String> changePassword (MemberDto memberDto) {
+		
+		Map<String, String> result = new HashMap<String, String>();
+		
+		try {
+							
+		Optional<MemberEntity> memberEntity = memberRepository.findById(memberDto.getEmail());
+		
+		// 이메일이 없을경우 
+		if(!memberEntity.isPresent()) {
+			log.info("패스워드 변경 ( 로그인 한 상태 ) ------> " + Constants.INBALID_EMAIL); 
+			result.put("HttpStatus", "1.00");	    	
+	    	result.put("Msg", Constants.INBALID_EMAIL);
+	    	 return result ;
+		}
+								     
+	    if (!passwordEncoder.matches(memberDto.getPassword(), memberEntity.get().getPassword())) {
+	    	log.info("패스워드 변경 ( 로그인 한 상태 ) ------> " + Constants.INBALID_PASSWORD);
+	    	result.put("HttpStatus", "1.00");	    	
+	    	result.put("Msg", Constants.INBALID_PASSWORD);		    	
+	    } else {
+	    	MemberEntity member = memberEntity.get();			 			
+	    	member.setPassword(passwordEncoder.encode(memberDto.getAfterPassword()));	
+		    result.put("HttpStatus", "2.00");
+		    result.put("Msg", Constants.SUCCESS);		    
+		    log.info("패스워드 변경 ( 로그인 한 상태 ) ------> " + Constants.SUCCESS);
+	    }
+	    
+		} catch (Exception e) {
+		    result.put("HttpStatus", "1.00");
+		    result.put("Msg", Constants.SYSTEM_ERROR);	
+			log.error("패스워드 변경 ( 로그인 한 상태 ) ------> " + Constants.SYSTEM_ERROR);
+			log.error(e.getMessage());
+		}
+	    return result ;			    	
+	}
+	
+	
+	/**
+	 * 패스워드 변경 ( 비밀번호 찾기 ) 
+	 * @param memberDto
+	 * @return
+	 */
+	@Transactional // 트랜잭션 안에서 entity를 조회해야 영속성 상태로 조회가 되고 값을 변경해면 변경 감지(dirty checking)가 일어난다.
+	public Map<String, String> changePasswordMail (MemberDto memberDto) {
+		
+		Map<String, String> result = new HashMap<String, String>();
+		
+		try {
+							
+		Optional<MemberEntity> memberEntity = memberRepository.findById(memberDto.getEmail());
+		
+		// 이메일이 없을경우 
+		if(!memberEntity.isPresent()) {
+			log.info("패스워드 변경 ( 비밀번호 찾기 ) ------> " + Constants.INBALID_EMAIL); 
+			result.put("HttpStatus", "1.00");	    	
+	    	result.put("Msg", Constants.INBALID_EMAIL);
+	    	 return result ;
+		}
+								     
+    	MemberEntity member = memberEntity.get();			 			
+    	member.setPassword(passwordEncoder.encode(memberDto.getPassword()));	
+	    result.put("HttpStatus", "2.00");
+	    result.put("Msg", Constants.SUCCESS);		    
+	    log.info("패스워드 변경 ( 비밀번호 찾기 ) ------> " + Constants.SUCCESS);
+	    
+		} catch (Exception e) {
+		    result.put("HttpStatus", "1.00");
+		    result.put("Msg", Constants.SYSTEM_ERROR);	
+		    log.error("패스워드 변경 ( 비밀번호 찾기 ) ------> " + Constants.SYSTEM_ERROR);
+			log.error(e.getMessage());
+		}
+	    return result ;			    	
+	}
 }

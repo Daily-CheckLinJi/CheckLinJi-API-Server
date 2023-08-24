@@ -52,14 +52,23 @@ public class MailSendController {
     	} 
     
     
+    @PostMapping("/passwordCode")     
+    public ResponseEntity<Map<String, String>> passwordCode(@RequestBody MemberDto memberDto ) throws Exception {    	
+    	    	    	
+    	Map<String, String> result = mailService.sendPasswordCode(memberDto.getEmail());
+    	    	
+		if(result.get("HttpStatus").equals("2.00")){				
+			return new ResponseEntity<>(result,HttpStatus.OK);		
+		}else {
+			return new ResponseEntity<>(result,HttpStatus.BAD_REQUEST);	
+		}					
+	} 
+    
     @PostMapping("/confirm")     
     public ResponseEntity<MessageDto> ConfirmAuthCode (@RequestBody Map<String,String> data ) throws Exception {    	
     	
     	MessageDto messageDto = new MessageDto();
-    	
-    	System.out.println("email1"+data.get("email"));
-    	System.out.println("authCode"+data.get("authCode"));
-    	
+    	    	
     	Map<String, String> result = mailService.ConfirmAuthCode(data.get("email"),data.get("authCode"));
     	
     	messageDto.setStatusCode(result.get("HttpStatus"));
