@@ -234,6 +234,25 @@ public class MemberController {
 				 return new ResponseEntity<>(message,HttpStatus.BAD_REQUEST); 
 			 }
 		}
+		
+		/**
+		 * 총 사용자 수 
+		 * @return
+		 */
+		@PostMapping("/cnt")
+		public ResponseEntity<Map<String, String>> memberCnt () {
+						 			 
+			 Map<String, String> result = memberService.findMemCnt();
+			 
+			 
+			 if(result.get("HttpStatus").equals("2.00")) {
+
+				 return new ResponseEntity<>(result, HttpStatus.OK);
+			 } else {
+
+				 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+			 }		
+		}	
 	
 	
 		

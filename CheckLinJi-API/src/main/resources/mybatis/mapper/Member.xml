@@ -138,10 +138,11 @@
 	</select>
 	
 	<!-- 본인 미션 상세정보 좋아요-->
-	<select id="missionLikes" parameterType="ChallengeSubmissionDto" resultType="java.util.Map" >
-		SELECT email FROM LIKES WHERE CHALLENGE_SUBMISSION_ID = #{challengeSubmissionId} 					
-		 			
-			
+	<select id="missionLikes" parameterType="ChallengeSubmissionDto" resultType="java.util.Map" >		
+		SELECT MI.EMAIL , MI.NICK_NAME as NICKNAME , MI.GRADE , MI.PROFILE FROM LIKES LI
+			JOIN MEMBER_INFO MI
+			ON LI.EMAIL = MI.EMAIL 
+		WHERE CHALLENGE_SUBMISSION_ID = #{challengeSubmissionId}						 					
 	</select>		
 
 	<!-- 본인 미션 상세정보 해쉬태그-->
@@ -189,6 +190,20 @@
 		 SELECT DATE(JOIN_DATE) as joinDate FROM MEMBER_INFO MI 
 			WHERE EMAIL = #{email} ; 
 	</select>
+	
+	<!-- 총 사용자 수 -->
+	<select id="findMemCnt" parameterType="MemberDto" resultType="int" >
+		SELECT COUNT(*) FROM MEMBER_INFO
+	</select>	
+	
+	<!-- 오늘 미션 성공 유무 -->
+	<select id="missionYn" parameterType="String" resultType="int" >
+		SELECT COUNT(*) FROM CHALLENGE_SUBMISSION CS 
+			JOIN USER_CHALLENGE UC  
+			ON UC.USER_CHALLENGE_ID = CS.USER_CHALLENGE_ID
+		WHERE UC.EMAIL = #{email} AND SUBMISSION_DATE = DATE_FORMAT(NOW(), '%Y-%m-%d')
+	</select>		 
+	 
 	 
 	 
 </mapper>

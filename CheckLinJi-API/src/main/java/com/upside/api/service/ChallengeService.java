@@ -86,6 +86,7 @@ public class ChallengeService {
 		        	 	log.info("첼린지 인증글 리스트 ------> " + Constants.SUCCESS);
 		        	   	result.put("HttpStatus","2.00");		
 		      			result.put("Msg",Constants.SUCCESS);
+		      			result.put("totalCount",challengeSubmissionRepository.count());
 		      			result.put("viewChallengeList",viewChallengeList);		        		
 		       		 
 		           } else {

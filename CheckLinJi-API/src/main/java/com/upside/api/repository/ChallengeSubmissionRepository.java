@@ -22,6 +22,8 @@ public interface ChallengeSubmissionRepository extends JpaRepository<ChallengeSu
 	 List<ChallengeSubmissionEntity> findByUserChallengeOrderBySubmissionDateDesc (UserChallengeEntity userChallenge);
 	 
 	 Optional<ChallengeSubmissionEntity> findByUserChallengeAndSubmissionDate (UserChallengeEntity userChallenge , String submissionDate);
+	 
+	 long count();
 	 	 
 }
 
