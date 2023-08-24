@@ -1,7 +1,5 @@
 package com.upside.api.dto;
 
-import java.time.LocalDate;
-
 import lombok.Data;
 
 @Data
@@ -21,6 +19,7 @@ public class MemberDto {
  private String accessToken;
  private String refreshToken;
  private String grade;
+ private String afterPassword;
  private String date;
  
 }
