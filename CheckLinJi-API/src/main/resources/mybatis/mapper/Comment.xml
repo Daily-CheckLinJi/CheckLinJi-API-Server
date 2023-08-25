@@ -9,13 +9,13 @@
 	
 	 <!-- 유저 댓글 등록 -->
 	<insert id="userCommentSubmit" parameterType="CommentDto" >
-		INSERT INTO COMMENT (content, nick_name, regist_date, update_date, challenge_submission_id, parent_id, email)
+		INSERT INTO COMMENT (content, nick_name, regist_date, update_date, challenge_submission_id, parent_id, email , comment_state)
 			<choose>
       			<when test="parentId == null">
-        			VALUES(#{content},#{nickName},#{registDate}, NULL, #{challengeSubmissionId}, NULL, #{email})
+        			VALUES(#{content},#{nickName},#{registDate}, NULL, #{challengeSubmissionId}, NULL, #{email} , 'Y')
       			</when>
       		  <otherwise>
-        			VALUES(#{content},#{nickName},#{registDate}, NULL, #{challengeSubmissionId}, #{parentId}, #{email})
+        			VALUES(#{content},#{nickName},#{registDate}, NULL, #{challengeSubmissionId}, #{parentId}, #{email} , 'Y' )
       		  </otherwise>
     		</choose>	
 	</insert>

@@ -1,8 +1,5 @@
 package com.upside.api.entity;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -51,6 +48,9 @@ public class CommentEntity { // 게시글 테이블
  @Column(name = "updateDate")
  private String updateDate; // 댓글 최종 수정 시각
  
+ @Column(name = "commentState")
+ private String commentState; // 댓글 상태
+ 
  /**
   * 댓글 테이블에서 parent_id 컬럼은 대댓글이 있을 때,
   * 그 대댓글이 속한 부모 댓글의 식별자를 저장하는 역할을 합니다. 
@@ -71,7 +71,7 @@ public class CommentEntity { // 게시글 테이블
 
 @Builder
 public CommentEntity(ChallengeSubmissionEntity challengeSubmissionEntity, String content, String nickName, 
-		CommentEntity parentId , String registDate , String updateDate
+		CommentEntity parentId , String registDate , String updateDate , String commentState  
 		) {
 	super();
 	this.challengeSubmissionEntity = challengeSubmissionEntity;
@@ -79,6 +79,7 @@ public CommentEntity(ChallengeSubmissionEntity challengeSubmissionEntity, String
 	this.nickName = nickName;
 	this.parentId = parentId;
 	this.registDate = registDate;
-	this.updateDate = updateDate;		
+	this.updateDate = updateDate;
+	this.commentState = commentState;
  }
 }

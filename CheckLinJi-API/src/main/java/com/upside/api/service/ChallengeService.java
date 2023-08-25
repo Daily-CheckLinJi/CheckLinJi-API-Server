@@ -400,8 +400,10 @@ public class ChallengeService {
 				 							   .completed(false)
 				 							   .build();
 		 
-		 	userChallengeRepository.save(userChallenge);
-		 		 
+		 userChallengeRepository.save(userChallenge);
+		 			 		 		 	
+		 	
+		 	
 	         log.info("첼린지 참가 ------> " + Constants.SUCCESS);
 	         result.put("HttpStatus","2.00");		
 			 result.put("Msg",Constants.SUCCESS);	       
