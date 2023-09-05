@@ -43,7 +43,7 @@ public class ChallengeController {
 	 * @param pageDto
 	 * @return
 	 */
-	@GetMapping("/list") 
+	@PostMapping("/list") 
 	public ResponseEntity<Map<String, Object>> viewChallengeList (@RequestBody PageDto pageDto) {
 															
 		Map<String, Object> result = challengeSerivce.viewChallengeList(pageDto);
@@ -62,7 +62,7 @@ public class ChallengeController {
 	 * @param submissionDto
 	 * @return
 	 */
-	@GetMapping("/list/detail") 
+	@PostMapping("/list/detail") 
 	public ResponseEntity<Map<String, Object>> detail (@RequestBody ChallengeSubmissionDto submissionDto) {		
 											
 		Map<String, Object> result = challengeSerivce.detail(submissionDto);

@@ -7,12 +7,9 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.upside.api.dto.MemberDto;
@@ -30,7 +27,12 @@ public class MailSendController {
         
 
 
-    
+    /**
+     * 회원 가입 이메일 인증
+     * @param memberDto
+     * @return
+     * @throws Exception
+     */
     @PostMapping("/mail")     
     public ResponseEntity<MessageDto> SendMail(@RequestBody MemberDto memberDto ) throws Exception {    	
     	
@@ -52,6 +54,12 @@ public class MailSendController {
     	} 
     
     
+    /**
+     * 비밀번호 찾기 이메일 인증
+     * @param memberDto
+     * @return
+     * @throws Exception
+     */
     @PostMapping("/passwordCode")     
     public ResponseEntity<Map<String, String>> passwordCode(@RequestBody MemberDto memberDto ) throws Exception {    	
     	    	    	
@@ -64,6 +72,12 @@ public class MailSendController {
 		}					
 	} 
     
+    /**
+     * 회원가입 인증코드 확인
+     * @param data
+     * @return
+     * @throws Exception
+     */
     @PostMapping("/confirm")     
     public ResponseEntity<MessageDto> ConfirmAuthCode (@RequestBody Map<String,String> data ) throws Exception {    	
     	
@@ -84,5 +98,22 @@ public class MailSendController {
 		
     	} 
     
+    /**
+     * 비밀번호 찾기 인증코드 확인
+     * @param data
+     * @return
+     * @throws Exception
+     */
+    @PostMapping("/confirmPasswordCode")     
+    public ResponseEntity<Map<String, String>> ConfirmPasswordCode (@RequestBody Map<String,String> data ) throws Exception {    	
+    	    	    	    
+    	Map<String, String> result = mailService.ConfirmPasswordCode(data.get("email"),data.get("passwordCode"));
+    	        	
+		if(result.get("HttpStatus").equals("2.00")){		
+			return new ResponseEntity<>(result,HttpStatus.OK);				
+		} else {
+			return new ResponseEntity<>(result,HttpStatus.BAD_REQUEST);
+		}						
+	} 
   
 }

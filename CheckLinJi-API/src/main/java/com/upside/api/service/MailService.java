@@ -93,35 +93,39 @@ public class MailService {
 	    
 	    Map<String, String> result = new HashMap<String, String>();
 	    
-	    String authCode = "" ; 
+	    String passwordCode = "" ; 
 	    
 	    try{
 	    
 	        // 1. 메일 수신자 설정	    	
 	    	String[] receiveList = {email};
-	    	
-//	        String[] receiveList = {"kyky7852@naver.com", "thswhdrnr12@naver.com"};
-	        	      	        
+	    		        	        	      	        
 	        simpleMailMessage.setTo(receiveList);
 	       
 	        // 2. 메일 제목 설정
 	        simpleMailMessage.setSubject("데일리 첵린지 비밀번호 찾기");
 
 	        // 3. 메일 내용 설정
-	        authCode = AuthCode(); // 인증코드 발급       
-	        simpleMailMessage.setText("인증 번호 6자리를 입력해주세요. " + authCode);       
+	        passwordCode = AuthCode(); // 인증코드 발급       
+	        simpleMailMessage.setText("인증 번호 6자리를 입력해주세요. " + passwordCode);       
 	       	        
 	        // 4. 메일 전송
 	        javaMailSender.send(simpleMailMessage);
 	        
+	        // 5. redis 저장 
+	        ValueOperations<String, String> redis = redisTemplate.opsForValue(); // Redis Map 객체 생성		    			    	
+	    	redis.set("passwordCode_"+email, passwordCode); // passwordCode Redis 저장
+	    	redisTemplate.expire("passwordCode_"+ email ,30, TimeUnit.MINUTES); // redis refreshToken expire 30분 지정
+	        
 	    	log.info("비밀번호 찾기 이메일 전송 ------> " + Constants.SUCCESS);
 	        result.put("HttpStatus","2.00");		
- 			result.put("Msg",Constants.SUCCESS);	        
+			result.put("Msg",Constants.SUCCESS);	   
+			
 	    } catch(Exception e){
-	    	 log.info("비밀번호 찾기 이메일 전송 ------> " + Constants.FAIL);
-	         result.put("HttpStatus","1.00");		
-	  		 result.put("Msg", Constants.SYSTEM_ERROR);
-	  		 log.error(e.getMessage());	  		 
+	    	log.info("비밀번호 찾기 이메일 전송 ------> " + Constants.FAIL);
+	        result.put("HttpStatus","1.00");		
+	  		result.put("Msg", Constants.SYSTEM_ERROR);
+	  		log.error(e.getMessage());	  		 
 	    }	 			    		 		
 			return result;					
 	}
@@ -175,6 +179,43 @@ public class MailService {
 	 		
 		} catch (Exception e) {
 			log.info("회원가입 인증 ------> " + Constants.FAIL);
+	        result.put("HttpStatus","1.00");		
+	 		result.put("Msg", Constants.FAIL);
+	 		
+	 		return result;
+		}
+	}
+	
+	
+	/**
+	 * 비밀번호 찾기 passwordCode 인증
+	 * @return
+	 */
+	public Map<String, String> ConfirmPasswordCode (String email , String passwordCode) {
+		Map<String, String> result = new HashMap<String, String>();
+		
+		ValueOperations<String, String> redis = redisTemplate.opsForValue(); // Redis Map 객체 생성
+		
+		log.info("비밀번호 찾기 인증 ------> " + "Start");
+		
+		try {
+			
+		if(redis.get("passwordCode_"+email).equals(passwordCode)) {		
+			
+			log.info("비밀번호 찾기 인증 ------> " + Constants.SUCCESS);
+	        result.put("HttpStatus","2.00");		
+	 		result.put("Msg",Constants.SUCCESS);
+	 		redisTemplate.delete("passwordCode_"+email); // "myKey"라는 Key를 삭제	
+	 		return result;
+		} 		
+			log.info("비밀번호 찾기 인증 ------> " + Constants.FAIL);
+	        result.put("HttpStatus","1.00");		
+	 		result.put("Msg", Constants.FAIL);
+					 		
+	 		return result;
+	 		
+		} catch (Exception e) {
+			log.info("비밀번호 찾기 인증 ------> " + Constants.FAIL);
 	        result.put("HttpStatus","1.00");		
 	 		result.put("Msg", Constants.FAIL);
 	 		
