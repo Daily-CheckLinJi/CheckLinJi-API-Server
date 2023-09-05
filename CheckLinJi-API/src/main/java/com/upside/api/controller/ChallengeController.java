@@ -3,6 +3,8 @@ package com.upside.api.controller;
 
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
@@ -45,7 +47,8 @@ public class ChallengeController {
 	 */
 	@PostMapping("/list") 
 	public ResponseEntity<Map<String, Object>> viewChallengeList (@RequestBody PageDto pageDto) {
-															
+		
+		 						
 		Map<String, Object> result = challengeSerivce.viewChallengeList(pageDto);
 				
 		if (result.get("HttpStatus").equals("2.00")) { // 성공			
@@ -82,7 +85,7 @@ public class ChallengeController {
 	 * @param pageDto
 	 * @return
 	 */
-	@GetMapping("/myList") 
+	@PostMapping("/myList") 
 	public ResponseEntity<Map<String, Object>> viewChallenge (@RequestHeader("Authorization") String authHeader , @RequestBody PageDto pageDto) {
 		
 		String userEmail = jwtTokenProvider.getEmail(authHeader); // email을 얻기위해 헤더에서 토큰을 디코딩하는 부분이다.

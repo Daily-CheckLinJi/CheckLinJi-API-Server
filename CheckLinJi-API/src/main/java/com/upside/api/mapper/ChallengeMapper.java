@@ -21,6 +21,13 @@ public interface ChallengeMapper {
 	ArrayList<Map<String, Object>> viewChallengeList (PageDto pageDto);
 	
 	/**
+	 * 첼린지 인증글 리스트
+	 * @param data
+	 * @return
+	 */
+	int listTotalCnt (PageDto pageDto);
+	
+	/**
 	 * 첼린지 인증글 상세페이지
 	 * @param submissionDto
 	 * @return

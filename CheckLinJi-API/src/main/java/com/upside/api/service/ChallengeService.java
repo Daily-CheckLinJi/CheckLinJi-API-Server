@@ -74,6 +74,11 @@ public class ChallengeService {
 			log.info("첼린지 인증글 리스트 ------> " + "Start");
 									 						 					
 			  try {
+				  
+					if(pageDto.getTag() != null) {
+						pageDto.setTagList(Arrays.asList(pageDto.getTag().split("\\|")));  // hashTag | 기준으로 잘라서 리스트에 넣기
+					}
+				  				  
 		        	ArrayList<Map<String, Object>> viewChallengeList = challengeMapper.viewChallengeList(pageDto);
 		        	        	        	
 		        	if (viewChallengeList.size() != 0 ) { 
@@ -86,7 +91,7 @@ public class ChallengeService {
 		        	 	log.info("첼린지 인증글 리스트 ------> " + Constants.SUCCESS);
 		        	   	result.put("HttpStatus","2.00");		
 		      			result.put("Msg",Constants.SUCCESS);
-		      			result.put("totalCount",challengeSubmissionRepository.count());
+		      			result.put("totalCount",challengeMapper.listTotalCnt(pageDto));
 		      			result.put("viewChallengeList",viewChallengeList);		        		
 		       		 
 		           } else {

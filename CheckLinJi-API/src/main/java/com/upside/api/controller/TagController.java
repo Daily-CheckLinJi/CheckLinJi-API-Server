@@ -13,25 +13,38 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.upside.api.dto.HashTagDto;
-import com.upside.api.dto.MessageDto;
-import com.upside.api.service.AdminService;
+import com.upside.api.service.TagService;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/admin")
-public class AdminController {
+@RequestMapping("/api/tag")
+public class TagController {
     
-    private final AdminService adminService;
+    private final TagService tagService;
         
 
 
+    @PostMapping("/list")     
+    public ResponseEntity<Map<String, Object>> listTag(@RequestBody HashTagDto hashTagDto ) throws Exception {    	
+    	    	    	
+    	Map<String, Object> result = tagService.listTag(hashTagDto);
+    	    	    	
+		if(result.get("HttpStatus").equals("1.00")){
+				
+		return new ResponseEntity<>(result,HttpStatus.BAD_REQUEST);
+		
+		} 
+		
+		return new ResponseEntity<>(result,HttpStatus.OK);
+		
+    	}  
     
-    @PostMapping("/addTag")     
+    @PostMapping("/add")     
     public ResponseEntity<Map<String, String>> addTag(@RequestBody HashTagDto hashTagDto ) throws Exception {    	
     	    	    	
-    	Map<String, String> result = adminService.addTag(hashTagDto);
+    	Map<String, String> result = tagService.addTag(hashTagDto);
     	    	    	
 		if(result.get("HttpStatus").equals("1.00")){
 				
@@ -44,10 +57,10 @@ public class AdminController {
     	} 
     
         
-    @PostMapping("/deleteTag")     
+    @PostMapping("/delete")     
     public ResponseEntity<Map<String, String>> deleteTag(@RequestBody HashTagDto hashTagDto ) throws Exception {    	
     	    	    	
-    	Map<String, String> result = adminService.deleteTag(hashTagDto);
+    	Map<String, String> result = tagService.deleteTag(hashTagDto);
     	    	    	
 		if(result.get("HttpStatus").equals("1.00")){
 				

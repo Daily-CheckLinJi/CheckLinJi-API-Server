@@ -3,10 +3,10 @@ package com.upside.api.service;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.apache.tomcat.util.bcel.Const;
 import org.springframework.stereotype.Service;
 
 import com.upside.api.dto.HashTagDto;
@@ -20,12 +20,48 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class AdminService {
+public class TagService {
  
 	private final HashTagRepository hashTagRepository;
 	
 	
 	
+
+	
+	/**
+	 * 해쉬태그 목록
+	 * @param hashTagDto
+	 * @return
+	 */
+	public Map<String, Object> listTag (HashTagDto hashTagDto) {
+		
+		Map<String, Object> result = new HashMap<String, Object>();
+		
+		log.info("해쉬태그 목록 ------> " + "Start");
+		
+		try {
+		
+		List<HashTagEntity> tagList = hashTagRepository.findAll();
+		
+		if(tagList.isEmpty()) {
+			 result.put("HttpStatus","2.00");		
+    		 result.put("Msg","태그가 존재하지 않습니다.");
+    		 log.info("해쉬태그 목록 ------> " + "태그가 존재하지 않습니다.");
+    		 return result ;
+		}						
+		 result.put("HttpStatus","2.00");		
+		 result.put("tagList",tagList);		 
+		log.info("해쉬태그 목록 ------> " + Constants.SUCCESS);
+		
+		} catch (Exception e) {
+			log.info("해쉬태그 목록 ------> " + Constants.FAIL);
+			 result.put("HttpStatus","1.00");		
+    		 result.put("Msg",Constants.FAIL);
+    		 return result ;
+		}
+						
+		return result;
+	}
 	
 	/**
 	 * 해쉬태그 추가
