@@ -58,14 +58,7 @@ public class MailService {
 	       	        
 	        // 4. 메일 전송
 	        javaMailSender.send(simpleMailMessage);
-	        
-	    } catch(Exception e){
-	    	 log.error("이메일 전송 ------> " + Constants.FAIL , e);
-	         result.put("HttpStatus","1.00");		
-	  		 result.put("Msg", Constants.FAIL);	  		
-	  		 return result;
-	    }
-	 		
+	        	 		
 	 		ValueOperations<String, String> redis = redisTemplate.opsForValue(); // Redis Map 객체 생성		    			    	
 	    	redis.set("authCode_"+email, authCode); // authCode Redis 저장
 	    	redisTemplate.expire("authCode_"+ email ,30, TimeUnit.MINUTES); // redis refreshToken expire 30분 지정
@@ -74,6 +67,12 @@ public class MailService {
 	        result.put("HttpStatus","2.00");		
 	 		result.put("Msg",Constants.SUCCESS);
 	 		
+	    } catch(Exception e){
+	    	 log.error("이메일 전송 ------> " + Constants.FAIL , e);
+	         result.put("HttpStatus","1.00");		
+	  		 result.put("Msg", Constants.FAIL);	  			  		 
+	    }
+ 		
 			return result;
 			
 			
@@ -177,9 +176,9 @@ public class MailService {
 	 		return result;
 	 		
 		} catch (Exception e) {
-			log.error("회원가입 인증 ------> " + Constants.FAIL , e);
+			log.error("회원가입 인증 ------> " + Constants.SYSTEM_ERROR , e);
 	        result.put("HttpStatus","1.00");		
-	 		result.put("Msg", Constants.FAIL);
+	 		result.put("Msg", Constants.SYSTEM_ERROR);
 	 		
 	 		return result;
 		}
@@ -214,9 +213,9 @@ public class MailService {
 	 		return result;
 	 		
 		} catch (Exception e) {
-			log.error("비밀번호 찾기 인증 ------> " + Constants.FAIL , e);
+			log.error("비밀번호 찾기 인증 ------> " + Constants.SYSTEM_ERROR , e);
 	        result.put("HttpStatus","1.00");		
-	 		result.put("Msg", Constants.FAIL);
+	 		result.put("Msg", Constants.SYSTEM_ERROR);
 	 		
 	 		return result;
 		}

@@ -101,9 +101,9 @@ public class ChallengeService {
 		           }
 		        	
 				} catch (Exception e) {
-					log.error("첼린지 인증글 리스트 ------> " + "Data 접근 실패" , e);					
+					log.error("첼린지 인증글 리스트 ------> " + Constants.SYSTEM_ERROR , e);					
 		    	    result.put("HttpStatus","1.00");		
-		   			result.put("Msg","Data 접근 실패");		   			
+		   			result.put("Msg",Constants.SYSTEM_ERROR);		   			
 		   		 return result ;			
 				}               		 
 			  return result ;					 	    		   
@@ -156,9 +156,9 @@ public class ChallengeService {
 		           }
 		        	
 				} catch (Exception e) {
-					log.error("첼린지 인증글 상세페이지 ------> " + "Data 접근 실패" , e);
+					log.error("첼린지 인증글 상세페이지 ------> " + Constants.SYSTEM_ERROR , e);
 		    	    result.put("HttpStatus","1.00");		
-		   			result.put("Msg","Data 접근 실패");
+		   			result.put("Msg",Constants.SYSTEM_ERROR);
 		   		 return result ;			
 				}               		 
 			  return result ;					 	    		   
@@ -216,9 +216,9 @@ public class ChallengeService {
 			 log.info("첼린지 참가 내역 ------> " + "End");
 			 
 			} catch (Exception e) {
-				 log.error("첼린지 참가 내역 ------> " + Constants.FAIL , e);
+				 log.error("첼린지 참가 내역 ------> " + Constants.SYSTEM_ERROR , e);
 	             result.put("HttpStatus","1.00");		
-	     		 result.put("Msg",Constants.FAIL);
+	     		 result.put("Msg",Constants.SYSTEM_ERROR);
 			}
 			 
 			  return result ;				 	    		   
@@ -258,8 +258,8 @@ public class ChallengeService {
 			
 			} catch (Exception e) {
 				 result.put("HttpStatus","1.00");		
-				 result.put("Msg","Data 접근 실패");
-				 log.error("본인 미션 성공 총 횟수 (월) ---> " + Constants.FAIL , e);
+				 result.put("Msg",Constants.SYSTEM_ERROR);
+				 log.error("본인 미션 성공 총 횟수 (월) ---> " + Constants.SYSTEM_ERROR , e);
 			}
 	        
 		    return result ;			    		   
@@ -299,8 +299,8 @@ public class ChallengeService {
 			
 			} catch (Exception e) {
 				 result.put("HttpStatus","1.00");		
-				 result.put("Msg","Data 접근 실패");
-				 log.error("본인 미션 성공 총 횟수 ---> " + Constants.FAIL , e);
+				 result.put("Msg",Constants.SYSTEM_ERROR);
+				 log.error("본인 미션 성공 총 횟수 ---> " + Constants.SYSTEM_ERROR , e);
 			}
 	        
 		    return result ;			    		   
@@ -366,9 +366,9 @@ public class ChallengeService {
 		result.put("Msg",Constants.SUCCESS);
 		
 		} catch (Exception e) {
-       	 log.error("첼린지 생성 ------> " + Constants.FAIL , e);
+       	 log.error("첼린지 생성 ------> " + Constants.SYSTEM_ERROR , e);
          result.put("HttpStatus","1.00");		
-  		 result.put("Msg",Constants.FAIL);
+  		 result.put("Msg",Constants.SYSTEM_ERROR);
 		}
         
 	
@@ -432,9 +432,9 @@ public class ChallengeService {
 		 log.info("첼린지 참가 ------> " + "End");
 			 
 		} catch (Exception e) {
-			 log.error("첼린지 참가 ------> " + Constants.FAIL);
+			 log.error("첼린지 참가 ------> " + Constants.SYSTEM_ERROR , e);
              result.put("HttpStatus","1.00");		
-     		 result.put("Msg",Constants.FAIL);
+     		 result.put("Msg",Constants.SYSTEM_ERROR);
 		}
 		  return result ;				 	    		   
 }
@@ -601,8 +601,8 @@ public class ChallengeService {
 	 	
 		} catch (Exception e) {
 	        result.put("HttpStatus","1.00");		
-			result.put("Msg",Constants.FAIL);	       
-			log.error("첼린지 제출 ------> " + Constants.FAIL);	
+			result.put("Msg",Constants.SYSTEM_ERROR);	       
+			log.error("첼린지 제출 ------> " + Constants.SYSTEM_ERROR , e);	
 		}
         
 	 	

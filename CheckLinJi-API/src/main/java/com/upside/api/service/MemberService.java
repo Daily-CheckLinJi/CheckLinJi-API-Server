@@ -2,7 +2,6 @@ package com.upside.api.service;
 
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,13 +9,10 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,7 +59,9 @@ public class MemberService {
 		Map<String, Object> result = new HashMap<String, Object>();
 		
 		// Base64로 인코딩된 이미지 파일 문자열로 가져옴
-	     
+	    
+		try {
+					
 		Optional<MemberEntity> data = memberRepository.findById(email);
 		
 		 if(data.isPresent()) {
@@ -91,6 +89,12 @@ public class MemberService {
 			 result.put("Msg",Constants.FAIL);
 		 }
 		 
+		} catch (Exception e) {
+			 log.error("회원목록 조회 ------> " + Constants.SYSTEM_ERROR , e);
+			 result.put("HttpStatus","1.00");
+			 result.put("Msg",Constants.SYSTEM_ERROR);
+		}
+		 
 		 return result;
 							
 	}
@@ -103,6 +107,8 @@ public class MemberService {
 	public Map<String, String> signUp(MemberDto memberDto) {
 		Map<String, String> result = new HashMap<String, String>();
 		
+		try {
+			
 		if(memberDto.getEmail() == null || memberDto.getName() == null || memberDto.getNickName() == null || memberDto.getPassword() == null ||
 		     memberDto.getBirth() == null || memberDto.getSex() == null ) {  
 		    									
@@ -177,6 +183,13 @@ public class MemberService {
 			 result.put("HttpStatus","1.00");
 			 result.put("Msg",Constants.FAIL);			  
 		 }
+		 
+		} catch (Exception e) {
+			 log.error("회원가입 실패 ------> " + Constants.SYSTEM_ERROR , e);
+			 result.put("HttpStatus","1.00");
+			 result.put("Msg",Constants.SYSTEM_ERROR);	
+		}
+				 
 		 return result ;
 	}
 	
@@ -188,6 +201,8 @@ public class MemberService {
     	   
     	Map<String , String> result = new HashMap<String, String>();
     	
+    	try {
+			    	
         if (memberRepository.findByNickName(nickName).isPresent()) {
         	log.info("아이디 검증 ------> " + "중복된 닉네임입니다.");
         	result.put("HttpStatus","1.00");			
@@ -197,6 +212,13 @@ public class MemberService {
         	result.put("HttpStatus","2.00");			
 			result.put("Msg","사용할 수있는 닉네임입니다.");        		        	
         }
+        
+		} catch (Exception e) {
+        	log.error("아이디 검증 ------> " + Constants.SYSTEM_ERROR , e);
+        	result.put("HttpStatus","1.00");			
+			result.put("Msg",Constants.SYSTEM_ERROR);    
+		}
+        
         return result ;
     }
 	
@@ -204,6 +226,8 @@ public class MemberService {
     	
     	Map<String , String> result = new HashMap<String, String>();
     	
+    	try {
+			    	
         if (memberRepository.findById(email).isPresent()) {
         	log.info("아이디 검증 ------> " + "중복된 이메일 입니다.");
         	result.put("HttpStatus","1.00");			
@@ -213,6 +237,13 @@ public class MemberService {
         	result.put("HttpStatus","2.00");			
 			result.put("Msg","사용할 수있는 이메일입니다.");		        	        	        	
         }   
+        
+		} catch (Exception e) {
+        	log.error("아이디 검증 ------> " + Constants.SYSTEM_ERROR , e);
+        	result.put("HttpStatus","1.00");			
+			result.put("Msg",Constants.SYSTEM_ERROR); 
+		}
+        
         return result ;
     }
     
@@ -227,6 +258,8 @@ public class MemberService {
 		
 		Map<String, String> result = new HashMap<String, String>();
 		
+		try {
+					
 		if(memberDto.getEmail() == null ) {
 			log.info("회원정보 업데이트 실패 ------> " + Constants.NOT_EXIST_PARAMETER);
 			result.put("HttpStatus","1.01");
@@ -259,7 +292,14 @@ public class MemberService {
 			 result.put("HttpStatus","2.00");
 			 result.put("Msg","회원정보 수정이 완료되었습니다.");
 			 log.info("회원정보 업데이트 ------> " + updateUser.getEmail()); 			 			
-		}				
+		}
+		
+		} catch (Exception e) {
+			log.error("회원정보 업데이트 실패 ------> " + Constants.SYSTEM_ERROR , e);
+			result.put("HttpStatus","1.00");
+			result.put("Msg",Constants.SYSTEM_ERROR);
+		}
+		
 		return result ; // 요청 성공	 	
 	}
 	
@@ -271,8 +311,9 @@ public class MemberService {
 	public Map<String, String> deleteMember(String email) {
 		
 			Map<String, String> result = new HashMap<String, String>();
+									
+		try {		
 			
-		try {						
 			 if(memberRepository.findById(email).isPresent() == true ) {			 
 				 
 				 HashMap<String, String> param = new HashMap<String, String>();			 			 			 
@@ -283,25 +324,24 @@ public class MemberService {
 				 memberMapper.memberDelete(param);
 				 			 			 			 
 				 if (param.get("COMPLETED").equals("Y")) {
-					 log.info("삭제 성공 ------> " + email);
+					 log.info("회원정보 삭제 성공 ------> " + email);
 					 result.put("HttpStatus", "2.00");
 					 result.put("Msg", Constants.SUCCESS);
 				 }else {
-					 log.info("삭제 실패 ------> " + email);
+					 log.info("회원정보 삭제 실패 ------> " + email);
 					 result.put("HttpStatus", "1.00");
 					 result.put("Msg", Constants.FAIL);
 				 }			 			 			 
 			 } else {
-				 log.info("삭제 실패 ------> " + email);
+				 log.info("회원정보 삭제 실패 ------> " + email);
 				 result.put("HttpStatus", "1.00");
 				 result.put("Msg", "존재하지 않는 이메일입니다.");
 				 	
 			 }
 		} catch (Exception e) {
-			 log.info("DB 에러 ------> " );
-			 e.printStackTrace();
+			 log.info("회원정보 삭제 실패 ------> " + Constants.SYSTEM_ERROR , e);			 
 			 result.put("HttpStatus", "1.00");
-			 result.put("Msg", "DB 오류로 인한 실패");
+			 result.put("Msg", Constants.SYSTEM_ERROR);
 		}
 		
 		 return result ; 
@@ -315,6 +355,8 @@ public class MemberService {
 	public Map<String, String> loginMember(MemberDto memberDto) {
 		Map<String, String> result = new HashMap<String, String>();
 		
+		try {
+					
 		Optional<MemberEntity> memberEntity = memberRepository.findById(memberDto.getEmail());
 		
 		if(!memberEntity.isPresent()) {
@@ -345,6 +387,14 @@ public class MemberService {
 			    
 			    log.info("회원 로그인 ------> " + Constants.SUCCESS);
 		    }
+		    
+		} catch (Exception e) {
+			log.error("회원 로그인 ------> " + Constants.SYSTEM_ERROR , e); 
+			result.put("HttpStatus", "1.00");
+	    	result.put("UserEmail", null);
+	    	result.put("Msg", Constants.SYSTEM_ERROR);
+		}
+		    
 		    return result ;			    	
 }
 	
@@ -363,6 +413,8 @@ public class MemberService {
     	
     	Map<String, String> result = new HashMap<String, String>();
     	 
+    	try {
+			    	
     	if (memberDto.getAccessToken() == null || memberDto.getRefreshToken() == null ) {
     		log.info("Refresh Token 검증 ------> " + Constants.EXPIRATION_TOKEN);
     		
@@ -416,30 +468,15 @@ public class MemberService {
              result.put("HttpStatus", "2.00");	    	
      		 result.put("Msg", Constants.SUCCESS);
      		 result.put("Token", accessToken);
-     		 result.put("RefreshToken", refreshToken);
-     		 
-             return result ;        	
-        }               
-    }
-
-    /**
-     * 유효한 토큰이라면 AccessToken으로부터 Id 정보를 받아와 DB에 저장된 회원을 찾고 ,
-     * 해당 회원의 실제 Refresh Token을 받아온다.
-     * @param requestDto
-     * @return
-     */
-    public MemberEntity findMemberByToken(MemberDto requestDto) {
-        Authentication auth = jwtTokenProvider.getAuthentication(requestDto.getAccessToken());
-        UserDetails userDetails = (UserDetails) auth.getPrincipal();
-        String username = userDetails.getUsername();
-        
-        if(memberRepository.findById(username).isPresent() == true ) {
-                	        	
-        	return memberRepository.findById(username).get();
-        } else {
-        
-        	return null ;
-        }        
+     		 result.put("RefreshToken", refreshToken);     		      		      	                    	
+        	}        
+		} catch (Exception e) {
+			log.error("Refresh Token 검증 ------> " + Constants.SYSTEM_ERROR , e);        	
+        	result.put("HttpStatus", "1.00");	    	
+	    	result.put("Msg", Constants.SYSTEM_ERROR);	    	
+	    	
+		}
+    	return result; 
     }
     
     /**
@@ -454,6 +491,8 @@ public class MemberService {
     	Map<String, String> result = new HashMap<String, String>();
     	log.info("소셜 로그인 ------> Start ");
     	
+    	try {
+			    	
     	Optional<MemberEntity> user = memberRepository.findById(email);
        
     	if(!user.isPresent()) { 
@@ -472,6 +511,14 @@ public class MemberService {
 	    	result.put("UserEmail", member.getEmail());
 
     	}
+    	
+		} catch (Exception e) {
+    		log.error("소셜 로그인 ------> "+ Constants.SYSTEM_ERROR , e);
+    		result.put("HttpStatus", "1.00");
+    		result.put("Msg", Constants.SYSTEM_ERROR);
+	    	result.put("UserEmail", email);	 
+		}
+    	
     	return result;
    }
     
@@ -487,54 +534,55 @@ public class MemberService {
     	Map<String, String> result = new HashMap<String, String>();
     	log.info("프로필 사진 업데이트 ------> Start ");
     	
-    	try {					    	
+    	try {
+    		
     	Optional<MemberEntity> user = memberRepository.findById(email);       
-    	if(!user.isPresent()) { 
-    		log.info("프로필 사진 업데이트 실패 ------> 존재하지 않는 이메일입니다.");
-    		result.put("HttpStatus", "1.00");
-    		result.put("Msg", Constants.FAIL);
-    		return result;
-    	}else {
-    		
-    		// 기본 프로필 ( M- , or W- 일 경우 삭제 X )
-    		if(!user.get().getProfile().contains("M-") && !user.get().getProfile().contains("W-")) {
-    		
-    			// 파일 삭제
-        		boolean deleteYn = fileService.deleteFile(user.get().getProfile());
-        		
-        		// 삭제 실패 시
-        		if(!deleteYn) {
-        			log.info("프로필 사진 삭제 실패 ------> " + user.get().getProfile());
-    	    		result.put("HttpStatus", "1.00");
-    	    		result.put("Msg", "프로필 사진 삭제에 실패하였습니다.");
-    	    		return result;
-        		}
-    			
-    		}    		    		    		
-    		
-    		// 파일 업로드 
-    	 	String submissionImageRoute = fileService.uploadProfile(profile, profileName ,email);
-    		
-    	 	if(submissionImageRoute.equals("N")) {
-    	 		log.info("프로필 사진 업데이트 실패 ------> 파일 에러");
-	    		result.put("HttpStatus", "1.00");
-	    		result.put("Msg", "프로필 사진 업데이트에 실패하였습니다.");
-	    		return result;
-    	 	}
-    	 	    	 	    	        	 	
-    		MemberEntity member = user.get();
-    		
-    		member.setProfile(submissionImageRoute);    		    
-			
-	    	result.put("HttpStatus", "2.00");
-			result.put("Msg", Constants.SUCCESS);
-			log.info("프로필 사진 업데이트 성공 ------>" + email);	
-
-		}
-			} catch (Exception e) {
-				log.info("프로필 사진 업데이트 실패 ------> Exception");
+	    	if(!user.isPresent()) { 
+	    		log.info("프로필 사진 업데이트 실패 ------> 존재하지 않는 이메일입니다.");
 	    		result.put("HttpStatus", "1.00");
 	    		result.put("Msg", Constants.FAIL);
+	    		return result;
+	    	}else {
+	    		
+	    		// 기본 프로필 ( M- , or W- 일 경우 삭제 X )
+	    		if(!user.get().getProfile().contains("M-") && !user.get().getProfile().contains("W-")) {
+	    		
+	    			// 파일 삭제
+	        		boolean deleteYn = fileService.deleteFile(user.get().getProfile());
+	        		
+	        		// 삭제 실패 시
+	        		if(!deleteYn) {
+	        			log.info("프로필 사진 삭제 실패 ------> " + user.get().getProfile());
+	    	    		result.put("HttpStatus", "1.00");
+	    	    		result.put("Msg", "프로필 사진 삭제에 실패하였습니다.");
+	    	    		return result;
+	        		}
+	    			
+	    		}    		    		    		
+	    		
+	    		// 파일 업로드 
+	    	 	String submissionImageRoute = fileService.uploadProfile(profile, profileName ,email);
+	    		
+	    	 	if(submissionImageRoute.equals("N")) {
+	    	 		log.info("프로필 사진 업데이트 실패 ------> 파일 에러");
+		    		result.put("HttpStatus", "1.00");
+		    		result.put("Msg", "프로필 사진 업데이트에 실패하였습니다.");
+		    		return result;
+	    	 	}
+	    	 	    	 	    	        	 	
+	    		MemberEntity member = user.get();
+	    		
+	    		member.setProfile(submissionImageRoute);    		    
+				
+		    	result.put("HttpStatus", "2.00");
+				result.put("Msg", Constants.SUCCESS);
+				log.info("프로필 사진 업데이트 성공 ------>" + email);	
+	
+			 }
+			} catch (Exception e) {
+				log.error("프로필 사진 업데이트 실패 ------> " + Constants.SYSTEM_ERROR , e);
+	    		result.put("HttpStatus", "1.00");
+	    		result.put("Msg", Constants.SYSTEM_ERROR);
 	    		return result;
 			}
     	return result;
@@ -553,8 +601,8 @@ public class MemberService {
 		
         try {        	
         	missionCompletedSum = memberMapper.missionCompletedSum(memberDto);        	        	        	        	        	
-		} catch (DataAccessException e) {
-			log.info("본인 누적미션 횟수 ------> " + "Data 접근 실패");    	   
+		} catch (Exception e) {
+			log.error("본인 누적미션 횟수 ------> " + Constants.SYSTEM_ERROR , e);    	   
    		 return 0 ;   		 
 		}
         
@@ -572,8 +620,8 @@ public class MemberService {
 		
         try {
         	updateGrade = memberMapper.updateGrade(memberDto);        	        	        	        	        	
-		} catch (DataAccessException e) {
-			log.info("본인 누적미션 횟수 ------> " + "Data 접근 실패");    	   
+		} catch (Exception e) {
+			log.error("본인 누적미션 횟수 ------> " + Constants.SYSTEM_ERROR , e);    	   
    		 return 0 ;   		 
 		}
         
@@ -590,20 +638,18 @@ public class MemberService {
 		Map<String, Object> result = new HashMap<String, Object>();
 		
 		
-		log.info("회원 가입 날짜 ------> " + Constants.SUCCESS);
-		 // 현재 날짜와 시간을 LocalDateTime 객체로 가져옵니다.
-       LocalDateTime now = LocalDateTime.now();
-       
-       try {
+	    log.info("회원 가입 날짜 ------> " + Constants.SUCCESS);
+		                
+         try {
 					
   
-	   result = memberMapper.joinDate(userEmail);	        
+    	 result = memberMapper.joinDate(userEmail);	        
        
-    	 if(result.get("joinDate") == null ) {
-    		 result.put("HttpStatus","1.00");		
+		 if(result.get("joinDate") == null ) {
+			 result.put("HttpStatus","1.00");		
 			 result.put("Msg",Constants.FAIL); 
 			 return result ;	
-    	 }
+		 }
     	 
     	Date joinDate  =  (Date) result.get("joinDate");
     	Date currentDate = new Date();
@@ -626,9 +672,10 @@ public class MemberService {
 		log.info("회원 가입 날짜 ------> " + Constants.SUCCESS);
 		
 		} catch (Exception e) {
+			 log.error("회원 가입 날짜 ------> " + Constants.SYSTEM_ERROR , e);
 			 result.put("HttpStatus","1.00");		
 			 result.put("Msg","Data 접근 실패");
-			 e.printStackTrace();
+			 
 		}
        
 	    return result ;			    		   
@@ -672,8 +719,7 @@ public class MemberService {
 		} catch (Exception e) {
 		    result.put("HttpStatus", "1.00");
 		    result.put("Msg", Constants.SYSTEM_ERROR);	
-			log.error("패스워드 변경 ( 로그인 한 상태 ) ------> " + Constants.SYSTEM_ERROR);
-			log.error(e.getMessage());
+			log.error("패스워드 변경 ( 로그인 한 상태 ) ------> " + Constants.SYSTEM_ERROR , e);			
 		}
 	    return result ;			    	
 	}
@@ -710,8 +756,7 @@ public class MemberService {
 		} catch (Exception e) {
 		    result.put("HttpStatus", "1.00");
 		    result.put("Msg", Constants.SYSTEM_ERROR);	
-		    log.error("패스워드 변경 ( 비밀번호 찾기 ) ------> " + Constants.SYSTEM_ERROR);
-			log.error(e.getMessage());
+		    log.error("패스워드 변경 ( 비밀번호 찾기 ) ------> " + Constants.SYSTEM_ERROR , e);			
 		}
 	    return result ;			    	
 	}
@@ -739,9 +784,8 @@ public class MemberService {
 		
 		} catch (Exception e) {
 			 result.put("HttpStatus","1.00");		
-			 result.put("Msg","Data 접근 실패");
-			 e.printStackTrace();
-			 log.error("총 사용자 수 -----------------> " + Constants.FAIL);
+			 result.put("Msg",Constants.SYSTEM_ERROR);			 
+			 log.error("총 사용자 수 -----------------> " + Constants.SYSTEM_ERROR , e);
 		}
        
 	    return result ;			    		   

@@ -54,9 +54,9 @@ public class TagService {
 		log.info("해쉬태그 목록 ------> " + Constants.SUCCESS);
 		
 		} catch (Exception e) {
-			log.info("해쉬태그 목록 ------> " + Constants.FAIL);
+			log.error("해쉬태그 목록 ------> " + Constants.SYSTEM_ERROR , e);
 			 result.put("HttpStatus","1.00");		
-    		 result.put("Msg",Constants.FAIL);
+    		 result.put("Msg",Constants.SYSTEM_ERROR);
     		 return result ;
 		}
 						
@@ -99,9 +99,9 @@ public class TagService {
 		log.info("해쉬태그 추가 ------> " + Constants.SUCCESS);
 		
 		} catch (Exception e) {
-			log.info("해쉬태그 추가 ------> " + Constants.FAIL);
+			log.error("해쉬태그 추가 ------> " + Constants.SYSTEM_ERROR , e);
 			 result.put("HttpStatus","1.00");		
-    		 result.put("Msg",Constants.FAIL);
+    		 result.put("Msg",Constants.SYSTEM_ERROR);
     		 return result ;
 		}
 		
@@ -142,9 +142,9 @@ public class TagService {
 		log.info("해쉬태그 삭제 ------> " + Constants.SUCCESS);
 		
 		} catch (Exception e) {
-			log.info("해쉬태그 삭제 ------> " + Constants.FAIL);
+			log.error("해쉬태그 삭제 ------> " + Constants.SYSTEM_ERROR , e);
 			 result.put("HttpStatus","1.00");		
-    		 result.put("Msg",Constants.FAIL);
+    		 result.put("Msg",Constants.SYSTEM_ERROR);
     		 return result ;
 		}
 		

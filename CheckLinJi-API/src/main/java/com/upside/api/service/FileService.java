@@ -11,17 +11,12 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Base64;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.upside.api.util.Constants;
 
@@ -78,8 +73,8 @@ public class FileService {
 		  	    result = filePath.toString(); // DB에 저장될 경로
 
 		  	    return result;
-		  	} catch (IOException e) {
-		  	    e.printStackTrace();
+		  	} catch (Exception e) {
+		  	    log.error("파일 업로드 ( 외부에다 저장 ) - 인증 이미지 , 프로필 이미지 ---> " + Constants.SYSTEM_ERROR , e);
 		  	    result = "N";
 		  	    return result;
 		  	}
@@ -124,8 +119,8 @@ public class FileService {
 	        	        
 		    return result;
 		        
-			} catch (IOException e) {
-				e.printStackTrace();
+			} catch (Exception e) {
+				log.error("프로필 사진 업로드 ---> " + Constants.SYSTEM_ERROR , e);
 				result = "N";
 				return result;
 			}	 	
@@ -150,15 +145,14 @@ public class FileService {
         byte[] fileContent = Files.readAllBytes(Paths.get(filePath));
         
         // Base64 인코딩
-         encoded = Base64.getEncoder().encodeToString(fileContent);
-                        
+        encoded = Base64.getEncoder().encodeToString(fileContent);
+         
+        log.info("저장된 파일을 Base64로 인코딩  ------> " + "성공");
 		
 		} catch (IOException e) {			
 			encoded = "N";
-			log.info("저장된 파일을 Base64로 인코딩  ------> " + "실패");
-			e.printStackTrace();
-		}
-		log.info("저장된 파일을 Base64로 인코딩  ------> " + "성공");
+			log.error("저장된 파일을 Base64로 인코딩  ------> " + Constants.SYSTEM_ERROR , e);			
+		}		
 		 return encoded ;				 	 	    			    		   
 	}
 	
@@ -194,8 +188,7 @@ public class FileService {
 			                        		
 		} catch (Exception e) {			
 			result = false ;
-			log.info("파일 삭제 ------> " + Constants.FAIL);
-			e.printStackTrace();
+			log.error("파일 삭제 ------> " + Constants.SYSTEM_ERROR , e);			
 		}
 		 return result ;				 	 	    			    		   
 	}
@@ -235,8 +228,8 @@ public class FileService {
 		        connection.disconnect();
 		        inputStream.close();
 		        outputStream.close();
-		    } catch (IOException e) {
-		        e.printStackTrace();
+		    } catch (Exception e) {
+		        log.error("이미지 다운로드 (URL) -----> " + Constants.SYSTEM_ERROR);
 		        imageBytes = null ;
 		    }
 		 return imageBytes;
@@ -257,7 +250,7 @@ public class FileService {
 			 encoding_image = Base64.getEncoder().encodeToString(image);		        		        	        		        		      
 		        // 연결과 스트림 닫기		      
 		    } catch (Exception e) {
-		        e.printStackTrace();
+		    	log.error("디코딩된 blob 값을 다시 인코딩 ------> " + Constants.SYSTEM_ERROR);
 		        encoding_image = "N" ;
 		    }
 		 return encoding_image;

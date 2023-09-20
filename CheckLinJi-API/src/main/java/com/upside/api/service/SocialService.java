@@ -1,8 +1,6 @@
 package com.upside.api.service;
 
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -51,14 +49,21 @@ public class SocialService {
      * @param email
      */
     public boolean validateDuplicated(String nickName) {
-    	    	    	
+    	
+    	try {
+			    	
         if (memberRepository.findByNickName(nickName).isPresent()) {
         	log.info("아이디 검증 ------> " + "중복된 닉네임 입니다.");			 
         	return false ;			 			         	
         } else {
         	log.info("아이디 검증 ------> " + "사용할 수 있는 닉네임입니다.");
         	return true ;        	        	
-        }        
+        }  
+        
+		} catch (Exception e) {
+			log.error("아이디 검증 ------> " + Constants.SYSTEM_ERROR , e);
+			return false ;	
+		}
     }
 	
 	

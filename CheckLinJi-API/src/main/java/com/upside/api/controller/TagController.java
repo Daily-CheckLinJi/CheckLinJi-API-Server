@@ -31,30 +31,26 @@ public class TagController {
     	    	    	
     	Map<String, Object> result = tagService.listTag(hashTagDto);
     	    	    	
-		if(result.get("HttpStatus").equals("1.00")){
-				
-		return new ResponseEntity<>(result,HttpStatus.BAD_REQUEST);
+		if(result.get("HttpStatus").equals("2.00")){
+			return new ResponseEntity<>(result,HttpStatus.OK);					
+		}else {
+			return new ResponseEntity<>(result,HttpStatus.BAD_REQUEST);
+		}				
 		
-		} 
-		
-		return new ResponseEntity<>(result,HttpStatus.OK);
-		
-    	}  
+	}  
     
     @PostMapping("/add")     
     public ResponseEntity<Map<String, String>> addTag(@RequestBody HashTagDto hashTagDto ) throws Exception {    	
     	    	    	
     	Map<String, String> result = tagService.addTag(hashTagDto);
     	    	    	
-		if(result.get("HttpStatus").equals("1.00")){
-				
-		return new ResponseEntity<>(result,HttpStatus.BAD_REQUEST);
+		if(result.get("HttpStatus").equals("2.00")){
+			return new ResponseEntity<>(result,HttpStatus.OK);					
+		}else {
+			return new ResponseEntity<>(result,HttpStatus.BAD_REQUEST);
+		}	
 		
-		} 
-		
-		return new ResponseEntity<>(result,HttpStatus.OK);
-		
-    	} 
+	} 
     
         
     @PostMapping("/delete")     
@@ -62,14 +58,12 @@ public class TagController {
     	    	    	
     	Map<String, String> result = tagService.deleteTag(hashTagDto);
     	    	    	
-		if(result.get("HttpStatus").equals("1.00")){
-				
-		return new ResponseEntity<>(result,HttpStatus.BAD_REQUEST);
+		if(result.get("HttpStatus").equals("2.00")){
+			return new ResponseEntity<>(result,HttpStatus.OK);					
+		}else {
+			return new ResponseEntity<>(result,HttpStatus.BAD_REQUEST);
+		}	
 		
-		} 
-		
-		return new ResponseEntity<>(result,HttpStatus.OK);
-		
-    	} 
+	} 
   
 }

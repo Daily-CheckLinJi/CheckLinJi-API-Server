@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +19,7 @@ import com.upside.api.repository.ChallengeSubmissionRepository;
 import com.upside.api.repository.CommentRepository;
 import com.upside.api.repository.ReportCommentRepository;
 import com.upside.api.repository.ReportSubmissionRepository;
+import com.upside.api.util.Constants;
 import com.upside.api.util.DateTime;
 
 import lombok.RequiredArgsConstructor;
@@ -87,10 +87,10 @@ public class ReportService {
 			  
 	   		  log.info("게시글 신고  ------> " + "End");
 	   		  
-			} catch (DataAccessException e) {										
+			} catch (Exception e) {										
 	    	    result.put("HttpStatus","1.00");		
-	   			result.put("Msg","알수없는 이유로 신고에 실패하였습니다.");
-	   			log.error("게시글 신고 실패 ----------> " ,  e);
+	   			result.put("Msg",Constants.SYSTEM_ERROR);
+	   			log.error("게시글 신고 ----------> " + Constants.SYSTEM_ERROR ,  e);
 	   		 return result ;			
 			}               		 
 		  return result ;					 	    		   
@@ -144,10 +144,10 @@ public class ReportService {
 			  
 	   		  log.info("게시글 댓글 신고  ------> " + "End");
 	   		  
-			} catch (DataAccessException e) {										
+			} catch (Exception e) {										
 	    	    result.put("HttpStatus","1.00");		
 	   			result.put("Msg","알수없는 이유로 신고에 실패하였습니다.");
-	   			log.error("게시글 댓글 신고 실패 ----------> " ,  e);
+	   			log.error("게시글 댓글 신고 ----------> " + Constants.SYSTEM_ERROR ,  e);
 	   		 return result ;			
 			}               		 
 		  return result ;					 	    		   

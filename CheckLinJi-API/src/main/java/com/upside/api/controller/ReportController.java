@@ -45,10 +45,9 @@ public class ReportController {
 		
 		Map<String, String> result = reportService.reportSubmission(repoSubmissionDto);
 				
-		if (result.get("HttpStatus").equals("2.00")) { // 성공			
+		if(result.get("HttpStatus").equals("2.00")) { // 성공			
 			return new ResponseEntity<>(result,HttpStatus.OK);					
-		} else {			
-			
+		}else{						
 			return new ResponseEntity<>(result,HttpStatus.BAD_REQUEST);
 		} 
 					
@@ -69,9 +68,9 @@ public class ReportController {
 		
 		Map<String, String> result = reportService.reportComment(reCommentDto);
 				
-		if (result.get("HttpStatus").equals("2.00")) { // 성공			
+		if(result.get("HttpStatus").equals("2.00")) { // 성공			
 			return new ResponseEntity<>(result,HttpStatus.OK);					
-		} else {						
+		}else{						
 			return new ResponseEntity<>(result,HttpStatus.BAD_REQUEST);
 		} 
 				

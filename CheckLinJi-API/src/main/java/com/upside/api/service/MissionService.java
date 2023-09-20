@@ -2,8 +2,6 @@ package com.upside.api.service;
 
 
 
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,14 +10,12 @@ import java.util.Map;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.upside.api.dto.ChallengeSubmissionDto;
 import com.upside.api.mapper.MemberMapper;
-import com.upside.api.repository.MemberRepository;
 import com.upside.api.util.Constants;
 
 import lombok.RequiredArgsConstructor;
@@ -35,10 +31,7 @@ public class MissionService {
 		
 	
 	private final MemberMapper memberMapper ;
-	
-	
-	private final MemberRepository memberRepository ;
-	
+			
 	private final FileService fileService ;
 	 	 
 	
@@ -83,8 +76,8 @@ public class MissionService {
 		
 		} catch (Exception e) {
 	      	result.put("HttpStatus","1.00");		
-    		result.put("Msg",Constants.FAIL);
-    		return result ;
+    		result.put("Msg",Constants.SYSTEM_ERROR);
+    		log.error("미션 성공 총 횟수 (월) ------> " + Constants.SYSTEM_ERROR , e);    		
 		}
 	    return result ;			    		   
 	}
@@ -96,14 +89,14 @@ public class MissionService {
 	  */
 	public Map<String, Object> missionRanking (String userEmail) {
 		
-	   Map<String, Object> result = new HashMap<String, Object>();
-	   
-	   
+	   Map<String, Object> result = new HashMap<String, Object>();	   	   
               		
        Map<String, String> data = new HashMap<String, String>();              
        
        data.put("email", userEmail);
        
+       try {
+		             
        ArrayList<Map<String, Object>> missionRankingTop = memberMapper.missionRankingTop(data);
        
        Map<String, String> missionRankingOwn = memberMapper.missionRankingOwn(data);
@@ -136,6 +129,12 @@ public class MissionService {
 		
 		log.info("실시간 랭킹 ------> " + Constants.SUCCESS);
 		
+		} catch (Exception e) {
+    	    log.error("실시간 랭킹 ------> " + Constants.SYSTEM_ERROR , e);
+    	    result.put("HttpStatus","1.00");		
+   			result.put("Msg",Constants.SYSTEM_ERROR);
+		}
+		
 	    return result ;			    		   
 	}
 	
@@ -148,9 +147,7 @@ public class MissionService {
 		
 		log.info("본인 미션 달력 ------> " + "Start");
 		Map<String, Object> result = new HashMap<String, Object>();
-		
-		
-        
+				        
         // 현재 년도와 월을 가져옵니다.
         String year = challengeSubmissionDto.getYear();
         String month = challengeSubmissionDto.getMonth();                        
@@ -163,6 +160,7 @@ public class MissionService {
         data.put("email", userEmail);
         
         try {
+        	
         	ArrayList<Map<String, Object>> missionCalendarOwn = memberMapper.missionCalendarOwn(data);
         	        	        	
         	if (missionCalendarOwn.size() == 0 ) {
@@ -178,10 +176,10 @@ public class MissionService {
       			result.put("missionCalendarOwn",missionCalendarOwn);
            }
         	
-		} catch (DataAccessException e) {
-			log.info("본인 미션 달력 ------> " + "Data 접근 실패");
+		} catch (Exception e) {
+			log.error("본인 미션 달력 ------> " + Constants.SYSTEM_ERROR , e);
     	    result.put("HttpStatus","1.00");		
-   			result.put("Msg","Data 접근 실패");
+   			result.put("Msg",Constants.SYSTEM_ERROR);
    		 return result ;			
 		}               		 
 	  return result ;				 	    			    		   
@@ -281,11 +279,10 @@ public class MissionService {
 	      			result.put("missionLikes",missionLikes);
 			    }
            }
-		} catch (DataAccessException e) {
-			log.info("본인 미션 상세보기 ------> " + "Data 접근 실패");
+		} catch (Exception e) {
+			log.error("본인 미션 상세보기 ------> " + Constants.SYSTEM_ERROR , e);
     	    result.put("HttpStatus","1.00");		
-   			result.put("Msg","Data 접근 실패");
-   		 return result ;			
+   			result.put("Msg",Constants.SYSTEM_ERROR);   		 		
 		}               		 
 	  return result ;				 	    			    		   
 	}
@@ -302,6 +299,8 @@ public class MissionService {
 		
 		  log.info("본인 미션 수정 ------> " + "Start");
   		   
+		  try {
+					  
 		   int updateYN = memberMapper.missionUpdate(chaSubmissionDto);
 		   
 		   if (updateYN > 0) {
@@ -313,6 +312,12 @@ public class MissionService {
 		   }
 		  
 		   log.info("본인 미션 수정 결과 ------> " + updateYN);
+		   
+			} catch (Exception e) {
+				log.error("본인 미션 수정 ------> " + Constants.SYSTEM_ERROR , e);
+				 result.put("HttpStatus","1.00");		
+			  	 result.put("Msg",Constants.SYSTEM_ERROR);  
+			}
 		   
 		    return result ;			    		   
 		}
@@ -355,10 +360,10 @@ public class MissionService {
        	    	result.put("HttpStatus","2.00");		
       			result.put("Msg",Constants.SUCCESS);    
            }
-		} catch (DataAccessException e) {
-			log.info("본인 미션 삭제 ------> " + "Data 접근 실패");
+		} catch (Exception e) {
+			log.error("본인 미션 삭제 ------> " + Constants.SYSTEM_ERROR , e);
     	    result.put("HttpStatus","1.00");		
-   			result.put("Msg","Data 접근 실패");
+   			result.put("Msg", Constants.SYSTEM_ERROR);
    		 return result ;			
 		}               		 
 	  return result ;				 	    			    		   

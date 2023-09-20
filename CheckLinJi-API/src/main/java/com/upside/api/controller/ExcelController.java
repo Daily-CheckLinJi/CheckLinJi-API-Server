@@ -9,14 +9,9 @@ import java.io.OutputStream;
 import org.apache.poi.util.IOUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.upside.api.dto.MemberDto;
-import com.upside.api.dto.MessageDto;
-import com.upside.api.util.Constants;
-import com.upside.api.util.Excel;
 import com.upside.api.util.ExcelApiDownload;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -27,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/excel")
 public class ExcelController {
     
-    private final Excel excel;
+    
     private final ExcelApiDownload excelApi;
         
 
@@ -47,8 +42,7 @@ public class ExcelController {
     public void MemberListExcel(HttpServletResponse response) throws Exception {
     	
     	String data = "memberListExcel";    	
-    	MessageDto message = new MessageDto();
-    	
+    	    	
     	// 엑셀 데이터 생성
     	ByteArrayInputStream result = excelApi.getReserveExcel(data,response);  
     	

@@ -41,7 +41,9 @@ public class CommentService {
 		log.info("유저 댓글 입력  ------> " + "Start");
 		
 		Map<String, String> result = new HashMap<String, String>();
-						
+		
+		try {
+					
         int insertYn = userCommentMapper.userCommentSubmit(commentDto);
         
         if (insertYn == 0) {
@@ -54,6 +56,12 @@ public class CommentService {
 		result.put("Msg",Constants.SUCCESS);
 		
 		log.info("유저 댓글 입력  ------> " + Constants.SUCCESS);
+		
+		} catch (Exception e) {
+        	result.put("HttpStatus","1.00");		
+    		result.put("Msg",Constants.SYSTEM_ERROR);
+    		log.error("유저 댓글 입력  ------> " + Constants.SYSTEM_ERROR , e);
+		}
 		
 	    return result ;			    		   
 	}
@@ -68,19 +76,28 @@ public class CommentService {
 		log.info("유저 댓글 수정  ------> " + "Start");
 		
 		Map<String, String> result = new HashMap<String, String>();
-						
-       int insertYn = userCommentMapper.userCommentUpdate(commentDto);
+		
+		try {
+					
+        int insertYn = userCommentMapper.userCommentUpdate(commentDto);
        
-       if (insertYn == 0) {
-       	result.put("HttpStatus","1.00");		
-   		result.put("Msg",Constants.FAIL);
+        if (insertYn == 0) {
+       	  result.put("HttpStatus","1.00");		
+   		  result.put("Msg",Constants.FAIL);
    		return result ;
-       }
+   		
+        } 
        
-       result.put("HttpStatus","2.00");		
+        result.put("HttpStatus","2.00");		
 		result.put("Msg",Constants.SUCCESS);
 		
 		log.info("유저 댓글 수정  ------> " + Constants.SUCCESS);
+		
+		} catch (Exception e) {
+	       	result.put("HttpStatus","1.00");		
+    		result.put("Msg",Constants.SYSTEM_ERROR);
+    		log.error("유저 댓글 수정  ------> " + Constants.SYSTEM_ERROR , e);
+		}
 		
 	    return result ;			    		   
 	}
@@ -93,22 +110,30 @@ public class CommentService {
 	  */
 	public Map<String, String> userCommentDelete (CommentDto commentDto) {
 		
-		log.info("유저 댓글 삭제  ------> " + "Start");
-		
-		Map<String, String> result = new HashMap<String, String>();
-						
-      int insertYn = userCommentMapper.userCommentDelete(commentDto);
-      
-      if (insertYn == 0) {
-      	result.put("HttpStatus","1.00");		
-  		result.put("Msg",Constants.FAIL);
-  		return result ;
-      }
-      
-      result.put("HttpStatus","2.00");		
-		result.put("Msg",Constants.SUCCESS);
-		
-		log.info("유저 댓글 삭제  ------> " + Constants.SUCCESS);
+		  log.info("유저 댓글 삭제  ------> " + "Start");
+			
+		  Map<String, String> result = new HashMap<String, String>();
+			
+		  try {
+				  
+	      int insertYn = userCommentMapper.userCommentDelete(commentDto);
+	      
+	      if (insertYn == 0) {
+	      	result.put("HttpStatus","1.00");		
+	  		result.put("Msg",Constants.FAIL);
+	  		return result ;
+	      }
+	      
+         result.put("HttpStatus","2.00");		
+		 result.put("Msg",Constants.SUCCESS);
+			
+		 log.info("유저 댓글 삭제  ------> " + Constants.SUCCESS);
+			
+		 } catch (Exception e) {
+	      	result.put("HttpStatus","1.00");		
+	  		result.put("Msg",Constants.SYSTEM_ERROR);
+	  		log.error("유저 댓글 삭제  ------> " + Constants.SYSTEM_ERROR , e);
+		 }
 		
 	    return result ;			    		   
 	}
@@ -141,7 +166,8 @@ public class CommentService {
               			    		
 	   } catch (Exception e) {
 		result.put("HttpStatus","1.00");		
-   		result.put("Msg",Constants.FAIL);	   		
+   		result.put("Msg",Constants.SYSTEM_ERROR);
+   		log.error("유저 좋아요 등록 ------> " + Constants.SYSTEM_ERROR , e);
 	   }
 	    return result ;			    		   
 	}
@@ -173,7 +199,8 @@ public class CommentService {
              			    		
 	   } catch (Exception e) {
 		result.put("HttpStatus","1.00");		
-  		result.put("Msg",Constants.FAIL);	   		
+  		result.put("Msg",Constants.SYSTEM_ERROR);
+  		log.error("유저 좋아요 취소 ------> " + Constants.SYSTEM_ERROR , e);
 	   }
 	    return result ;			    		   
 	}
