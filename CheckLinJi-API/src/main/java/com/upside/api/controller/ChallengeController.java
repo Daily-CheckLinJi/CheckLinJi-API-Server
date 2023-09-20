@@ -3,8 +3,6 @@ package com.upside.api.controller;
 
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
@@ -14,16 +12,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.upside.api.config.JwtTokenProvider;
 import com.upside.api.dto.ChallengeDto;
 import com.upside.api.dto.ChallengeSubmissionDto;
-import com.upside.api.dto.MessageDto;
 import com.upside.api.dto.PageDto;
-import com.upside.api.dto.RankingMessageDto;
 import com.upside.api.dto.UserChallengeDto;
 import com.upside.api.service.ChallengeService;
 
@@ -152,19 +146,14 @@ public class ChallengeController {
 	 * @return
 	 */
 	@PostMapping("/create") 
-	public ResponseEntity<MessageDto>createChallenge (@RequestBody ChallengeDto challengeDto) {
-		
-		MessageDto message = new MessageDto();		
+	public ResponseEntity<Map<String, String>>createChallenge (@RequestBody ChallengeDto challengeDto) {
+					
 		Map<String, String> result = challengeSerivce.createChallenge(challengeDto);
 				
-		if (result.get("HttpStatus").equals("2.00")) { // 성공
-			message.setMsg(result.get("Msg"));
-			message.setStatusCode(result.get("HttpStatus"));						
-			return new ResponseEntity<>(message,HttpStatus.OK);					
+		if (result.get("HttpStatus").equals("2.00")) { // 성공						
+			return new ResponseEntity<>(result,HttpStatus.OK);				
 		} else {			
-			message.setMsg(result.get("Msg"));
-			message.setStatusCode(result.get("HttpStatus"));
-			return new ResponseEntity<>(message,HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(result,HttpStatus.BAD_REQUEST);
 		} 
 					
 	}
@@ -176,22 +165,16 @@ public class ChallengeController {
 	 * @return
 	 */
 	@PostMapping("/join") 
-	public ResponseEntity<MessageDto> joinChallenge (@RequestBody UserChallengeDto userChallengeDto , @RequestHeader("Authorization") String authHeader) {
-			
-		MessageDto message = new MessageDto();
-		
+	public ResponseEntity<Map<String, String>> joinChallenge (@RequestBody UserChallengeDto userChallengeDto , @RequestHeader("Authorization") String authHeader) {
+							
 		String userEmail = jwtTokenProvider.getEmail(authHeader); // email을 얻기위해 헤더에서 토큰을 디코딩하는 부분이다.
 		
 		Map<String, String> result = challengeSerivce.joinChallenge(userChallengeDto.getChallengeName() , userEmail);
 				
-		if (result.get("HttpStatus").equals("2.00")) { // 성공
-			message.setMsg(result.get("Msg"));
-			message.setStatusCode(result.get("HttpStatus"));						
-			return new ResponseEntity<>(message,HttpStatus.OK);					
+		if (result.get("HttpStatus").equals("2.00")) { // 성공						
+			return new ResponseEntity<>(result,HttpStatus.OK);					
 		} else {			
-			message.setMsg(result.get("Msg"));
-			message.setStatusCode(result.get("HttpStatus"));
-			return new ResponseEntity<>(message,HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(result,HttpStatus.BAD_REQUEST);
 		} 
 					
 	}
@@ -204,7 +187,7 @@ public class ChallengeController {
 	 * @throws IOException
 	 */
 	@PostMapping("/submit") 
-	public ResponseEntity<Map<String, String>> submitChallenge (@RequestBody ChallengeSubmissionDto submissonDto , @RequestHeader("Authorization") String authHeader ) throws IOException {					
+	public ResponseEntity<Map<String, String>> submitChallenge (@RequestBody ChallengeSubmissionDto submissonDto , @RequestHeader("Authorization") String authHeader ) {					
 		
 		String userEmail = jwtTokenProvider.getEmail(authHeader); // email을 얻기위해 헤더에서 토큰을 디코딩하는 부분이다.
 		
@@ -220,19 +203,14 @@ public class ChallengeController {
 	}
 	
 		@PostMapping("/completed") // 챌린지 완료 처리
-		public ResponseEntity<MessageDto> completedChallenge (@RequestBody ChallengeDto challengeDto) {
-				
-			MessageDto message = new MessageDto();		
+		public ResponseEntity<Map<String, String>> completedChallenge (@RequestBody ChallengeDto challengeDto) {
+								
 			Map<String, String> result = challengeSerivce.createChallenge(challengeDto);
 					
-			if (result.get("HttpStatus").equals("2.00")) { // 성공
-				message.setMsg(result.get("Msg"));
-				message.setStatusCode(result.get("HttpStatus"));						
-				return new ResponseEntity<>(message,HttpStatus.OK);					
-			} else {			
-				message.setMsg(result.get("Msg"));
-				message.setStatusCode(result.get("HttpStatus"));
-				return new ResponseEntity<>(message,HttpStatus.BAD_REQUEST);
+			if (result.get("HttpStatus").equals("2.00")) { // 성공														
+				return new ResponseEntity<>(result,HttpStatus.OK);					
+			} else {											
+				return new ResponseEntity<>(result,HttpStatus.BAD_REQUEST);
 			} 
   }
 				

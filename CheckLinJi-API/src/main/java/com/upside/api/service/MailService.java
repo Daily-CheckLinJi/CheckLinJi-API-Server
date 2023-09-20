@@ -60,10 +60,9 @@ public class MailService {
 	        javaMailSender.send(simpleMailMessage);
 	        
 	    } catch(Exception e){
-	    	 log.info("이메일 전송 ------> " + Constants.FAIL);
+	    	 log.error("이메일 전송 ------> " + Constants.FAIL , e);
 	         result.put("HttpStatus","1.00");		
-	  		 result.put("Msg", Constants.FAIL);
-	  		e.printStackTrace();
+	  		 result.put("Msg", Constants.FAIL);	  		
 	  		 return result;
 	    }
 	 		
@@ -122,10 +121,10 @@ public class MailService {
 			result.put("Msg",Constants.SUCCESS);	   
 			
 	    } catch(Exception e){
-	    	log.info("비밀번호 찾기 이메일 전송 ------> " + Constants.FAIL);
+	    	log.error("비밀번호 찾기 이메일 전송 ------> " + Constants.FAIL , e);
 	        result.put("HttpStatus","1.00");		
 	  		result.put("Msg", Constants.SYSTEM_ERROR);
-	  		log.error(e.getMessage());	  		 
+	  			  		 
 	    }	 			    		 		
 			return result;					
 	}
@@ -178,7 +177,7 @@ public class MailService {
 	 		return result;
 	 		
 		} catch (Exception e) {
-			log.info("회원가입 인증 ------> " + Constants.FAIL);
+			log.error("회원가입 인증 ------> " + Constants.FAIL , e);
 	        result.put("HttpStatus","1.00");		
 	 		result.put("Msg", Constants.FAIL);
 	 		
@@ -215,7 +214,7 @@ public class MailService {
 	 		return result;
 	 		
 		} catch (Exception e) {
-			log.info("비밀번호 찾기 인증 ------> " + Constants.FAIL);
+			log.error("비밀번호 찾기 인증 ------> " + Constants.FAIL , e);
 	        result.put("HttpStatus","1.00");		
 	 		result.put("Msg", Constants.FAIL);
 	 		

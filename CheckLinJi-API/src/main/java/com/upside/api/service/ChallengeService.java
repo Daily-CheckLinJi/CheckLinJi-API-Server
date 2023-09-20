@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -101,11 +100,10 @@ public class ChallengeService {
 		       			return result ;
 		           }
 		        	
-				} catch (DataAccessException e) {
-					log.info("첼린지 인증글 리스트 ------> " + "Data 접근 실패");					
+				} catch (Exception e) {
+					log.error("첼린지 인증글 리스트 ------> " + "Data 접근 실패" , e);					
 		    	    result.put("HttpStatus","1.00");		
-		   			result.put("Msg","Data 접근 실패");
-		   			e.printStackTrace();
+		   			result.put("Msg","Data 접근 실패");		   			
 		   		 return result ;			
 				}               		 
 			  return result ;					 	    		   
@@ -157,8 +155,8 @@ public class ChallengeService {
 		       			return result ;
 		           }
 		        	
-				} catch (DataAccessException e) {
-					log.info("첼린지 인증글 상세페이지 ------> " + "Data 접근 실패");
+				} catch (Exception e) {
+					log.error("첼린지 인증글 상세페이지 ------> " + "Data 접근 실패" , e);
 		    	    result.put("HttpStatus","1.00");		
 		   			result.put("Msg","Data 접근 실패");
 		   		 return result ;			
@@ -178,8 +176,9 @@ public class ChallengeService {
 			
 			log.info("첼린지 참가 내역 ------> " + "Start");
 			
-						 			
-			 Optional<MemberEntity> existsMember = memberRepository.findById(email);
+			try {
+										 			
+			Optional<MemberEntity> existsMember = memberRepository.findById(email);
 					
 			
 			if(!existsMember.isPresent()) {
@@ -201,7 +200,7 @@ public class ChallengeService {
 				 i.setChallengeName(as.getChallengeEntity().getChallengeName());
 				 challenge_list.add(i);
 			 }
-			 
+			 			 			 
 			 if(exsistUserChallenge == null) {
 				 log.info("첼린지 참가 내역 ------> " + "참가중인 첼린지가 없습니다.");
 	             result.put("HttpStatus","1.00");		
@@ -210,11 +209,18 @@ public class ChallengeService {
 			 }
 			 			
 			 		 
-		         log.info("첼린지 참가 내역 ------> " + Constants.SUCCESS);
-		         result.put("HttpStatus","2.00");		
-				 result.put("Msg",Constants.SUCCESS);
-				 result.put("Challenge",challenge_list);
-				 log.info("첼린지 참가 내역 ------> " + "End");
+	         log.info("첼린지 참가 내역 ------> " + Constants.SUCCESS);
+	         result.put("HttpStatus","2.00");		
+			 result.put("Msg",Constants.SUCCESS);
+			 result.put("Challenge",challenge_list);
+			 log.info("첼린지 참가 내역 ------> " + "End");
+			 
+			} catch (Exception e) {
+				 log.error("첼린지 참가 내역 ------> " + Constants.FAIL , e);
+	             result.put("HttpStatus","1.00");		
+	     		 result.put("Msg",Constants.FAIL);
+			}
+			 
 			  return result ;				 	    		   
 	}
 	 
@@ -252,7 +258,8 @@ public class ChallengeService {
 			
 			} catch (Exception e) {
 				 result.put("HttpStatus","1.00");		
-				 result.put("Msg","Data 접근 실패");			
+				 result.put("Msg","Data 접근 실패");
+				 log.error("본인 미션 성공 총 횟수 (월) ---> " + Constants.FAIL , e);
 			}
 	        
 		    return result ;			    		   
@@ -292,7 +299,8 @@ public class ChallengeService {
 			
 			} catch (Exception e) {
 				 result.put("HttpStatus","1.00");		
-				 result.put("Msg","Data 접근 실패");			
+				 result.put("Msg","Data 접근 실패");
+				 log.error("본인 미션 성공 총 횟수 ---> " + Constants.FAIL , e);
 			}
 	        
 		    return result ;			    		   
@@ -330,7 +338,8 @@ public class ChallengeService {
         LocalDate startDate = startOfMonth.toLocalDate();
         LocalDate endDate = endOfMonth.toLocalDate();
 		
-		
+		try {
+			        
         boolean existsChallenge = challengeRepository.findById(challengeDto.getChallengeName()).isPresent();
         
         if(existsChallenge == true) {
@@ -351,10 +360,17 @@ public class ChallengeService {
 		
 		
         challengeRepository.save(challenge);
-        
+                        
         log.info("첼린지 생성 ------> " + Constants.SUCCESS);
         result.put("HttpStatus","2.00");		
 		result.put("Msg",Constants.SUCCESS);
+		
+		} catch (Exception e) {
+       	 log.error("첼린지 생성 ------> " + Constants.FAIL , e);
+         result.put("HttpStatus","1.00");		
+  		 result.put("Msg",Constants.FAIL);
+		}
+        
 	
 	    return result ;			    		   
 	}
@@ -371,7 +387,8 @@ public class ChallengeService {
 		
 		log.info("첼린지 참가 ------> " + "Start");
 		
-		
+		 try {
+					
 		 Optional<ChallengeEntity> existsChallenge = challengeRepository.findById(challengeName);
 		
 		 Optional<MemberEntity> existsMember = memberRepository.findById(email);
@@ -395,7 +412,7 @@ public class ChallengeService {
 			 log.info("첼린지 참가 ------> " + "이미 참여하였습니다.");
              result.put("HttpStatus","1.00");		
      		 result.put("Msg","이미 참여하였습니다.");
-     	   return result ;
+ 	       return result ;
 		 }
 		 
 		 UserChallengeEntity userChallenge =  UserChallengeEntity.builder()
@@ -409,10 +426,16 @@ public class ChallengeService {
 		 			 		 		 	
 		 	
 		 	
-	         log.info("첼린지 참가 ------> " + Constants.SUCCESS);
-	         result.put("HttpStatus","2.00");		
-			 result.put("Msg",Constants.SUCCESS);	       
-			 log.info("첼린지 참가 ------> " + "End");
+         log.info("첼린지 참가 ------> " + Constants.SUCCESS);
+         result.put("HttpStatus","2.00");		
+		 result.put("Msg",Constants.SUCCESS);	       
+		 log.info("첼린지 참가 ------> " + "End");
+			 
+		} catch (Exception e) {
+			 log.error("첼린지 참가 ------> " + Constants.FAIL);
+             result.put("HttpStatus","1.00");		
+     		 result.put("Msg",Constants.FAIL);
+		}
 		  return result ;				 	    		   
 }
 	
@@ -424,7 +447,7 @@ public class ChallengeService {
 	 * @throws IOException 
 	 */
 	@Transactional // 트랜잭션 안에서 entity를 조회해야 영속성 상태로 조회가 되고 값을 변경해면 변경 감지(dirty checking)가 일어난다.
-	public Map<String, String> submitChallenge (ChallengeSubmissionDto submissonDto , String userEmail) throws IOException {
+	public Map<String, String> submitChallenge (ChallengeSubmissionDto submissonDto , String userEmail) {
 		Map<String, String> result = new HashMap<String, String>();
 		
 	    log.info("첼린지 제출 ------> " + "Start");	    
@@ -442,7 +465,8 @@ public class ChallengeService {
         String submissionDate = date.format(dateFormatter);
         String submissionTime = time.format(timeFormatter);
 	    
-	    
+	    try {
+			
 		Optional<ChallengeEntity> existsChallenge = challengeRepository.findById(submissonDto.getChallengeName());
 		
 		Optional<MemberEntity> existsMember = memberRepository.findById(userEmail);
@@ -572,25 +596,18 @@ public class ChallengeService {
 	 	} else {
 	 		 log.info("첼린지 제출 ------> " + Constants.FAIL);
 		        result.put("HttpStatus","1.00");		
-				result.put("Msg",Constants.FAIL);	       
-				log.info("첼린지 제출 ------> " + "End");				
+				result.put("Msg",Constants.FAIL);	       							
 	 	}
+	 	
+		} catch (Exception e) {
+	        result.put("HttpStatus","1.00");		
+			result.put("Msg",Constants.FAIL);	       
+			log.error("첼린지 제출 ------> " + Constants.FAIL);	
+		}
+        
+	 	
 	 	return result ;
 	}
 	
-	
-	/**
-	 * 첼린지 완료
-	 * @param challengeDTO
-	 * @return
-	 */
-	@Transactional // 트랜잭션 안에서 entity를 조회해야 영속성 상태로 조회가 되고 값을 변경해면 변경 감지(dirty checking)가 일어난다.
-	public Map<String, String> completedChallenge (String challengeName , String email) {
-		Map<String, String> result = new HashMap<String, String>();
 		
-		log.info("첼린지 완료 ------> " + "Start");				
-	        
-	    return result ;			    		   
-	}
-	
 	}
