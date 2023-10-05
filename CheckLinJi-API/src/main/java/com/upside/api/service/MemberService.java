@@ -375,12 +375,17 @@ public class MemberService {
 		    	result.put("UserEmail", null);
 		    	result.put("Msg", Constants.INBALID_EMAIL_PASSWORD);		    	
 		    } else {
+		    	
 		    	ValueOperations<String, String> redis = redisTemplate.opsForValue(); // Redis Map 객체 생성		    			    	
-		    	redis.set("refreshToken_"+member.getEmail(), jwtTokenProvider.createRefreshToken()); // refresh Token Redis 저장
+		    	
+		    	redis.set("accessToken_"+member.getEmail(), jwtTokenProvider.createToken(memberDto.getEmail())); // refresh Token Redis 저장 , 키 값이 같으면 덮어 씌워짐
+		    	redis.set("refreshToken_"+member.getEmail(), jwtTokenProvider.createRefreshToken()); // refresh Token Redis 저장 , 키 값이 같으면 덮어 씌워짐		    	
+		    	redisTemplate.expire("accessToken_" + member.getEmail(), 1, TimeUnit.HOURS); // redis accessToken expire 1시간 지정
 		    	redisTemplate.expire("refreshToken_"+member.getEmail(), 31, TimeUnit.DAYS); // redis refreshToken expire 31일 지정
 		    	
+		    	
 			    result.put("HttpStatus", "2.00");
-			    result.put("Token", jwtTokenProvider.createToken(memberDto.getEmail()));
+			    result.put("Token", redis.get("accessToken_"+member.getEmail()));
 			    result.put("RefreshToken", redis.get("refreshToken_"+member.getEmail()));
 			    result.put("UserEmail", member.getEmail());
 			    result.put("Msg", Constants.SUCCESS);
@@ -414,7 +419,9 @@ public class MemberService {
     	Map<String, String> result = new HashMap<String, String>();
     	 
     	try {
-			    	
+		
+    	ValueOperations<String, String> redis = redisTemplate.opsForValue(); // Redis Map 객체 생성
+    		
     	if (memberDto.getAccessToken() == null || memberDto.getRefreshToken() == null ) {
     		log.info("Refresh Token 검증 ------> " + Constants.EXPIRATION_TOKEN);
     		
@@ -423,52 +430,49 @@ public class MemberService {
 	    	return result; 
 		}    	
     	
-        if (!jwtTokenProvider.validateTokenExceptExpiration(memberDto.getRefreshToken())) { // 리프레쉬 토큰 만료기간이 지났는지 확인 
+        if (!jwtTokenProvider.validateRefreshTokenExceptExpiration(memberDto.getRefreshToken())) { // 리프레쉬 토큰 만료기간이 지났는지 확인 
         	log.info("Refresh Token 검증 ------> " + Constants.EXPIRATION_TOKEN);
         	
         	result.put("HttpStatus", "1.00");	    	
 	    	result.put("Msg", Constants.EXPIRATION_TOKEN);	        	
 	    	return result; 
         }
-            
-//        MemberEntity member = findMemberByToken(memberDto); // 유효한 토큰이라면 AccessToken으로부터 Id 정보를 받아와 DB에 저장된 회원을 찾고 , 해당 회원의 실제 Refresh Token을 받아온다.
-        
-        String token = jwtTokenProvider.getEmail(memberDto.getAccessToken()); // 유효한 토큰이라면 AccessToken으로부터 email을 얻기위해 헤더에서 토큰을 디코딩하는 부분.
-        
-        ValueOperations<String, String> redis = redisTemplate.opsForValue(); // Redis Map 객체 생성
+                        
+        String email = jwtTokenProvider.getEmail(memberDto.getAccessToken()); // 유효한 토큰이라면 AccessToken으로부터 email을 얻기위해 헤더에서 토큰을 디코딩하는 부분.                
                 
-        if(token == null ) {
-        	log.info("Refresh Token 검증 ------> " + "Refresh Token NULL");
+        if(email == null) {
+        	log.error("Refresh Token 검증 ------> " + "accessToken에 email 값이 없음");
         	
         	result.put("HttpStatus", "1.00");	    	
 	    	result.put("Msg", Constants.FAIL);	    	
 	    	return result; 
         }
         
-        if (!redis.get("refreshToken_"+token).equals(memberDto.getRefreshToken())) {// 파라미터로 입력받은 Refresh Token과 실제 Redis 에 저장된 Refresh Token을 비교하여 검증한다.
+        if (redis.get("refreshToken_"+email) == null || !redis.get("refreshToken_"+email).equals(memberDto.getRefreshToken())) {// 파라미터로 입력받은 Refresh Token과 실제 Redis 에 저장된 Refresh Token을 비교하여 검증한다.
         	log.info("Refresh Token 검증 ------> " + Constants.INBALID_TOKEN);
         	result.put("HttpStatus", "1.00");	    	
-    		result.put("Msg", Constants.INBALID_TOKEN);
+    		result.put("Msg", Constants.EXPIRATION_TOKEN);
     		
     		return result;   
     		
         } else {
         	 
-        	 String accessToken = jwtTokenProvider.createToken(token);
+        	 String accessToken = jwtTokenProvider.createToken(email);
              String refreshToken = jwtTokenProvider.createRefreshToken();
              
-             redis.set("refreshToken_"+token, refreshToken);
+             redis.set("accessToken_"+email, accessToken);
+             redis.set("refreshToken_"+email, refreshToken);
              
-             redisTemplate.expire("refreshToken_"+token, 31, TimeUnit.DAYS); // redis refreshToken expire 31일 지정
+             redisTemplate.expire("accessToken_" +email, 1, TimeUnit.HOURS); // redis accessToken expire 1시간 지정
+             redisTemplate.expire("refreshToken_"+email, 31, TimeUnit.DAYS); // redis refreshToken expire 31일 지정
              
-             log.info("redis RT : {}", redis.get("refreshToken_"+token));
-             
+                          
                   
              log.info("Refresh Token 검증 ------> " + Constants.SUCCESS);
              result.put("HttpStatus", "2.00");	    	
      		 result.put("Msg", Constants.SUCCESS);
-     		 result.put("Token", accessToken);
-     		 result.put("RefreshToken", refreshToken);     		      		      	                    	
+     		 result.put("Token", redis.get("accessToken_"+email));
+     		 result.put("RefreshToken", redis.get("refreshToken_"+email));     		      		      	                    	
         	}        
 		} catch (Exception e) {
 			log.error("Refresh Token 검증 ------> " + Constants.SYSTEM_ERROR , e);        	
@@ -712,7 +716,8 @@ public class MemberService {
 	    	MemberEntity member = memberEntity.get();			 			
 	    	member.setPassword(passwordEncoder.encode(memberDto.getAfterPassword()));	
 		    result.put("HttpStatus", "2.00");
-		    result.put("Msg", Constants.SUCCESS);		    
+		    result.put("Msg", Constants.SUCCESS);		
+		    jwtTokenProvider.deleteToken(memberDto.getAccessToken()); // redis 에 저장되어있던 Token 삭제 		    
 		    log.info("패스워드 변경 ( 로그인 한 상태 ) ------> " + Constants.SUCCESS);
 	    }
 	    

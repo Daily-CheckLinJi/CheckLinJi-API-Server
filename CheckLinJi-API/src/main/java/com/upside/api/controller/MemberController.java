@@ -22,6 +22,7 @@ import com.upside.api.config.JwtTokenProvider;
 import com.upside.api.dto.MemberDto;
 import com.upside.api.entity.MemberEntity;
 import com.upside.api.service.MemberService;
+import com.upside.api.util.Constants;
 
 import lombok.RequiredArgsConstructor;
 
@@ -214,12 +215,13 @@ public class MemberController {
 	
 		
 	@PostMapping("/changePassword")
-	public ResponseEntity<Map<String, String>> changePassword (@RequestBody MemberDto memberDto , @RequestHeader("Authorization") String authHeader) {			
+	public ResponseEntity<Map<String, String>> changePassword (@RequestBody MemberDto memberDto , @RequestHeader("Authorization") String accessToken) {			
 		
-		 String userEmail = jwtTokenProvider.getEmail(authHeader); // email을 얻기위해 헤더에서 토큰을 디코딩하는 부분이다.
-		 
-		 memberDto.setEmail(userEmail);
-		 
+		 String accEmail = jwtTokenProvider.getEmail(accessToken); // email을 얻기위해 헤더에서 토큰을 디코딩하는 부분이다.
+		 		 		 		 
+		 memberDto.setEmail(accEmail);
+		 memberDto.setAccessToken(accessToken);		 		
+		                                 
 		 Map<String, String> result = memberService.changePassword(memberDto);
 		 		 		 
 		 if(result.get("HttpStatus").equals("2.00")) {			 		 
