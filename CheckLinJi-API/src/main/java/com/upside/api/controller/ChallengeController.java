@@ -217,7 +217,7 @@ public class ChallengeController {
 				
 
 		/**
-		 * 첼린지 많이 구경하는 첵린저 리스트
+		 * 사람들이 많이 구경하는 첵린저 리스트
 		 * @param pageDto
 		 * @return
 		 */

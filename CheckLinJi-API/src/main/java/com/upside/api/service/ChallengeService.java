@@ -612,7 +612,7 @@ public class ChallengeService {
 		
 	
 	 /**
-		 * 첼린지 인증글 리스트
+		 * 사람들이 많이 구경하는 첵린저 리스트
 		 * @param memberDto
 		 * @param challengeDto
 		 * @return
@@ -621,7 +621,7 @@ public class ChallengeService {
 		public Map<String, Object> viewCheckRinger (PageDto pageDto) {
 			Map<String, Object> result = new HashMap<String, Object>();
 			
-			log.info("첼린지 인증글 리스트 ------> " + "Start");
+			log.info("사람들이 많이 구경하는 첵린저 리스트 ------> " + "Start");
 									 						 					
 			  try {
 				  				  				  
@@ -629,26 +629,25 @@ public class ChallengeService {
 		        	        	        	
 		        	if (viewCheckRinger.size() != 0 ) { 
 		        		for(int i = 0; i < viewCheckRinger.size(); i++) { // 리스트 사이즈만큼 돌면서 DB에 저장된 이미지 경로로 이미지를 base64로 인코딩해서 값 덮어씌우기
-		        			String image = fileService.myAuthImage((String) viewCheckRinger.get(i).get("SUBMISSION_IMAGE"));
+		        			String image = fileService.myAuthImage((String) viewCheckRinger.get(i).get("PROFILE"));
 		        				if(!image.equals("N")) {
-		        					viewCheckRinger.get(i).put("SUBMISSION_IMAGE", image);
+		        					viewCheckRinger.get(i).put("PROFILE", image);
 		        				}
 		        		}
-		        	 	log.info("첼린지 인증글 리스트 ------> " + Constants.SUCCESS);
+		        	 	log.info("사람들이 많이 구경하는 첵린저 리스트 ------> " + Constants.SUCCESS);
 		        	   	result.put("HttpStatus","2.00");		
-		      			result.put("Msg",Constants.SUCCESS);
-		      			result.put("totalCount",challengeMapper.listTotalCnt(pageDto));
-		      			result.put("viewChallengeList",viewCheckRinger);		        		
+		      			result.put("Msg",Constants.SUCCESS);		      			
+		      			result.put("viewCheckRinger",viewCheckRinger);		        		
 		       		 
 		           } else {
-		        	   log.info("첼린지 인증글 리스트 ------> " + "게시글이 없습니다.");
+		        	   log.info("사람들이 많이 구경하는 첵린저 리스트 ------> " + "게시글이 없습니다.");
 		        	    result.put("HttpStatus","1.00");		
 		       			result.put("Msg","게시글이 없습니다.");
 		       			return result ;
 		           }
 		        	
 				} catch (Exception e) {
-					log.error("첼린지 인증글 리스트 ------> " + Constants.SYSTEM_ERROR , e);					
+					log.error("사람들이 많이 구경하는 첵린저 리스트 ------> " + Constants.SYSTEM_ERROR , e);					
 		    	    result.put("HttpStatus","1.00");		
 		   			result.put("Msg",Constants.SYSTEM_ERROR);		   			
 		   		 return result ;			
