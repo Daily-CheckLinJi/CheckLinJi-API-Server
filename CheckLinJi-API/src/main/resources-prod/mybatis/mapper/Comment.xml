@@ -35,8 +35,8 @@
 	 <!-- 유저 좋아요 등록 -->
 	<insert id="insertLike" parameterType="CommentDto" >
 		INSERT INTO LIKES
-			(CREATE_DATE, CHALLENGE_SUBMISSION_ID, EMAIL)
-		VALUES(#{registDate}, #{challengeSubmissionId}, #{email});
+			(CREATE_DATE, CHALLENGE_SUBMISSION_ID, EMAIL , WRITER_EMAIL)
+		VALUES(#{registDate}, #{challengeSubmissionId}, #{email} , #{writerEmail});
 	</insert>
 	
 	 <!-- 유저 좋아요 취소 -->

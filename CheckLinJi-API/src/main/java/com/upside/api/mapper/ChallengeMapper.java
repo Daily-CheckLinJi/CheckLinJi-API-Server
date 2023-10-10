@@ -20,6 +20,15 @@ public interface ChallengeMapper {
 	 */
 	ArrayList<Map<String, Object>> viewChallengeList (PageDto pageDto);
 	
+	
+	/**
+	 * 첼린지 인증글 리스트
+	 * @param data
+	 * @return
+	 */
+	ArrayList<Map<String, Object>> viewCheckRinger (PageDto pageDto);
+	
+	
 	/**
 	 * 첼린지 인증글 리스트
 	 * @param data

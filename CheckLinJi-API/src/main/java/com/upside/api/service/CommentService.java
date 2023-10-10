@@ -150,19 +150,25 @@ public class CommentService {
 		
 	   Map<String, String> result = new HashMap<String, String>();
 	   
-	   int insertYn = 0 ;
-	   
-	   try {
-			   	   					
-	   insertYn = userCommentMapper.insertLike(commentDto);
-	   
-	   if (insertYn == 0) {
-	   	result.put("HttpStatus","1.00");		
-		result.put("Msg",Constants.FAIL);   		
-	   } else {
-		result.put("HttpStatus","2.00");		
-		result.put("Msg",Constants.SUCCESS);   
+	   if(commentDto.getWriterEmail() == null || commentDto.getWriterEmail().equals("")) {
+		 	result.put("HttpStatus","1.00");		
+			result.put("Msg",Constants.FAIL);
+			return result;
 	   }
+	   
+	   int insertYn = 0 ;
+	   	   
+	   try {		   
+			   	   					
+		   insertYn = userCommentMapper.insertLike(commentDto);
+		   
+		   if (insertYn == 0) {
+		   	result.put("HttpStatus","1.00");		
+			result.put("Msg",Constants.FAIL);   		
+		   } else {
+			result.put("HttpStatus","2.00");		
+			result.put("Msg",Constants.SUCCESS);   
+		   }
               			    		
 	   } catch (Exception e) {
 		result.put("HttpStatus","1.00");		

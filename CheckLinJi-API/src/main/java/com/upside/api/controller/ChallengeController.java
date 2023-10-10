@@ -53,6 +53,7 @@ public class ChallengeController {
 		} 
 					
 	}
+		
 	
 	/**
 	 * 첼린지 인증글 상세페이지
@@ -215,4 +216,24 @@ public class ChallengeController {
   }
 				
 
+		/**
+		 * 첼린지 많이 구경하는 첵린저 리스트
+		 * @param pageDto
+		 * @return
+		 */
+		@PostMapping("/checkRinger") 
+		public ResponseEntity<Map<String, Object>> viewCheckRinger (@RequestBody PageDto pageDto) {
+			
+			 						
+			Map<String, Object> result = challengeSerivce.viewCheckRinger(pageDto);
+					
+			if (result.get("HttpStatus").equals("2.00")) { // 성공			
+				return new ResponseEntity<>(result,HttpStatus.OK);					
+			} else {			
+				
+				return new ResponseEntity<>(result,HttpStatus.BAD_REQUEST);
+			} 
+						
+		}			
+		
 }

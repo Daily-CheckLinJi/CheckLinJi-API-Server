@@ -610,4 +610,50 @@ public class ChallengeService {
 	}
 	
 		
+	
+	 /**
+		 * 첼린지 인증글 리스트
+		 * @param memberDto
+		 * @param challengeDto
+		 * @return
+		 */
+		@Transactional // 트랜잭션 안에서 entity를 조회해야 영속성 상태로 조회가 되고 값을 변경해면 변경 감지(dirty checking)가 일어난다.
+		public Map<String, Object> viewCheckRinger (PageDto pageDto) {
+			Map<String, Object> result = new HashMap<String, Object>();
+			
+			log.info("첼린지 인증글 리스트 ------> " + "Start");
+									 						 					
+			  try {
+				  				  				  
+		        	ArrayList<Map<String, Object>> viewCheckRinger = challengeMapper.viewCheckRinger(pageDto);
+		        	        	        	
+		        	if (viewCheckRinger.size() != 0 ) { 
+		        		for(int i = 0; i < viewCheckRinger.size(); i++) { // 리스트 사이즈만큼 돌면서 DB에 저장된 이미지 경로로 이미지를 base64로 인코딩해서 값 덮어씌우기
+		        			String image = fileService.myAuthImage((String) viewCheckRinger.get(i).get("SUBMISSION_IMAGE"));
+		        				if(!image.equals("N")) {
+		        					viewCheckRinger.get(i).put("SUBMISSION_IMAGE", image);
+		        				}
+		        		}
+		        	 	log.info("첼린지 인증글 리스트 ------> " + Constants.SUCCESS);
+		        	   	result.put("HttpStatus","2.00");		
+		      			result.put("Msg",Constants.SUCCESS);
+		      			result.put("totalCount",challengeMapper.listTotalCnt(pageDto));
+		      			result.put("viewChallengeList",viewCheckRinger);		        		
+		       		 
+		           } else {
+		        	   log.info("첼린지 인증글 리스트 ------> " + "게시글이 없습니다.");
+		        	    result.put("HttpStatus","1.00");		
+		       			result.put("Msg","게시글이 없습니다.");
+		       			return result ;
+		           }
+		        	
+				} catch (Exception e) {
+					log.error("첼린지 인증글 리스트 ------> " + Constants.SYSTEM_ERROR , e);					
+		    	    result.put("HttpStatus","1.00");		
+		   			result.put("Msg",Constants.SYSTEM_ERROR);		   			
+		   		 return result ;			
+				}               		 
+			  return result ;					 	    		   
+	}	
+	
 	}

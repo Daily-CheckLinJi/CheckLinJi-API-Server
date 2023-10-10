@@ -53,7 +53,7 @@ public class MissionController {
 	  * @param memberDto
 	  * @return
 	  */
-	@PostMapping("/ranking") // 첼린지 생성
+	@PostMapping("/ranking") 
 	public ResponseEntity<Map<String, Object >> missionRanking (@RequestHeader("Authorization") String authHeader) {
 		
 					

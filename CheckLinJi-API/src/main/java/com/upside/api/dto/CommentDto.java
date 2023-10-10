@@ -12,6 +12,8 @@ public class CommentDto { // 게시글 테이블
  
  private String email; // 이메일
  
+ private String writerEmail; // 이메일
+ 
  private String content; // 댓글 내용
  
  private String nickName; // 댓글 작성자의 식별자
