@@ -244,42 +244,51 @@
 				</configuration>
 			</plugin>
 		</plugins>
-		  <resources>
-	        <!-- 공통 -->
-	        <resource>
-	            <directory>src/main/resources</directory>
-	        </resource>
-	        <!-- local/dev/prod -->
-	        <resource>
-	            <directory>src/main/resources-${env}</directory>
-	        </resource>
-	    </resources>
+		  
+    
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<excludes> <!-- 빌드할때 src/main/resources 밑에있는 properties,local 폴더 ,prod 폴더 제외 -->
+					<exclude>application.properties</exclude>
+					<exclude>local/**</exclude>
+					<exclude>prod/**</exclude>
+				</excludes>
+		</resource>
+			<resource> <!-- 빌드할때 프로필 값에 따라 local , prod 폴더에 있는 properties를 src/main/resources 밑으로 등록 -->
+				<directory>src/main/resources/${environment}</directory>
+				<includes>
+					<include>application.properties</include>
+					<include>*</include>
+				</includes>
+				<targetPath>${project.build.outputDirectory}</targetPath>
+			</resource>
+		</resources>
 	    <testResources>
 	        <testResource>
 	            <directory>src/test/resources</directory>
 	        </testResource>
 	    </testResources>	
 	</build>
+	
 	<profiles>
-	    <profile>
-	        <id>local</id>
-	        <properties>
-	            <env>local</env>
-	        </properties>
-<!-- 	        기본 프로파일 -->
-	        <activation>
-	            <activeByDefault>true</activeByDefault>
-	        </activation>
-	    </profile>
-	    <profile>
-	        <id>prod</id>
-	        <properties>
-	            <env>prod</env>
-	        </properties>
-<!-- 	         기본 프로파일 -->
-<!-- 	        <activation> -->
-<!-- 	            <activeByDefault>true</activeByDefault> -->
-<!-- 	        </activation> -->
-	    </profile>
-</profiles>
+		<profile>
+			<id>local</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<environment>local</environment>
+				<checkRingi-config-path>${project.build.outputDirectory}</checkRingi-config-path>
+			</properties>
+		</profile>
+		<profile>
+			<id>prod</id>
+			<properties>
+				<environment>prod</environment>
+				<checkRingi-config-path>${project.build.directory}/conf</checkRingi-config-path>
+			</properties>
+		</profile>
+	</profiles>
+
 </project>
