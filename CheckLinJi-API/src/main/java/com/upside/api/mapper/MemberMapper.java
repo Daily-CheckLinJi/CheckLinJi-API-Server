@@ -18,7 +18,7 @@ public interface MemberMapper {
 	 * @param data
 	 * @return
 	 */
-	HashMap<String,String> missionCompletedCnt (Map<String, String> data);
+	Map<String,Object> missionCompletedCnt (Map<String, String> data);
 	
 	/**
 	 * 내 미션 수정
@@ -126,5 +126,12 @@ public interface MemberMapper {
 	 * @return
 	 */
 	int missionYn(String email);
+	
+	/**
+	 * 실시간 본인 랭킹
+	 * @param data
+	 * @return
+	 */
+	HashMap<String,String> OwnRanking (Map<String, String> data);
 	
 }

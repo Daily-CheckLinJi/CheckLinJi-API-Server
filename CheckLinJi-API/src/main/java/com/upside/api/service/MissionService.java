@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -43,8 +44,8 @@ public class MissionService {
 	  * @param memberDto
 	  * @return
 	  */
-	public Map<String, String> missionCompletedCnt (String userEmail) {
-		Map<String, String> result = new HashMap<String, String>();
+	public Map<String, Object> missionCompletedCnt (String userEmail) {
+		Map<String, Object> result = new HashMap<String, Object>();		
 		
 		try {
 					
@@ -62,10 +63,21 @@ public class MissionService {
         data.put("email", userEmail);
                         
         result = memberMapper.missionCompletedCnt(data);
+              
+        // Map의 키(key) 값만 가져오기
+        Set<String> keys = result.keySet();
+
+        // 키(key) 값 출력
+        for (String key : keys) {
+            System.out.println("Key: " + key);
+        }
         
         if (String.valueOf(result.get("own")) == null || String.valueOf(result.get("own")).equals("0")) {
         	result.put("HttpStatus","2.00");		
     		result.put("Msg",Constants.SUCCESS);
+    		System.out.println(result.get("own"));
+    		System.out.println(result.get("userAvg"));
+    		System.out.println("333");
     		return result ;
         }
         
@@ -74,9 +86,9 @@ public class MissionService {
 		
 		log.info("미션 성공 총 횟수 (월) ------> " + Constants.SUCCESS);
 		
-		} catch (Exception e) {
+		} catch (Exception e) {			
 	      	result.put("HttpStatus","1.00");		
-    		result.put("Msg",Constants.SYSTEM_ERROR);
+    		result.put("Msg",Constants.SYSTEM_ERROR);    		   
     		log.error("미션 성공 총 횟수 (월) ------> " + Constants.SYSTEM_ERROR , e);    		
 		}
 	    return result ;			    		   

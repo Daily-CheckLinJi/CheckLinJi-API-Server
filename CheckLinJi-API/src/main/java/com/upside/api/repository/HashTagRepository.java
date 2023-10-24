@@ -17,6 +17,8 @@ public interface HashTagRepository extends JpaRepository<HashTagEntity, Long> {
 	
 	Optional<HashTagEntity> findByTagName (String hashTagName);
 	
+//	Optional<HashTagEntity> findById (String hashTagName);
+	
 	void deleteByTagName (String hashTagName);
 }
 

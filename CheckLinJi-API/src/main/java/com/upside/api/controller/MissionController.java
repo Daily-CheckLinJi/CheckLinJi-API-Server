@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -33,12 +32,12 @@ public class MissionController {
 	  * @param memberDto
 	  * @return
 	  */	
-	@GetMapping("/completed") // 첼린지 생성
-	public ResponseEntity<Map<String, String>> missionCompletedCnt (@RequestHeader("Authorization") String authHeader) {
+	@PostMapping("/completed") // 첼린지 생성
+	public ResponseEntity<Map<String, Object>> missionCompletedCnt (@RequestHeader("Authorization") String authHeader) {
 								
 		String userEmail = jwtTokenProvider.getEmail(authHeader); // email을 얻기위해 헤더에서 토큰을 디코딩하는 부분이다.
-		
-		Map<String, String> result = missionSerivce.missionCompletedCnt(userEmail);
+				
+		Map<String, Object> result = missionSerivce.missionCompletedCnt(userEmail);
 				
 		if (result.get("HttpStatus").equals("2.00")) { // 성공
 			return new ResponseEntity<>(result,HttpStatus.OK);					

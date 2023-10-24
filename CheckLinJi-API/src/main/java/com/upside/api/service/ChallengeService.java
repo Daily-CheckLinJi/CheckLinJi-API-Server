@@ -532,10 +532,13 @@ public class ChallengeService {
 			if(successYn.isPresent()) {								
 				
 		    	List<String> list = Arrays.asList(submissonDto.getHashTag().split("\\|")); // hashTag | 기준으로 잘라서 리스트에 넣기    	
-		    	    	    
+		    	List<Long> lists = new ArrayList<Long>();
+		    	for(int i = 0 ; list.size() > i; i++) {		    		
+		    		lists.add(Long.valueOf(list.get(i)));
+		    	}
 		    	
 		    	for(int i = 0 ; list.size() > i; i++) { // 리스트 사이즈만큼 돌면서 map에 담기
-		    		Optional<HashTagEntity> tagExistYn = hashTagRepository.findByTagName(list.get(i));
+		    		Optional<HashTagEntity> tagExistYn = hashTagRepository.findById((lists.get(i)));
 		    		if(tagExistYn.isPresent()) {		    			
 		    			SubmissionHashTagEntity hashTagEntity = SubmissionHashTagEntity.builder()
 								.challengeSubmissionId(successYn.get())

@@ -69,6 +69,12 @@ public class MemberService {
 			 MemberDto memberDto = new MemberDto();
 			 memberDto.setEmail(email);
 			 
+	         Map<String, String> ownData = new HashMap<String, String>();              
+	       
+	         ownData.put("email", email);
+			 
+			 Map<String, String> missionRankingOwn = memberMapper.OwnRanking(ownData);
+			 			 			 
 			 String file = fileService.myAuthImage(data.get().getProfile());
 			 data.get().setPassword(""); // 조회시 패스워드는 공백 처리
 			 data.get().setProfile(file); // 프로필은 base64로 인코딩해서 넘겨줌
@@ -76,6 +82,7 @@ public class MemberService {
 			 result.put("HttpStatus","2.00");
 			 result.put("Msg",Constants.SUCCESS);
 			 result.put("selectMember",data.get());
+			 result.put("ownRanking",missionRankingOwn.get("rank"));
 			 
 			 if(memberMapper.missionYn(email) == 0) {
 				 result.put("missionSuccess","N");
