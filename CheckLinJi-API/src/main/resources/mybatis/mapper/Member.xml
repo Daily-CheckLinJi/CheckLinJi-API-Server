@@ -7,7 +7,7 @@
 	
 	<!-- 내 미션 달성 횟수 , 참가자 평균 -->
 	<select id="missionCompletedCnt" parameterType="MemberDto" resultType="java.util.Map" >
-		SELECT  (SELECT ROUND(AVG(COUNT)) FROM (
+	SELECT  (SELECT COALESCE(ROUND(AVG(COUNT), 0), 0) FROM (
 		   SELECT COUNT(*) as count
 		 	 FROM CHALLENGE_SUBMISSION CS 
 			  JOIN USER_CHALLENGE UC 
@@ -20,8 +20,8 @@
 		  JOIN USER_CHALLENGE UC 
 		   ON CS.USER_CHALLENGE_ID = UC.USER_CHALLENGE_ID
 		  WHERE YEAR(STR_TO_DATE(CS.submission_date, '%Y-%m-%d')) = #{year} 
-			  	AND MONTH(STR_TO_DATE(CS.submission_date, '%Y-%m-%d')) = #{month} 
-		   		AND UC.EMAIL = #{email}					 
+			  	AND MONTH(STR_TO_DATE(CS.submission_date, '%Y-%m-%d')) = #{month}
+		   		AND UC.EMAIL = #{email}						 
 	</select>
 
 	<!-- 실시간 랭킹 TOP 3 -->

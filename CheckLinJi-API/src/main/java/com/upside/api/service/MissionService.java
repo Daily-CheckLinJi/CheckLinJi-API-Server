@@ -64,20 +64,10 @@ public class MissionService {
                         
         result = memberMapper.missionCompletedCnt(data);
               
-        // Map의 키(key) 값만 가져오기
-        Set<String> keys = result.keySet();
-
-        // 키(key) 값 출력
-        for (String key : keys) {
-            System.out.println("Key: " + key);
-        }
         
         if (String.valueOf(result.get("own")) == null || String.valueOf(result.get("own")).equals("0")) {
         	result.put("HttpStatus","2.00");		
     		result.put("Msg",Constants.SUCCESS);
-    		System.out.println(result.get("own"));
-    		System.out.println(result.get("userAvg"));
-    		System.out.println("333");
     		return result ;
         }
         
