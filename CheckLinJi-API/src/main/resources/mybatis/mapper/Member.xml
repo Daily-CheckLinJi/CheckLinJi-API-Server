@@ -115,6 +115,12 @@
 		UPDATE CHALLENGE_SUBMISSION SET SUBMISSION_TEXT = #{submissionText} WHERE CHALLENGE_SUBMISSION_ID = #{challengeSubmissionId}
 	</update>
 	
+		<!-- 태그 삭제 -->
+	<update id="deleteTag" parameterType="ChallengeSubmissionDto">
+		DELETE FROM SUBMISSION_HASH_TAG WHERE CHALLENGE_SUBMISSION_ID = #{challengeSubmissionId}
+	</update>
+	
+	
 	<!-- 본인 미션 상세정보 댓글-->
 	<select id="missionComment" parameterType="ChallengeSubmissionDto" resultType="java.util.Map" >
 		SELECT 	 CM.comment_seq as COMMENT_SEQ

@@ -27,6 +27,13 @@ public interface MemberMapper {
 	 */
 	int missionUpdate (ChallengeSubmissionDto challengeSubmissionDto);
 	
+	/**
+	 * 내 미션 수정
+	 * @param data
+	 * @return
+	 */
+	int deleteTag (ChallengeSubmissionDto challengeSubmissionDto);
+	
 	
 	/**
 	 * 실시간 TOP3 랭킹

@@ -4,9 +4,11 @@ package com.upside.api.service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Optional;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -16,7 +18,13 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.upside.api.dto.ChallengeSubmissionDto;
+import com.upside.api.entity.ChallengeSubmissionEntity;
+import com.upside.api.entity.HashTagEntity;
+import com.upside.api.entity.SubmissionHashTagEntity;
 import com.upside.api.mapper.MemberMapper;
+import com.upside.api.repository.ChallengeSubmissionRepository;
+import com.upside.api.repository.HashTagRepository;
+import com.upside.api.repository.SubmissionHashTagRepository;
 import com.upside.api.util.Constants;
 
 import lombok.RequiredArgsConstructor;
@@ -32,6 +40,12 @@ public class MissionService {
 		
 	
 	private final MemberMapper memberMapper ;
+	
+	private final HashTagRepository hashTagRepository;
+	
+	private final SubmissionHashTagRepository submissionHashTagRepository;
+	
+	private final ChallengeSubmissionRepository challengeSubmissionRepository;
 			
 	private final FileService fileService ;
 	 	 
@@ -303,17 +317,53 @@ public class MissionService {
   		   
 		  try {
 					  
-		   int updateYN = memberMapper.missionUpdate(chaSubmissionDto);
+		   int updateMission = memberMapper.missionUpdate(chaSubmissionDto);
 		   
-		   if (updateYN > 0) {
-			 result.put("HttpStatus","2.00");		
-			 result.put("Msg",Constants.SUCCESS);       		
-		   } else {
-			 result.put("HttpStatus","1.00");		
-		  	 result.put("Msg",Constants.FAIL);   
+		   int deleteTag = memberMapper.deleteTag(chaSubmissionDto);
+
+		   String tagExistN = "" ; // 태그 존재 유무
+		   
+		   if (updateMission > 0) {
+			   	result.put("HttpStatus","2.00");		
+			   	result.put("Msg",Constants.SUCCESS);       		
+		   } else if(updateMission == 0) {
+			   	result.put("HttpStatus","1.00");		
+		  	 	result.put("Msg",Constants.FAIL);
+		  	 	return result ;		
+		   } else if(deleteTag == 0) {
+				result.put("HttpStatus","1.00");		
+			  	result.put("Msg",Constants.FAIL);
+			  	return result ;		
 		   }
-		  
-		   log.info("본인 미션 수정 결과 ------> " + updateYN);
+		   
+		   
+		   List<String> list = Arrays.asList(chaSubmissionDto.getHashTag().split("\\|")); // hashTag | 기준으로 잘라서 리스트에 넣기    	
+	    	List<Long> lists = new ArrayList<Long>();
+	    	for(int i = 0 ; list.size() > i; i++) {		    		
+	    		lists.add(Long.valueOf(list.get(i)));
+	    	}
+	    	
+	    	for(int i = 0 ; list.size() > i; i++) { // 리스트 사이즈만큼 돌면서 map에 담기
+	    		Optional<HashTagEntity> tagExistYn = hashTagRepository.findById((lists.get(i)));
+	    		Optional<ChallengeSubmissionEntity> missionExist = challengeSubmissionRepository.findById((long)chaSubmissionDto.getChallengeSubmissionId());	    		
+	    		if(tagExistYn.isPresent()) {	    			
+	    			SubmissionHashTagEntity hashTagEntity = SubmissionHashTagEntity.builder()
+							.challengeSubmissionId(missionExist.get())
+							.hashTagId(tagExistYn.get())						
+							.build();
+		    		submissionHashTagRepository.save(hashTagEntity);
+		    		log.info("미션인증 해쉬태그 저장 ------> "+list.size() +" 중 " +i+ "번째 " + Constants.SUCCESS);
+	    		}else {
+	    			tagExistN += list.get(i)+ "," ;  
+	    		}		
+	    	}
+		   
+	    	if(!tagExistN.equals("")) {
+				tagExistN += " -- 등록된 태그가 아니기 때문에 추가에서 제외 되었습니다."; 				
+				result.put("tagExistN",tagExistN);	
+			}
+		   		  
+		   log.info("본인 미션 수정 결과 ------> " + updateMission);
 		   
 			} catch (Exception e) {
 				log.error("본인 미션 수정 ------> " + Constants.SYSTEM_ERROR , e);
