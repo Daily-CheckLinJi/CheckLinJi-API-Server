@@ -74,7 +74,12 @@ public class MemberService {
 	         ownData.put("email", email);
 			 
 			 Map<String, String> missionRankingOwn = memberMapper.OwnRanking(ownData);
-			 			 			 
+		
+			 if(missionRankingOwn == null) {
+				 missionRankingOwn = new HashMap<String, String>();
+				 missionRankingOwn.put("rank", "0");
+			 }
+			 
 			 String file = fileService.myAuthImage(data.get().getProfile());
 			 data.get().setPassword(""); // 조회시 패스워드는 공백 처리
 			 data.get().setProfile(file); // 프로필은 base64로 인코딩해서 넘겨줌

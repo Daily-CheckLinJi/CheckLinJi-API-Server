@@ -89,7 +89,10 @@ public interface MemberMapper {
 	 * @param data
 	 * @return
 	 */
-	int missionAuthDelete (Map<String, String> data);
+	int missionDeleteComment (ChallengeSubmissionDto challengeSubmissionDto);
+	int missionDeleteLikes (ChallengeSubmissionDto challengeSubmissionDto);
+	int missionDeleteHashTag (ChallengeSubmissionDto challengeSubmissionDto);
+	int missionDeleteSubmission (ChallengeSubmissionDto challengeSubmissionDto);
 	
 	/**
 	 * 본인 미션 삭제

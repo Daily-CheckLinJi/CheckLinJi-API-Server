@@ -165,12 +165,24 @@
 			
 	</select>		
 	
-	<!-- 본인 미션 정보 삭제 -->
-	<delete id="missionAuthDelete" parameterType="MemberDto" >
-		DELETE FROM FILE_UPLOAD 
-	WHERE UPLOAD_DATE = #{date}
-	AND EMAIL =  #{email}  
+	
+	
+		<!-- 본인 미션 정보 좋아요 삭제 -->
+	<delete id="missionDeleteComment" parameterType="ChallengeSubmissionDto" >
+		DELETE FROM COMMENT WHERE CHALLENGE_SUBMISSION_ID = #{challengeSubmissionId} 
 	</delete>	
+		<!-- 본인 미션 정보 좋아요 삭제 -->
+	<delete id="missionDeleteLikes" parameterType="ChallengeSubmissionDto" >
+		DELETE FROM LIKES WHERE CHALLENGE_SUBMISSION_ID = #{challengeSubmissionId} 
+	</delete>		
+		<!-- 본인 미션 정보 태그 삭제 -->
+	<delete id="missionDeleteHashTag" parameterType="ChallengeSubmissionDto" >
+		DELETE FROM SUBMISSION_HASH_TAG WHERE CHALLENGE_SUBMISSION_ID = #{challengeSubmissionId} 
+	</delete>	
+		<!-- 본인 미션 정보 삭제 -->
+	<delete id="missionDeleteSubmission" parameterType="ChallengeSubmissionDto" >
+		DELETE FROM CHALLENGE_SUBMISSION WHERE CHALLENGE_SUBMISSION_ID = #{challengeSubmissionId} 
+	</delete>
 	
 	<!-- 본인 미션 정보 삭제 parameterType="String" resultType="String" -->
 	<select id="memberDelete" statementType="CALLABLE" resultType="hashmap"> 

@@ -385,23 +385,23 @@ public class MissionService {
 		
 		log.info("본인 미션 삭제 ------> " + "Start");
 		Map<String, Object> result = new HashMap<String, Object>();
-				        
-        
-        // 현재 년도와 월을 가져옵니다.
-        String year = challengeSubmissionDto.getYear();
-        String month = challengeSubmissionDto.getMonth();
-        String day = challengeSubmissionDto.getDay();
-        String date = year+"-"+ month+"-"+day;                                
-        
-        Map<String, String> data = new HashMap<String, String>();
-        
-        data.put("date", date);
-        data.put("email", userEmail);
+				                
         
         try {
-        	int missionAuthInfo = memberMapper.missionAuthDelete(data); // 해당날짜에 해당하는 본인 데이터
+        	
+        	HashMap<String,Object> missionAuthInfo = memberMapper.missionAuthInfo(challengeSubmissionDto);
+        	
+        	memberMapper.missionDeleteComment(challengeSubmissionDto); // 해당날짜에 해당하는 본인 데이터
+        	
+        	memberMapper.missionDeleteLikes(challengeSubmissionDto); // 해당날짜에 해당하는 본인 데이터
+        	
+        	memberMapper.missionDeleteHashTag(challengeSubmissionDto); // 해당날짜에 해당하는 본인 데이터
+        	
+        	int missionDeleteSubmission = memberMapper.missionDeleteSubmission(challengeSubmissionDto); // 해당날짜에 해당하는 본인 데이터
+        	
+        	boolean deleteImage = fileService.deleteFile(String.valueOf(missionAuthInfo.get("SUBMISSION_IMAGE_ROUTE")));
         	        	        	
-        	if (missionAuthInfo == 0 ) {
+        	if (missionDeleteSubmission == 0 && !deleteImage) {
         		log.info("본인 미션 삭제 ------> " + "요청이 제대로 처리되지 않았습니다.");
         	    result.put("HttpStatus","1.00");		
        			result.put("Msg","요청이 제대로 처리되지 않았습니다.");
