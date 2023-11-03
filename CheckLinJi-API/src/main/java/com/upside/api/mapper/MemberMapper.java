@@ -21,6 +21,13 @@ public interface MemberMapper {
 	Map<String,Object> missionCompletedCnt (Map<String, String> data);
 	
 	/**
+	 * 내 미션 달성 횟수 (전체)
+	 * @param data
+	 * @return
+	 */
+	int missionCompletedCntAll (String data);	
+	
+	/**
 	 * 내 미션 수정
 	 * @param data
 	 * @return

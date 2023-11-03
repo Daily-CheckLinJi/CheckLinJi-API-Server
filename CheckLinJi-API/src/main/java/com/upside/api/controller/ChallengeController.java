@@ -82,11 +82,7 @@ public class ChallengeController {
 	 */
 	@PostMapping("/myList") 
 	public ResponseEntity<Map<String, Object>> viewChallenge (@RequestHeader("Authorization") String authHeader , @RequestBody PageDto pageDto) {
-		
-		String userEmail = jwtTokenProvider.getEmail(authHeader); // email을 얻기위해 헤더에서 토큰을 디코딩하는 부분이다.
-		
-		pageDto.setEmail(userEmail);
-		
+						
 		Map<String, Object> result = challengeSerivce.viewChallengeList(pageDto);
 		
 		if (result.get("HttpStatus").equals("2.00")) { // 성공			
@@ -97,6 +93,27 @@ public class ChallengeController {
 		} 
 					
 	}
+	
+	/**
+	 * 유저 상세페이지
+	 * @param authHeader
+	 * @param pageDto
+	 * @return
+	 */
+	@PostMapping("/userDetail") 
+	public ResponseEntity<Map<String, Object>> userList (@RequestHeader("Authorization") String authHeader , @RequestBody PageDto pageDto) {
+				
+		Map<String, Object> result = challengeSerivce.viewChallengeList(pageDto);
+		
+		if (result.get("HttpStatus").equals("2.00")) { // 성공			
+			return new ResponseEntity<>(result,HttpStatus.OK);					
+		} else {			
+			
+			return new ResponseEntity<>(result,HttpStatus.BAD_REQUEST);
+		} 
+					
+	}	
+	
 	
 	/**
 	 * 본인 첼린지 인증 성공 횟수 (월)

@@ -11,8 +11,8 @@ import com.upside.api.entity.BestBookEntity;
 
 public interface BestBookRepository extends JpaRepository<BestBookEntity, Long> {
 		 
-	void deleteByDate(String date);
+	void deleteByDateAndType(String date , String type);
 	
-	List<BestBookEntity> findByDate(String date);
+	List<BestBookEntity> findByDateAndType(String date , String type);
 }
 

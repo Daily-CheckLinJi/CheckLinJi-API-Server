@@ -3,6 +3,7 @@ package com.upside.api.service;
 
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -10,6 +11,7 @@ import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +32,7 @@ import com.upside.api.entity.MemberEntity;
 import com.upside.api.entity.SubmissionHashTagEntity;
 import com.upside.api.entity.UserChallengeEntity;
 import com.upside.api.mapper.ChallengeMapper;
+import com.upside.api.mapper.MemberMapper;
 import com.upside.api.repository.ChallengeRepository;
 import com.upside.api.repository.ChallengeSubmissionRepository;
 import com.upside.api.repository.HashTagRepository;
@@ -56,6 +59,7 @@ public class ChallengeService {
 	 private final SubmissionHashTagRepository submissionHashTagRepository;
 	 private final HashTagRepository hashTagRepository;
 	 private final MemberService memberService;
+	 private final MemberMapper memberMapper;
 	 private final FileService fileService;
 	 private final ChallengeMapper challengeMapper;
 	 	 
@@ -78,21 +82,43 @@ public class ChallengeService {
 						pageDto.setTagList(Arrays.asList(pageDto.getTag().split("\\|")));  // hashTag | 기준으로 잘라서 리스트에 넣기
 					}
 				  				  
-		        	ArrayList<Map<String, Object>> viewChallengeList = challengeMapper.viewChallengeList(pageDto);
+		        	ArrayList<Map<String, Object>> userChallengeList = challengeMapper.userChallengeList(pageDto);
 		        	        	        	
-		        	if (viewChallengeList.size() != 0 ) { 
-		        		for(int i = 0; i < viewChallengeList.size(); i++) { // 리스트 사이즈만큼 돌면서 DB에 저장된 이미지 경로로 이미지를 base64로 인코딩해서 값 덮어씌우기
-		        			String image = fileService.myAuthImage((String) viewChallengeList.get(i).get("SUBMISSION_IMAGE"));
+		        	if (userChallengeList.size() != 0 ) { 
+		        		for(int i = 0; i < userChallengeList.size(); i++) { // 리스트 사이즈만큼 돌면서 DB에 저장된 이미지 경로로 이미지를 base64로 인코딩해서 값 덮어씌우기
+		        			String image = fileService.myAuthImage((String) userChallengeList.get(i).get("SUBMISSION_IMAGE"));
 		        				if(!image.equals("N")) {
-		        					viewChallengeList.get(i).put("SUBMISSION_IMAGE", image);
+		        					userChallengeList.get(i).put("SUBMISSION_IMAGE", image);
 		        				}
 		        		}
-		        	 	log.info("첼린지 인증글 리스트 ------> " + Constants.SUCCESS);
+		        		
+		        		Optional<MemberEntity> user = memberRepository.findById(pageDto.getEmail());
+		        		
+		        		HashMap<String, Object> memberInfo = new HashMap<String, Object>();
+		        		
+		                // SimpleDateFormat을 사용하여 문자열을 Date로 변환
+		                SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+		                
+	                    Date joinDate = dateTimeFormat.parse(user.get().getJoinDate());
+	                   
+		            	Date currentDate = new Date();
+		            			            	
+		            	long differenceInMillis = currentDate.getTime() - joinDate.getTime();
+		            	long differenceInDays = differenceInMillis / (24 * 60 * 60 * 1000);
+		        		
+		        		memberInfo.put("nickName", user.get().getNickName());
+		        		memberInfo.put("profile", fileService.myAuthImage(user.get().getProfile()));
+		        		memberInfo.put("grade", user.get().getProfile());
+		        		memberInfo.put("totalMissionSuccessCnt", memberMapper.missionCompletedCntAll(pageDto.getEmail()));
+		        		memberInfo.put("joinDate", differenceInDays);
+		        				        	 	
 		        	   	result.put("HttpStatus","2.00");		
 		      			result.put("Msg",Constants.SUCCESS);
-		      			result.put("totalCount",challengeMapper.listTotalCnt(pageDto));
-		      			result.put("viewChallengeList",viewChallengeList);		        		
+		      			result.put("userInfo",memberInfo);
+		      			result.put("missionTotalList",challengeMapper.listTotalCnt(pageDto));
+		      			result.put("userChallengeList",userChallengeList);		        		
 		       		 
+		      			log.info("첼린지 인증글 리스트 ------> " + Constants.SUCCESS);
 		           } else {
 		        	   log.info("첼린지 인증글 리스트 ------> " + "게시글이 없습니다.");
 		        	    result.put("HttpStatus","1.00");		
@@ -526,8 +552,7 @@ public class ChallengeService {
 			Optional<ChallengeSubmissionEntity> successYn = challengeSubmissionRepository.findByUserChallengeAndSubmissionDate(userChallenge, submissionDate);
 				
 			String tagExistN = "" ; // 태그 존재 유무
-			
-			System.out.println("successYn.isPresent() "+ successYn.isPresent());
+						
 			
 			if(successYn.isPresent()) {								
 				

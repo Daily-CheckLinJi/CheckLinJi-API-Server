@@ -28,7 +28,9 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/external")
 public class ExternalAPIController {
 	
-	private final ExternalAPIService externalAPIService;
+	private final ExternalAPIService externalAPIService;	
+	
+
 	
 	/**
 	 * 명언 API	
@@ -54,18 +56,16 @@ public class ExternalAPIController {
 	 */
 	@PostMapping("/bestSeller") 						  	
 	public ResponseEntity<Map<String,Object>> bestSeller (@RequestBody BestBookDto bestBookDto) {
-						
-		String day = bestBookDto.getDate();
-		
+										
 		Map<String,Object> result = new HashMap<String, Object>();
 		
 		// 요청 온 데이터가 날짜가 아닐때 -> 잘못된 요청
-		if(!day.equals("today") && !day.equals("yesterDay") && !day.equals("week")) {
+		if(bestBookDto.getDate() == null || bestBookDto.getType() == null) {
 			result.put("HttpStatus", "1.00");
 			result.put("Msg", Constants.FAIL);
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);		
 		}else {
-			result = externalAPIService.bestSeller(day);
+			result = externalAPIService.bestSeller(bestBookDto);
 		}
 												
 		if(result.get("HttpStatus").equals("2.00")) {			
@@ -77,6 +77,7 @@ public class ExternalAPIController {
 	 }
 	
 	
+
 	
 	/**
 	 * ChatGpt API

@@ -10,11 +10,9 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
 
-import com.upside.api.dto.BestBookDto;
 import com.upside.api.entity.BestBookEntity;
 import com.upside.api.repository.BestBookRepository;
 import com.upside.api.service.FileService;
-import com.upside.api.service.MemberService;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -36,14 +34,13 @@ public class WebPageReader  {
      * @throws Exception
      */
     @Transactional
-	public Boolean readWebPageYesterDay(String url) throws Exception {
+	public Boolean readWebPageYesterDay(String url , String type) throws Exception {
 		
 		 // 저장 성공유무
 		 boolean insertYN = false;
 		 
 		 // 반복횟수
-		 Integer seq = 1 ;
-		 Integer image_seq = 1 ;
+		 Integer seq = 1 ;		 
 		
         // Jsoup을 사용하여 URL에 접속하고 웹 페이지를 파싱한다.
         Document doc = Jsoup.connect(url).get();
@@ -60,6 +57,7 @@ public class WebPageReader  {
 	        			.name(bookName)
 	        			.date("yesterDay")
 	        			.rank(seq)
+	        			.type(type)
 	        			.updateDate(LocalDate.now())
 	        			.build();           	
                 list.add(bookDto);
@@ -93,8 +91,8 @@ public class WebPageReader  {
         }  
         
         // 가져온 데이터가 10개가 맞으면 기존 데이터 삭제 후 인서트
-        if(list.size() == 10) {
-        	bookRepository.deleteByDate("yesterDay");
+        if(list.size() == 10) {        	
+        	bookRepository.deleteByDateAndType("yesterDay", type);
         	List<BestBookEntity> result = bookRepository.saveAll(list);
         	
         	if(result.size()==10) {
@@ -119,7 +117,7 @@ public class WebPageReader  {
      * @throws Exception
      */
     @Transactional
-	public Boolean readWebPageToDay(String url) throws Exception {
+	public Boolean readWebPageToDay(String url , String type) throws Exception {
 		
 		 // 저장 성공유무
 		 boolean insertYN = false;
@@ -144,6 +142,7 @@ public class WebPageReader  {
 	        			.name(bookName)
 	        			.date("toDay")
 	        			.rank(seq)
+	        			.type(type)
 	        			.updateDate(LocalDate.now())
 	        			.build();           	
                 list.add(bookDto);
@@ -178,7 +177,7 @@ public class WebPageReader  {
         
         // 가져온 데이터가 10개가 맞으면 기존 데이터 삭제 후 인서트
         if(list.size() == 10) {
-        	bookRepository.deleteByDate("toDay");
+        	bookRepository.deleteByDateAndType("toDay", type);
         	List<BestBookEntity> result = bookRepository.saveAll(list);
         	
         	if(result.size()==10) {
@@ -200,7 +199,7 @@ public class WebPageReader  {
      * @throws Exception
      */
     @Transactional
-	public Boolean readWebPageWeek(String url) throws Exception {
+	public Boolean readWebPageWeek(String url , String type) throws Exception {
 		
 		 // 저장 성공유무
 		 boolean insertYN = false;
@@ -225,6 +224,7 @@ public class WebPageReader  {
 	        			.name(bookName)
 	        			.date("week")
 	        			.rank(seq)
+	        			.type(type)
 	        			.updateDate(LocalDate.now())
 	        			.build();           	
                 list.add(bookDto);
@@ -259,7 +259,7 @@ public class WebPageReader  {
         
         // 가져온 데이터가 10개가 맞으면 기존 데이터 삭제 후 인서트
         if(list.size() == 10) {
-        	bookRepository.deleteByDate("week");
+        	bookRepository.deleteByDateAndType("week", type);
         	List<BestBookEntity> result = bookRepository.saveAll(list);
         	
         	if(result.size()==10) {

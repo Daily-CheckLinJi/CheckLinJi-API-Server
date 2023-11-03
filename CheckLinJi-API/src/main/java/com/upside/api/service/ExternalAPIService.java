@@ -89,13 +89,13 @@ public class ExternalAPIService {
 	  * 베스트 셀러 
 	  * @return
 	  */
-	 public  Map<String,Object> bestSeller (String day) {
+	 public  Map<String,Object> bestSeller (BestBookDto bestBookDto) {
 		 
 		 Map<String,Object> result = new HashMap<String, Object>();
 		 
 		 try {
 					 
-		 List<BestBookEntity> existYN = bestBooRepository.findByDate(day);	     		
+		 List<BestBookEntity> existYN = bestBooRepository.findByDateAndType(bestBookDto.getDate(),bestBookDto.getType());	     		
 	     
 		 if(existYN == null) {
 			 log.info("베스트셀러 확인 ------> " + Constants.FAIL);

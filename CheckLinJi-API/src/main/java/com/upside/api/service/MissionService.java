@@ -98,6 +98,33 @@ public class MissionService {
 	    return result ;			    		   
 	}
 	
+	 /**
+	  * 미션 성공 총 횟수 (전체)
+	  * @param memberDto
+	  * @return
+	  */
+	public Map<String, Object> missionCompletedCntAll(String userEmail) {
+		Map<String, Object> result = new HashMap<String, Object>();		
+		
+		try {
+					                                                		
+	   	                       
+			int missionCompletedCnt = memberMapper.missionCompletedCntAll(userEmail);
+	             	       
+	        result.put("HttpStatus","2.00");
+	        result.put("missionCompletedCnt",missionCompletedCnt);
+			result.put("Msg",Constants.SUCCESS);
+			
+			log.info("미션 성공 총 횟수 (전체) ------> " + Constants.SUCCESS);
+		
+		} catch (Exception e) {			
+	      	result.put("HttpStatus","1.00");		
+   		result.put("Msg",Constants.SYSTEM_ERROR);    		   
+   		log.error("미션 성공 총 횟수 (전체) ------> " + Constants.SYSTEM_ERROR , e);    		
+		}
+	    return result ;			    		   
+	}	
+	
 	/**
 	  * 실시간 랭킹
 	  * @param memberDto

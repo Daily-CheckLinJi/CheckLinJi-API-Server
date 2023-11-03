@@ -35,6 +35,28 @@
 				LIMIT #{startPage} , #{endPage} 		 
 	</select>	
 	
+	<!-- 유저 인증글 리스트 -->
+	<select id="userChallengeList" parameterType="PageDto" resultType="java.util.Map" >
+				SELECT   CS.CHALLENGE_SUBMISSION_ID AS SUBMISSION_ID
+				,CS.SUBMISSION_IMAGE_ROUTE AS SUBMISSION_IMAGE
+				,CS.SUBMISSION_DATE	
+				,CS.SUBMISSION_COMPLETED
+				,(SELECT COUNT(*)  FROM LIKES 
+					JOIN CHALLENGE_SUBMISSION CS 
+					ON LIKES.CHALLENGE_SUBMISSION_ID = CS.CHALLENGE_SUBMISSION_ID 
+					WHERE LIKES.CHALLENGE_SUBMISSION_ID = SUBMISSION_ID) AS LIKE_COUNT
+				,(SELECT COUNT(*) FROM COMMENT CM  
+					JOIN CHALLENGE_SUBMISSION CS 
+						ON CM.CHALLENGE_SUBMISSION_ID = CS.CHALLENGE_SUBMISSION_ID 
+					WHERE CM.CHALLENGE_SUBMISSION_ID = SUBMISSION_ID) AS COMMENT_COUNT
+		 		FROM CHALLENGE_SUBMISSION CS			 		
+					JOIN MEMBER_INFO MI  
+						ON CS.NICK_NAME = MI.NICK_NAME  
+				WHERE MI.EMAIL = #{email}
+				ORDER BY SUBMISSION_DATE DESC 
+				LIMIT 0,5 ;		 
+	</select>	
+	
 	
 	<!--첼린지 인증글 상세페이지-->
 	<select id="detail" parameterType="ChallengeSubmissionDto" resultType="java.util.Map" >

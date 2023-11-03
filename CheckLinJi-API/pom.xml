@@ -243,9 +243,7 @@
 					</excludes>
 				</configuration>
 			</plugin>
-		</plugins>
-		  
-    
+		</plugins>		      
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>

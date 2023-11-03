@@ -13,6 +13,7 @@ public class BestBookDto {
  private Integer rank;
  private String image;
  private LocalDate updateDate;
+ private String type;
  
  
 }

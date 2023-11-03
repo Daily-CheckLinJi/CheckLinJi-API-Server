@@ -22,7 +22,6 @@ import com.upside.api.config.JwtTokenProvider;
 import com.upside.api.dto.MemberDto;
 import com.upside.api.entity.MemberEntity;
 import com.upside.api.service.MemberService;
-import com.upside.api.util.Constants;
 
 import lombok.RequiredArgsConstructor;
 

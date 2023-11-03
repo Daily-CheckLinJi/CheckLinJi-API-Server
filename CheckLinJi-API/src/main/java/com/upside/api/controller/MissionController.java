@@ -32,7 +32,7 @@ public class MissionController {
 	  * @param memberDto
 	  * @return
 	  */	
-	@PostMapping("/completed") // 첼린지 생성
+	@PostMapping("/completed") 
 	public ResponseEntity<Map<String, Object>> missionCompletedCnt (@RequestHeader("Authorization") String authHeader) {
 								
 		String userEmail = jwtTokenProvider.getEmail(authHeader); // email을 얻기위해 헤더에서 토큰을 디코딩하는 부분이다.
@@ -43,8 +43,26 @@ public class MissionController {
 			return new ResponseEntity<>(result,HttpStatus.OK);					
 		} else {			
 			return new ResponseEntity<>(result,HttpStatus.BAD_REQUEST);
-		} 
-					
+		} 					
+	}
+	
+	/**
+	  * 미션 성공 총 횟수 (전체)
+	  * @param memberDto
+	  * @return
+	  */	
+	@PostMapping("/completedAll") 
+	public ResponseEntity<Map<String, Object>> missionCompletedCntAll (@RequestHeader("Authorization") String authHeader) {
+								
+		String userEmail = jwtTokenProvider.getEmail(authHeader); // email을 얻기위해 헤더에서 토큰을 디코딩하는 부분이다.
+				
+		Map<String, Object> result = missionSerivce.missionCompletedCntAll(userEmail);
+				
+		if (result.get("HttpStatus").equals("2.00")) { // 성공
+			return new ResponseEntity<>(result,HttpStatus.OK);					
+		} else {			
+			return new ResponseEntity<>(result,HttpStatus.BAD_REQUEST);
+		} 					
 	}
 	
 	/**
