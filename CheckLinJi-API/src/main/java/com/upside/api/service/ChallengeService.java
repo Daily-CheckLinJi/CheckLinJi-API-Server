@@ -108,7 +108,7 @@ public class ChallengeService {
 		        		
 		        		memberInfo.put("nickName", user.get().getNickName());
 		        		memberInfo.put("profile", fileService.myAuthImage(user.get().getProfile()));
-		        		memberInfo.put("grade", user.get().getProfile());
+		        		memberInfo.put("grade", user.get().getGrade());
 		        		memberInfo.put("totalMissionSuccessCnt", memberMapper.missionCompletedCntAll(pageDto.getEmail()));
 		        		memberInfo.put("joinDate", differenceInDays);
 		        				        	 	
