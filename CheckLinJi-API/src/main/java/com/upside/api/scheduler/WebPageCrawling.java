@@ -53,8 +53,8 @@ public class WebPageCrawling {
 	   try {
 	  		// 알라딘 현재 베스트셀러 url
 	  		Boolean read_essay = webPageReader.readWebPageToDay(essayBestBookToday,"essay");
-	  		Boolean read_selfDev = webPageReader.readWebPageToDay(essayBestBookToday,"selfDev");
-	  		Boolean read_humanities = webPageReader.readWebPageToDay(essayBestBookToday,"humanities");
+	  		Boolean read_selfDev = webPageReader.readWebPageToDay(selfDevBestBookToday,"selfDev");
+	  		Boolean read_humanities = webPageReader.readWebPageToDay(humanitiesBestBookToday,"humanities");
 	  		
 	  		if(read_essay && read_selfDev && read_humanities) {
 	  			log.info("현재 베스트 셀러 Crawling 성공 ------> " + LocalDate.now());  			
