@@ -103,7 +103,7 @@ public class ChallengeController {
 	@PostMapping("/userDetail") 
 	public ResponseEntity<Map<String, Object>> userList (@RequestHeader("Authorization") String authHeader , @RequestBody PageDto pageDto) {
 				
-		Map<String, Object> result = challengeSerivce.viewChallengeList(pageDto);
+		Map<String, Object> result = challengeSerivce.userChallengeList(pageDto);
 		
 		if (result.get("HttpStatus").equals("2.00")) { // 성공			
 			return new ResponseEntity<>(result,HttpStatus.OK);					
