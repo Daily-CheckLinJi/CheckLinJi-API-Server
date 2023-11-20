@@ -61,8 +61,12 @@ public class ChallengeController {
 	 * @return
 	 */
 	@PostMapping("/list/detail") 
-	public ResponseEntity<Map<String, Object>> detail (@RequestBody ChallengeSubmissionDto submissionDto) {		
+	public ResponseEntity<Map<String, Object>> detail (@RequestHeader("Authorization") String authHeader , @RequestBody ChallengeSubmissionDto submissionDto) {		
 											
+		String userEmail = jwtTokenProvider.getEmail(authHeader); // email을 얻기위해 헤더에서 토큰을 디코딩하는 부분이다.
+		
+		submissionDto.setEmail(userEmail);
+		
 		Map<String, Object> result = challengeSerivce.detail(submissionDto);
 				
 		if (result.get("HttpStatus").equals("2.00")) { // 성공			

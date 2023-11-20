@@ -27,84 +27,7 @@ public class WebPageReader  {
     private final FileService fileService;
     
     
-    /**
-     * 전날 베스트셀러 Top 10 
-     * @param url
-     * @return
-     * @throws Exception
-     */
-    @Transactional
-	public Boolean readWebPageYesterDay(String url , String type) throws Exception {
-		
-		 // 저장 성공유무
-		 boolean insertYN = false;
-		 
-		 // 반복횟수
-		 Integer seq = 1 ;		 
-		
-        // Jsoup을 사용하여 URL에 접속하고 웹 페이지를 파싱한다.
-        Document doc = Jsoup.connect(url).get();
-        List<BestBookEntity> list = new ArrayList<>();
-        
-        Elements items = doc.select("li");                               
-        // li 갯수만큼 반복하면서 .bo3 옆 b 태그 값 가져오기(책이름)
-        for (Element item : items) {       	
-            String bookName = item.select(".bo3 > b").text();
-            
-            // .bo3 옆 b 태그 값이 공백이 아니며 베스트 셀러 상위 10개 가져오기
-            if(!bookName.equals("") && seq <= 10) {            
-            	BestBookEntity bookDto = BestBookEntity.builder()
-	        			.name(bookName)
-	        			.date("yesterDay")
-	        			.rank(seq)
-	        			.type(type)
-	        			.updateDate(LocalDate.now())
-	        			.build();           	
-                list.add(bookDto);
-                seq++;    
-            }   
-            
-        }                             
-                        
-        // 이미지 크롤링으로 받아오기       
-        Elements imgElements = doc.select("img.front_cover");
-        int count = 0;
-        for (Element imgElement : imgElements) {
-            String imageUrl = imgElement.attr("src");
-            
-            System.out.println("imageURL : " + imageUrl);
-            // 이미지 URL로 다운받아 디코딩한 값 
-            byte[] image = fileService.ImageUrlDownload(imageUrl);
-                       
-            list.get(count).setImage(image);
-            count++;
-            if (count >= 10) {
-                break;
-            }
-        }
 
-        
-        // 전날 베스트셀러 Top 10 출력
-        for (int i = 0; i < list.size(); i++) {
-        	int rank = i+1;
-        	log.info("전날 베스트셀러 " +rank+ "위 " + list.get(i).getName());            
-        }  
-        
-        // 가져온 데이터가 10개가 맞으면 기존 데이터 삭제 후 인서트
-        if(list.size() == 10) {        	
-        	bookRepository.deleteByDateAndType("yesterDay", type);
-        	List<BestBookEntity> result = bookRepository.saveAll(list);
-        	
-        	if(result.size()==10) {
-        		insertYN = true;
-        	} else {
-        		insertYN = false;
-        	}
-        }
-              
-        // 데이터가 저장된 배열을 반환한다.
-        return insertYN;
-    }
     
     
     
@@ -237,6 +160,7 @@ public class WebPageReader  {
         // 이미지 크롤링으로 받아오기       
         Elements imgElements = doc.select("img.front_cover");
         int count = 0;
+        System.out.println(imgElements.size());
         for (Element imgElement : imgElements) {
             String imageUrl = imgElement.attr("src");
             
@@ -270,6 +194,86 @@ public class WebPageReader  {
         }
               
         
+        return insertYN;
+    }
+    
+    /**
+     * 이번달 베스트셀러 Top 10 
+     * @param url
+     * @return
+     * @throws Exception
+     */
+    @Transactional
+	public Boolean readWebPageMonthly(String url , String type) throws Exception {
+		
+		 // 저장 성공유무
+		 boolean insertYN = false;
+		 
+		 // 반복횟수
+		 Integer seq = 1 ;		 
+		
+        // Jsoup을 사용하여 URL에 접속하고 웹 페이지를 파싱한다.
+        Document doc = Jsoup.connect(url).get();
+        List<BestBookEntity> list = new ArrayList<>();
+        
+        Elements items = doc.select("li");                               
+        // li 갯수만큼 반복하면서 .bo3 옆 b 태그 값 가져오기(책이름)
+        for (Element item : items) {       	
+            String bookName = item.select(".bo3 > b").text();
+            
+            // .bo3 옆 b 태그 값이 공백이 아니며 베스트 셀러 상위 10개 가져오기
+            if(!bookName.equals("") && seq <= 10) {            
+            	BestBookEntity bookDto = BestBookEntity.builder()
+	        			.name(bookName)
+	        			.date("monthly")
+	        			.rank(seq)
+	        			.type(type)
+	        			.updateDate(LocalDate.now())
+	        			.build();           	
+                list.add(bookDto);
+                seq++;    
+            }   
+            
+        }                             
+                        
+        // 이미지 크롤링으로 받아오기       
+        Elements imgElements = doc.select("img.i_cover"); // 이번 달은 front_cover 가 아닌 i_cover 
+        int count = 0;        
+        System.out.println(imgElements.size());
+        
+        for (Element imgElement : imgElements) {        	
+            String imageUrl = imgElement.attr("src");
+            
+            System.out.println("imageURL : " + imageUrl);
+            // 이미지 URL로 다운받아 디코딩한 값 
+            byte[] image = fileService.ImageUrlDownload(imageUrl);
+                       
+            list.get(count).setImage(image);
+            count++;
+            if (count >= 10) {
+                break;
+            }
+        }        
+        
+        // 전날 베스트셀러 Top 10 출력
+        for (int i = 0; i < list.size(); i++) {
+        	int rank = i+1;
+        	log.info("이번달 베스트셀러 " +rank+ "위 " + list.get(i).getName());            
+        }  
+        
+        // 가져온 데이터가 10개가 맞으면 기존 데이터 삭제 후 인서트
+        if(list.size() == 10) {        	
+        	bookRepository.deleteByDateAndType("monthly", type);
+        	List<BestBookEntity> result = bookRepository.saveAll(list);
+        	
+        	if(result.size()==10) {
+        		insertYN = true;
+        	} else {
+        		insertYN = false;
+        	}
+        }
+              
+        // 데이터가 저장된 배열을 반환한다.
         return insertYN;
     }
     

@@ -37,6 +37,8 @@ import com.upside.api.repository.ChallengeRepository;
 import com.upside.api.repository.ChallengeSubmissionRepository;
 import com.upside.api.repository.HashTagRepository;
 import com.upside.api.repository.MemberRepository;
+import com.upside.api.repository.ReportCommentRepository;
+import com.upside.api.repository.ReportSubmissionRepository;
 import com.upside.api.repository.SubmissionHashTagRepository;
 import com.upside.api.repository.UserChallengeRepository;
 import com.upside.api.util.Constants;
@@ -62,6 +64,7 @@ public class ChallengeService {
 	 private final MemberMapper memberMapper;
 	 private final FileService fileService;
 	 private final ChallengeMapper challengeMapper;
+	 private final ReportSubmissionRepository reportSubmissionRepository;
 	 	 
 	
 	 
@@ -203,7 +206,8 @@ public class ChallengeService {
 			log.info("첼린지 인증글 상세페이지 ------> " + "Start");
 									 						 					
 			  try {
-				  HashMap<String,String> submissionDetail = challengeMapper.detail(submissionDto);
+				   // 게시글 상세정보
+				   HashMap<String,String> submissionDetail = challengeMapper.detail(submissionDto);
 			
 		        	if (submissionDetail.size() != 0 ) { 		        	
 		        		String image = fileService.myAuthImage(submissionDetail.get("SUBMISSION_IMAGE_ROUTE"));
@@ -213,19 +217,30 @@ public class ChallengeService {
 		        			submissionDetail.put("SUBMISSION_IMAGE_ROUTE", image);
 		        		}
 		        		
+		        		// 좋아요 갯수 가져오기
 		        		int likesCount = challengeMapper.likesCount(submissionDto);
 		        		ArrayList<Map<String, Object>> commentList = challengeMapper.commentList(submissionDto);
 		        		
+		        		// 댓글 가져오기
 		        		for(int i = 0 ; i < commentList.size(); i++) {
 		        			 commentList.get(i).put("PROFILE", fileService.myAuthImage((String) commentList.get(i).get("PROFILE")));		        			
 		        		}
-		        		
+		        				        		
+		        		// 게시글 신고 유무
+		        		Long existsReport = reportSubmissionRepository.countByChallengeSubmissionIdAndEmail(Long.valueOf(submissionDto.getChallengeSubmissionId()),submissionDto.getEmail());
+		  			  		  			 		        				        	
 		        	 	log.info("첼린지 인증글 상세페이지 ------> " + Constants.SUCCESS);
 		        	   	result.put("HttpStatus","2.00");		
 		      			result.put("Msg",Constants.SUCCESS);
 		      			result.put("submissionDetail",submissionDetail);
 		      			result.put("likesCount",likesCount);
 		      			result.put("commentList",commentList);
+		      			 // 같은 게시글을 신고한 이력이 있으면 이미 신고되었음 처리
+			  			  if(existsReport != 0) { 
+			  				  result.put("existsReport","Y");
+			  			  }else {
+			  				  result.put("existsReport","N");
+			  			  }
 		       		 
 		           } else {
 		        	   log.info("첼린지 인증글 상세페이지 ------> " + "게시글이 없습니다.");
