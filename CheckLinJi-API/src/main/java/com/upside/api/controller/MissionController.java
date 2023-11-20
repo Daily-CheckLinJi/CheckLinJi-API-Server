@@ -118,7 +118,11 @@ public class MissionController {
 	 */
 	@PostMapping("/info")
     public ResponseEntity<Map<String,Object>> myAuthInfo(@RequestHeader("Authorization") String authHeader , @RequestBody ChallengeSubmissionDto challengeSubmissionDto) throws Exception {
-	 								
+	 				
+		String userEmail = jwtTokenProvider.getEmail(authHeader); // email을 얻기위해 헤더에서 토큰을 디코딩하는 부분이다.
+		
+		challengeSubmissionDto.setEmail(userEmail);
+		
 		Map<String, Object > result = missionSerivce.myAuthInfo(challengeSubmissionDto);
 	  	
 		if(result.get("HttpStatus").equals("2.00")) { // 성공															    

@@ -24,6 +24,7 @@ import com.upside.api.entity.SubmissionHashTagEntity;
 import com.upside.api.mapper.MemberMapper;
 import com.upside.api.repository.ChallengeSubmissionRepository;
 import com.upside.api.repository.HashTagRepository;
+import com.upside.api.repository.ReportSubmissionRepository;
 import com.upside.api.repository.SubmissionHashTagRepository;
 import com.upside.api.util.Constants;
 
@@ -48,6 +49,8 @@ public class MissionService {
 	private final ChallengeSubmissionRepository challengeSubmissionRepository;
 			
 	private final FileService fileService ;
+	
+	private final ReportSubmissionRepository reportSubmissionRepository;
 	 	 
 	
 	
@@ -312,6 +315,10 @@ public class MissionService {
 	        	   		missionAuthInfo.put("PROFILE", profileImage);
 	        	   	}
 	        	   	
+	        	 // 게시글 신고 유무
+	        	Long existsReport = reportSubmissionRepository.countByChallengeSubmissionIdAndEmail(Long.valueOf(challengeSubmissionDto.getChallengeSubmissionId()),challengeSubmissionDto.getEmail());
+	        	   	
+	        	   	
 	        	   	log.info("본인 미션 상세보기 ------> " + Constants.SUCCESS);	        	   		        	   	
 	        	   	missionAuthInfo.put("SUBMISSION_IMAGE_ROUTE", missionImage);	        	   	
 	        	   	result.put("HttpStatus","2.00");		
@@ -320,6 +327,14 @@ public class MissionService {
 	      			result.put("missionComment",missionComment);
 	      			result.put("missionHashTag",missionHashTag);
 	      			result.put("missionLikes",missionLikes);
+	      			
+	      			 // 같은 게시글을 신고한 이력이 있으면 이미 신고되었음 처리
+		  			  if(existsReport != 0) { 
+		  				  result.put("existsReport","Y");
+		  			  }else {
+		  				  result.put("existsReport","N");
+		  			  }
+	      			
 			    }
            }
 		} catch (Exception e) {
