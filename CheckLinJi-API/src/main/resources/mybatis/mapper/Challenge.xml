@@ -79,6 +79,7 @@
 			WHERE CS.CHALLENGE_SUBMISSION_ID  = #{challengeSubmissionId} ;
 	</select>	
 	
+	
 	<!--첼린지 인증글 상세페이지 댓글 -->
 	<select id="commentList" parameterType="ChallengeSubmissionDto" resultType="java.util.Map" >
 			SELECT   CM.COMMENT_SEQ 

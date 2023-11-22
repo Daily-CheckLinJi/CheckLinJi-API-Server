@@ -160,7 +160,7 @@ public class WebPageCrawling {
   	
   }  
   
-	  @PostConstruct
+//	  @PostConstruct
 	  public void initialTask() throws Exception {
 		  
 	  		// 알라딘 현재 베스트셀러 url

@@ -2,6 +2,7 @@ package com.upside.api.service;
 
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,9 +20,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.upside.api.config.JwtTokenProvider;
 import com.upside.api.dto.MemberDto;
+import com.upside.api.dto.UserChallengeDto;
+import com.upside.api.entity.ChallengeEntity;
 import com.upside.api.entity.MemberEntity;
+import com.upside.api.entity.UserChallengeEntity;
+import com.upside.api.mapper.ChallengeMapper;
 import com.upside.api.mapper.MemberMapper;
+import com.upside.api.repository.ChallengeRepository;
 import com.upside.api.repository.MemberRepository;
+import com.upside.api.repository.UserChallengeRepository;
 import com.upside.api.util.Constants;
 
 import lombok.RequiredArgsConstructor;
@@ -41,6 +48,9 @@ public class MemberService {
 	private final MemberMapper memberMapper ;
 	private final RedisTemplate<String, String> redisTemplate;
 	private final FileService fileService ;
+	private final ChallengeRepository challengeRepository;
+	private final UserChallengeRepository userChallengeRepository;
+
 	
 	
 	/**
@@ -182,14 +192,40 @@ public class MemberService {
 				.build();						        
 		
 		 memberRepository.save(memberEntity);
-		 
+		 		 
 		 boolean  exsistUser = memberRepository.findById(memberDto.getEmail()).isPresent();
 		 
 		 if (exsistUser == true) {
+			
+			 Optional<ChallengeEntity> existsChallenge = challengeRepository.findById("첵린지");
+				
+			 Optional<MemberEntity> existsMember = memberRepository.findById(memberDto.getEmail());
+			 
+			 ChallengeEntity challenge =  existsChallenge.get();
+			 
+			 MemberEntity member =  existsMember.get();
+			 
+			 UserChallengeEntity userChallenge =  UserChallengeEntity.builder()
+					   .memberEntity(member)
+					   .challengeEntity(challenge)
+					   .registrationTime(LocalDateTime.now())
+					   .completed(false)
+					   .build();
+
+		 	userChallengeRepository.save(userChallenge);
+			 
 			 log.info("회원가입 성공 ------> " + memberDto.getEmail());
 			 result.put("HttpStatus","2.00");
 			 result.put("UserEmail",memberDto.getEmail());
-			 result.put("Msg",Constants.SUCCESS);			  
+			 
+			 Optional<UserChallengeEntity> exsistUserChallenge = userChallengeRepository.findByMemberEntityAndChallengeEntity(member,challenge);
+			 
+			 if(exsistUserChallenge.isPresent()) {
+				 result.put("Msg",Constants.SUCCESS); 
+			 }else {
+				 result.put("Msg","회원가입은 완료했으나 첼린지 참여에 실패하였습니다."); 
+			 }
+			 			  
 		 } else {
 			 log.info("회원가입 실패 ------> " + Constants.FAIL);
 			 result.put("HttpStatus","1.00");

@@ -154,24 +154,25 @@ public class MissionService {
    		 return result ;
        }
        
-       if (missionRankingOwn == null ) {
-    	    log.info("실시간 랭킹 ------> " + "해당 사용자 참여중 아닐땐 TOP3 만");
-   	    	result.put("HttpStatus","2.01");		
-  			result.put("Msg","참여중이 아닙니다.");
-  			result.put("missionRankingTop",missionRankingTop);
-  		 return result ;
-       }
+
        
        for(int i =0; i < missionRankingTop.size(); i++) {    	   
     	   missionRankingTop.get(i).put("profile",fileService.myAuthImage((String) missionRankingTop.get(i).get("profile")));
        }
        
-       missionRankingOwn.put("profile",fileService.myAuthImage((String) missionRankingOwn.get("profile")));
-       
        result.put("HttpStatus","2.00");		
 	   result.put("Msg",Constants.SUCCESS);
 	   result.put("missionRankingTop",missionRankingTop);
-	   result.put("missionRankingOwn",missionRankingOwn);
+	   if (missionRankingOwn != null ) {
+		   missionRankingOwn.put("profile",fileService.myAuthImage((String) missionRankingOwn.get("profile")));
+    	   result.put("missionRankingOwn",missionRankingOwn);
+       }else {
+    	   Map<String, String> missionRankingOwnInfo = memberMapper.missionRankingOwnInfo(data);
+    	   missionRankingOwnInfo.put("profile",fileService.myAuthImage((String) missionRankingOwnInfo.get("profile")));
+    	   missionRankingOwnInfo.put("ranking","0");
+    	   result.put("missionRankingOwn",missionRankingOwnInfo);
+       }
+	   
 		
 		log.info("실시간 랭킹 ------> " + Constants.SUCCESS);
 		

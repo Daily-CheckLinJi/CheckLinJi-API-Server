@@ -57,6 +57,13 @@ public interface MemberMapper {
 	HashMap<String,String> missionRankingOwn (Map<String, String> data);
 	
 	/**
+	 * 실시간 본인 랭킹
+	 * @param data
+	 * @return
+	 */
+	HashMap<String,String> missionRankingOwnInfo (Map<String, String> data);
+	
+	/**
 	 * 본인 미션 달력 
 	 * @param data
 	 * @return

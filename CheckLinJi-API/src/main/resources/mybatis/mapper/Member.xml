@@ -40,7 +40,8 @@
 			FROM (
 			    SELECT MI.NICK_NAME
 			    	   , COUNT(*) AS count
-			    	   , TIMESTAMPDIFF(DAY, DATE(MI.JOIN_DATE) ,NOW()) AS joinDate
+<!-- 			    	   , TIMESTAMPDIFF(DAY, DATE(MI.JOIN_DATE) ,NOW()) AS joinDate -->
+			    	   , IF(TIMESTAMPDIFF(DAY, DATE(MI.JOIN_DATE), NOW()) = 0, 1, TIMESTAMPDIFF(DAY, DATE(MI.JOIN_DATE), NOW())) AS joinDate
 			    	   , MI.grade
 			    	   , MI.profile
 			    	   , UC.user_challenge_id as userSeq
@@ -64,7 +65,8 @@
 			    SELECT   UC.EMAIL
 			    	   , MI.NICK_NAME as nickName
 			    	   , COUNT(*) AS count
-			    	   , TIMESTAMPDIFF(DAY, DATE(MI.JOIN_DATE) ,NOW()) AS joinDate
+<!-- 			    	   , TIMESTAMPDIFF(DAY, DATE(MI.JOIN_DATE) ,NOW()) AS joinDate -->
+			    	   , IF(TIMESTAMPDIFF(DAY, DATE(MI.JOIN_DATE), NOW()) = 0, 1, TIMESTAMPDIFF(DAY, DATE(MI.JOIN_DATE), NOW())) AS joinDate
    			    	   , MI.grade
    			    	   , MI.profile
 			    	   , UC.user_challenge_id as userSeq			    	   
@@ -78,6 +80,23 @@
 			  ) t, (SELECT @rank := 0) r 
 			) val 
 			WHERE val.email = #{email} 		 
+	</select>
+	
+		<!-- 실시간 본인 랭킹 -->
+	<select id="missionRankingOwnInfo" parameterType="MemberDto" resultType="java.util.Map" >
+			    SELECT   UC.EMAIL as email	
+			    	   , MI.NICK_NAME as nickName
+			    	   , COUNT(*) AS successCnt
+			    	   , IF(TIMESTAMPDIFF(DAY, DATE(MI.JOIN_DATE), NOW()) = 0, 1, TIMESTAMPDIFF(DAY, DATE(MI.JOIN_DATE), NOW())) AS joinDate			    	   
+   			    	   , MI.grade as grade
+   			    	   , MI.profile as profile
+			    	   , UC.user_challenge_id as userSeq
+			    FROM CHALLENGE_SUBMISSION CS 
+			    JOIN USER_CHALLENGE UC 
+			    ON CS.USER_CHALLENGE_ID = UC.USER_CHALLENGE_ID
+			    JOIN MEMBER_INFO MI 
+			    ON UC.EMAIL = MI.EMAIL 			    
+			where UC.EMAIL = #{email} 	
 	</select>
 	
 	<!-- 본인 미션 달력 -->
@@ -242,7 +261,8 @@
 			    SELECT   UC.EMAIL
 			    	   , MI.NICK_NAME as nickName
 			    	   , COUNT(*) AS count
-			    	   , TIMESTAMPDIFF(DAY, DATE(MI.JOIN_DATE) ,NOW()) AS joinDate
+<!-- 			    	   , TIMESTAMPDIFF(DAY, DATE(MI.JOIN_DATE) ,NOW()) AS joinDate -->
+			    	   , IF(TIMESTAMPDIFF(DAY, DATE(MI.JOIN_DATE), NOW()) = 0, 1, TIMESTAMPDIFF(DAY, DATE(MI.JOIN_DATE), NOW())) AS joinDate
    			    	   , MI.grade
    			    	   , MI.profile
 			    	   , UC.user_challenge_id as userSeq			    	   

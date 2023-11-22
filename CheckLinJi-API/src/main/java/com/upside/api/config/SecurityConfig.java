@@ -42,6 +42,7 @@ public class SecurityConfig {
         		.requestMatchers("/api/members/sign/**").permitAll()  // login 없이 접근 허용 하는 URL
         		.requestMatchers("/api/members/login/**").permitAll()        		       	
         		.requestMatchers("/api/members/validateDuplicated/**").permitAll()
+        		.requestMatchers("/api/members/changePasswordMail/**").permitAll()
         		.requestMatchers("/api/social/login/**").permitAll()
         		.requestMatchers("/api/members/refreshToken/**").permitAll()          		
         		.requestMatchers("/api/external/**").permitAll()

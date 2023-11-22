@@ -191,7 +191,7 @@ public class ChallengeController {
 							
 		String userEmail = jwtTokenProvider.getEmail(authHeader); // email을 얻기위해 헤더에서 토큰을 디코딩하는 부분이다.
 		
-		Map<String, String> result = challengeSerivce.joinChallenge(userChallengeDto.getChallengeName() , userEmail);
+		Map<String, String> result = challengeSerivce.joinChallenge("첵린지" , userEmail);
 				
 		if (result.get("HttpStatus").equals("2.00")) { // 성공						
 			return new ResponseEntity<>(result,HttpStatus.OK);					
