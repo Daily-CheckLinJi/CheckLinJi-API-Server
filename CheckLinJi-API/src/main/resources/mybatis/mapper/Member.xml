@@ -52,7 +52,7 @@
 			    ORDER BY COUNT(*) DESC 
 			) t, (SELECT @rank := 0) r 
 			ORDER BY ranking ASC 
-			LIMIT 3;		 
+			LIMIT 3		 
 	</select>
 	
 	<!-- 실시간 본인 랭킹 -->
@@ -107,12 +107,12 @@
 				, SUBMISSION_TIME
 				, SUBMISSION_COMPLETED		
 		FROM CHALLENGE_SUBMISSION CS 
-	JOIN USER_CHALLENGE UC 
-	ON UC.USER_CHALLENGE_ID = CS.USER_CHALLENGE_ID
-	WHERE CS.SUBMISSION_DATE LIKE #{date}
-	AND UC.CHALLENGE_NAME = #{challengeName}
-	AND UC.EMAIL = #{email}
-	GROUP BY CS.SUBMISSION_DATE ; 
+	 		JOIN USER_CHALLENGE UC 
+				ON UC.USER_CHALLENGE_ID = CS.USER_CHALLENGE_ID
+		WHERE CS.SUBMISSION_DATE LIKE #{date}
+				AND UC.CHALLENGE_NAME = #{challengeName}
+				AND UC.EMAIL = #{email}
+		GROUP BY CS.SUBMISSION_DATE 
 	</select>
 		
 	<!-- 본인 미션 상세정보 -->
