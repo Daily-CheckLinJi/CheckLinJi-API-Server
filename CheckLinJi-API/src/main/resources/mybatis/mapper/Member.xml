@@ -40,8 +40,7 @@
 			FROM (
 			    SELECT MI.NICK_NAME
 			    	   , COUNT(*) AS count
-<!-- 			    	   , TIMESTAMPDIFF(DAY, DATE(MI.JOIN_DATE) ,NOW()) AS joinDate -->
-			    	   , IF(TIMESTAMPDIFF(DAY, DATE(MI.JOIN_DATE), NOW()) = 0, 1, TIMESTAMPDIFF(DAY, DATE(MI.JOIN_DATE), NOW())) AS joinDate
+			    	   , IF(TIMESTAMPDIFF(DAY, DATE(MI.JOIN_DATE), NOW()) = 0, 1, TIMESTAMPDIFF(DAY, DATE(MI.JOIN_DATE), NOW()) + 1) AS joinDate
 			    	   , MI.grade
 			    	   , MI.profile
 			    	   , UC.user_challenge_id as userSeq
@@ -64,9 +63,8 @@
 			  FROM (
 			    SELECT   UC.EMAIL
 			    	   , MI.NICK_NAME as nickName
-			    	   , COUNT(*) AS count
-<!-- 			    	   , TIMESTAMPDIFF(DAY, DATE(MI.JOIN_DATE) ,NOW()) AS joinDate -->
-			    	   , IF(TIMESTAMPDIFF(DAY, DATE(MI.JOIN_DATE), NOW()) = 0, 1, TIMESTAMPDIFF(DAY, DATE(MI.JOIN_DATE), NOW())) AS joinDate
+			    	   , COUNT(*) AS count			    	   
+			    	   , IF(TIMESTAMPDIFF(DAY, DATE(MI.JOIN_DATE), NOW()) = 0, 1, TIMESTAMPDIFF(DAY, DATE(MI.JOIN_DATE), NOW()) + 1) AS joinDate
    			    	   , MI.grade
    			    	   , MI.profile
 			    	   , UC.user_challenge_id as userSeq			    	   
@@ -87,7 +85,7 @@
 			    SELECT   UC.EMAIL as email	
 			    	   , MI.NICK_NAME as nickName
 			    	   , COUNT(*) AS successCnt
-			    	   , IF(TIMESTAMPDIFF(DAY, DATE(MI.JOIN_DATE), NOW()) = 0, 1, TIMESTAMPDIFF(DAY, DATE(MI.JOIN_DATE), NOW())) AS joinDate			    	   
+			    	   , IF(TIMESTAMPDIFF(DAY, DATE(MI.JOIN_DATE), NOW()) = 0, 1, TIMESTAMPDIFF(DAY, DATE(MI.JOIN_DATE), NOW()) + 1) AS joinDate			    	   
    			    	   , MI.grade as grade
    			    	   , MI.profile as profile
 			    	   , UC.user_challenge_id as userSeq
@@ -260,9 +258,8 @@
 			  FROM (
 			    SELECT   UC.EMAIL
 			    	   , MI.NICK_NAME as nickName
-			    	   , COUNT(*) AS count
-<!-- 			    	   , TIMESTAMPDIFF(DAY, DATE(MI.JOIN_DATE) ,NOW()) AS joinDate -->
-			    	   , IF(TIMESTAMPDIFF(DAY, DATE(MI.JOIN_DATE), NOW()) = 0, 1, TIMESTAMPDIFF(DAY, DATE(MI.JOIN_DATE), NOW())) AS joinDate
+			    	   , COUNT(*) AS count			    	   
+			    	   , IF(TIMESTAMPDIFF(DAY, DATE(MI.JOIN_DATE), NOW()) = 0, 1, TIMESTAMPDIFF(DAY, DATE(MI.JOIN_DATE), NOW()) + 1) AS joinDate
    			    	   , MI.grade
    			    	   , MI.profile
 			    	   , UC.user_challenge_id as userSeq			    	   

@@ -130,7 +130,7 @@ public class ChallengeService {
 		public Map<String, Object> userChallengeList (PageDto pageDto) {
 			Map<String, Object> result = new HashMap<String, Object>();
 			
-			log.info("첼린지 인증글 리스트 ------> " + "Start");
+			log.info("유저 첼린지 인증글 리스트 ------> " + "Start");
 									 						 					
 			  try {
 				  
