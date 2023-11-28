@@ -224,16 +224,16 @@ public class ChallengeController {
 		} 
 	}
 	
-		@PostMapping("/completed") // 챌린지 완료 처리
-		public ResponseEntity<Map<String, String>> completedChallenge (@RequestBody ChallengeDto challengeDto) {
-								
-			Map<String, String> result = challengeSerivce.createChallenge(challengeDto);
-					
-			if (result.get("HttpStatus").equals("2.00")) { // 성공														
-				return new ResponseEntity<>(result,HttpStatus.OK);					
-			} else {											
-				return new ResponseEntity<>(result,HttpStatus.BAD_REQUEST);
-			} 
+	@PostMapping("/completed") // 챌린지 완료 처리
+	public ResponseEntity<Map<String, String>> completedChallenge (@RequestBody ChallengeDto challengeDto) {
+							
+		Map<String, String> result = challengeSerivce.createChallenge(challengeDto);
+				
+		if (result.get("HttpStatus").equals("2.00")) { // 성공														
+			return new ResponseEntity<>(result,HttpStatus.OK);					
+		} else {											
+			return new ResponseEntity<>(result,HttpStatus.BAD_REQUEST);
+		} 
   }
 				
 

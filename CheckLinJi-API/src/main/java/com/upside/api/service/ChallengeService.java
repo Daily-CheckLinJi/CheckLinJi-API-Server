@@ -86,16 +86,19 @@ public class ChallengeService {
 					if(pageDto.getTag() != null) {
 						pageDto.setTagList(Arrays.asList(pageDto.getTag().split("\\|")));  // hashTag | 기준으로 잘라서 리스트에 넣기
 					}
-				  				  
+				  	
+					// 첼린지 인증글 리스트 가져오기
 		        	ArrayList<Map<String, Object>> viewChallengeList = challengeMapper.viewChallengeList(pageDto);
 		        	        	        	
+		        	// 리스트 사이즈만큼 돌면서 DB에 저장된 이미지 경로로 이미지를 base64로 인코딩해서 값 덮어씌우기
 		        	if (viewChallengeList.size() != 0 ) { 
-		        		for(int i = 0; i < viewChallengeList.size(); i++) { // 리스트 사이즈만큼 돌면서 DB에 저장된 이미지 경로로 이미지를 base64로 인코딩해서 값 덮어씌우기
+		        		for(int i = 0; i < viewChallengeList.size(); i++) { 
 		        			String image = fileService.myAuthImage((String) viewChallengeList.get(i).get("SUBMISSION_IMAGE"));
 		        				if(!image.equals("N")) {
 		        					viewChallengeList.get(i).put("SUBMISSION_IMAGE", image);
 		        				}
 		        		}
+		        		
 		        	 	log.info("첼린지 인증글 리스트 ------> " + Constants.SUCCESS);
 		        	   	result.put("HttpStatus","2.00");		
 		      			result.put("Msg",Constants.SUCCESS);
@@ -120,8 +123,8 @@ public class ChallengeService {
 	 
 	 
 	 
-	 /**
-		 * 첼린지 인증글 리스트
+		/**
+		 * 유저 첼린지 인증글 리스트
 		 * @param memberDto
 		 * @param challengeDto
 		 * @return
@@ -137,11 +140,13 @@ public class ChallengeService {
 					if(pageDto.getTag() != null) {
 						pageDto.setTagList(Arrays.asList(pageDto.getTag().split("\\|")));  // hashTag | 기준으로 잘라서 리스트에 넣기
 					}
-				  				  
+				  		
+					// 유저 첼린지 인증글 리스트 가져오기
 		        	ArrayList<Map<String, Object>> userChallengeList = challengeMapper.userChallengeList(pageDto);
 		        	        	        	
+		        	// 리스트 사이즈만큼 돌면서 DB에 저장된 이미지 경로로 이미지를 base64로 인코딩해서 값 덮어씌우기
 		        	if (userChallengeList.size() != 0 ) { 
-		        		for(int i = 0; i < userChallengeList.size(); i++) { // 리스트 사이즈만큼 돌면서 DB에 저장된 이미지 경로로 이미지를 base64로 인코딩해서 값 덮어씌우기
+		        		for(int i = 0; i < userChallengeList.size(); i++) { 
 		        			String image = fileService.myAuthImage((String) userChallengeList.get(i).get("SUBMISSION_IMAGE"));
 		        				if(!image.equals("N")) {
 		        					userChallengeList.get(i).put("SUBMISSION_IMAGE", image);
@@ -172,7 +177,8 @@ public class ChallengeService {
 		      			result.put("Msg",Constants.SUCCESS);
 		      			result.put("userInfo",memberInfo);
 		      			result.put("missionTotalList",challengeMapper.listTotalCnt(pageDto));
-		      			result.put("userChallengeList",userChallengeList);		        		
+		      			result.put("userChallengeList",userChallengeList);
+//		      			result.put("totalCount",challengeMapper.listTotalCnt(pageDto));
 		       		 
 		      			log.info("첼린지 인증글 리스트 ------> " + Constants.SUCCESS);
 		           } else {
@@ -234,7 +240,7 @@ public class ChallengeService {
 		      			result.put("Msg",Constants.SUCCESS);
 		      			result.put("submissionDetail",submissionDetail);
 		      			result.put("likesCount",likesCount);
-		      			result.put("commentList",commentList);
+		      			result.put("commentList",commentList);		      			
 		      			 // 같은 게시글을 신고한 이력이 있으면 이미 신고되었음 처리
 			  			  if(existsReport != 0) { 
 			  				  result.put("existsReport","Y");
