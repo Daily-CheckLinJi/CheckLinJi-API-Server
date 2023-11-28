@@ -8,7 +8,6 @@ import org.apache.ibatis.annotations.Mapper;
 
 import com.upside.api.dto.ChallengeSubmissionDto;
 import com.upside.api.dto.PageDto;
-import com.upside.api.dto.UserChallengeDto;
 
 @Mapper
 public interface ChallengeMapper {

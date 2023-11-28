@@ -1,7 +1,10 @@
 package com.upside.api.util;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 public class DateTime {
 
@@ -29,4 +32,21 @@ public class DateTime {
         
         return result;
 	}
+	
+	// 사용자의 가입일로부터 현재까지의 경과 일수를 계산
+	public static Long userJoinDate(String userJoinDate) throws ParseException {
+		
+		// SimpleDateFormat을 사용하여 문자열을 Date로 변환
+        SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        
+        Date joinDate = dateTimeFormat.parse(userJoinDate);
+       
+    	Date currentDate = new Date();
+    			            	
+    	long differenceInMillis = currentDate.getTime() - joinDate.getTime();
+    	long differenceInDays = differenceInMillis / (24 * 60 * 60 * 1000);  		
+        
+        return differenceInDays;
+	}
+	
 }

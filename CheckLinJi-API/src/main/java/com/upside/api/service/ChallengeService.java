@@ -42,6 +42,7 @@ import com.upside.api.repository.ReportSubmissionRepository;
 import com.upside.api.repository.SubmissionHashTagRepository;
 import com.upside.api.repository.UserChallengeRepository;
 import com.upside.api.util.Constants;
+import com.upside.api.util.DateTime;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -157,16 +158,9 @@ public class ChallengeService {
 		        		
 		        		HashMap<String, Object> memberInfo = new HashMap<String, Object>();
 		        		
-		                // SimpleDateFormat을 사용하여 문자열을 Date로 변환
-		                SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-		                
-	                    Date joinDate = dateTimeFormat.parse(user.get().getJoinDate());
-	                   
-		            	Date currentDate = new Date();
-		            			            	
-		            	long differenceInMillis = currentDate.getTime() - joinDate.getTime();
-		            	long differenceInDays = differenceInMillis / (24 * 60 * 60 * 1000);
-		        		
+		        		// 사용자의 가입일로부터 현재까지의 경과 일수를 계산
+		            	long differenceInDays =  DateTime.userJoinDate(user.get().getJoinDate());
+		            			        		
 		        		memberInfo.put("nickName", user.get().getNickName());
 		        		memberInfo.put("profile", fileService.myAuthImage(user.get().getProfile()));
 		        		memberInfo.put("grade", user.get().getGrade());
