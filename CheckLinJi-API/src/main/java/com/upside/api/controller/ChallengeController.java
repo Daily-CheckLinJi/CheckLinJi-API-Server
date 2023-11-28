@@ -180,26 +180,26 @@ public class ChallengeController {
 					
 	}
 	
-	/**
-	 * 첼린지 참가
-	 * @param userChallengeDto
-	 * @param authHeader
-	 * @return
-	 */
-	@PostMapping("/join") 
-	public ResponseEntity<Map<String, String>> joinChallenge (@RequestBody UserChallengeDto userChallengeDto , @RequestHeader("Authorization") String authHeader) {
-							
-		String userEmail = jwtTokenProvider.getEmail(authHeader); // email을 얻기위해 헤더에서 토큰을 디코딩하는 부분이다.
-		
-		Map<String, String> result = challengeSerivce.joinChallenge("첵린지" , userEmail);
-				
-		if (result.get("HttpStatus").equals("2.00")) { // 성공						
-			return new ResponseEntity<>(result,HttpStatus.OK);					
-		} else {			
-			return new ResponseEntity<>(result,HttpStatus.BAD_REQUEST);
-		} 
-					
-	}
+//	/**
+//	 * 첼린지 참가
+//	 * @param userChallengeDto
+//	 * @param authHeader
+//	 * @return
+//	 */
+//	@PostMapping("/join") 
+//	public ResponseEntity<Map<String, String>> joinChallenge (@RequestBody UserChallengeDto userChallengeDto , @RequestHeader("Authorization") String authHeader) {
+//							
+//		String userEmail = jwtTokenProvider.getEmail(authHeader); // email을 얻기위해 헤더에서 토큰을 디코딩하는 부분이다.
+//		
+//		Map<String, String> result = challengeSerivce.joinChallenge("첵린지" , userEmail);
+//				
+//		if (result.get("HttpStatus").equals("2.00")) { // 성공						
+//			return new ResponseEntity<>(result,HttpStatus.OK);					
+//		} else {			
+//			return new ResponseEntity<>(result,HttpStatus.BAD_REQUEST);
+//		} 
+//					
+//	}
 	
 	/**
 	 * 첼린지 제출

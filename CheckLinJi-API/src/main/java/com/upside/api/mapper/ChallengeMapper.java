@@ -29,7 +29,7 @@ public interface ChallengeMapper {
 	
 	
 	/**
-	 * 첼린지 인증글 리스트
+	 * 좋아요 수가 많은 사용자 구하기
 	 * @param data
 	 * @return
 	 */
