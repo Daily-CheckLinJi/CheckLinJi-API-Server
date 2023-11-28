@@ -61,23 +61,24 @@ public class ExternalAPIService {
 	     Long day = (long) now.getDayOfMonth();	     
 	     
 	     try {
-				     
-	     Optional<SayingEntity> existYN = wiseSayingRepository.findBysaySeq(day);
-	     
-		 if(existYN.isPresent()) {
-			 log.info("명언 ------> " + Constants.SUCCESS);
-			 result.put("HttpStatus","2.00");
-			 result.put("Msg",Constants.SUCCESS);
-			 result.put("name",existYN.get().getName());
-			 result.put("content",existYN.get().getMsg());		 			 
-		 } else {
-			 log.info("명언 ------> " + Constants.FAIL);
-			 result.put("HttpStatus","1.00");
-			 result.put("Msg",Constants.FAIL);
-		 }
-		 
+			
+	    	 // 매일 날짜별로 명언 가져오기
+		     Optional<SayingEntity> existYN = wiseSayingRepository.findBysaySeq(day);
+		     
+			 if(existYN.isPresent()) {				 
+				 result.put("HttpStatus","2.00");
+				 result.put("Msg",Constants.SUCCESS);
+				 result.put("name",existYN.get().getName());
+				 result.put("content",existYN.get().getMsg());
+				 log.info("명언 가져오기 ------> " + Constants.SUCCESS);
+			 } else {				 
+				 result.put("HttpStatus","1.00");
+				 result.put("Msg",Constants.FAIL);
+				 log.info("명언 가져오기 ------> " + Constants.FAIL);
+			 }
+			 
 		} catch (Exception e) {
-			 log.error("명언 ------> " + Constants.SYSTEM_ERROR , e);
+			 log.error("명언 가져오기 ------> " + Constants.SYSTEM_ERROR , e);
 			 result.put("HttpStatus","1.00");
 			 result.put("Msg",Constants.SYSTEM_ERROR);
 		}
@@ -94,33 +95,35 @@ public class ExternalAPIService {
 		 Map<String,Object> result = new HashMap<String, Object>();
 		 
 		 try {
-					 
-		 List<BestBookEntity> existYN = bestBooRepository.findByDateAndType(bestBookDto.getDate(),bestBookDto.getType());	     		
-	     
-		 if(existYN == null) {
-			 log.info("베스트셀러 확인 ------> " + Constants.FAIL);
-			 result.put("HttpStatus","1.00");
-			 result.put("Msg",Constants.FAIL);
-			 return result ;
-		 } 
-		 
-		 List<BestBookDto> list = new ArrayList<BestBookDto>();
-		 
-		 for(int i = 0; i < existYN.size(); i++) {
-			 BestBookDto bestBook = new BestBookDto();
-			 bestBook.setName(existYN.get(i).getName());
-			 bestBook.setRank(existYN.get(i).getRank());
-			 bestBook.setDate(existYN.get(i).getDate());
-			 bestBook.setUpdateDate(existYN.get(i).getUpdateDate());
-			 bestBook.setImage(fileService.encodingImageUrl(existYN.get(i).getImage()));
-			 list.add(bestBook);
-			 			
-		 }
-		 
-		 log.info("베스트셀러 확인 ------> " + Constants.SUCCESS);
-		 result.put("HttpStatus","2.00");
-		 result.put("Msg",Constants.SUCCESS);
-		 result.put("bestSeller",list);		
+					
+			 // 날짜와 타입에 해당하는 베스트셀러 리스트 가져오기
+			 List<BestBookEntity> existYN = bestBooRepository.findByDateAndType(bestBookDto.getDate(),bestBookDto.getType());	     		
+		     
+			 // 리스트가 없으면 에러 처리
+			 if(existYN == null) {
+				 log.info("베스트셀러 확인 ------> " + Constants.SYSTEM_ERROR);
+				 result.put("HttpStatus","1.00");
+				 result.put("Msg",Constants.SYSTEM_ERROR);
+				 return result ;
+			 } 
+			 
+			 List<BestBookDto> list = new ArrayList<BestBookDto>();
+			 
+			 // List<Entity> 사이즈만큼 돌면서 List<Dto> 에 담기
+			 for(int i = 0; i < existYN.size(); i++) {
+				 BestBookDto bestBook = new BestBookDto();
+				 bestBook.setName(existYN.get(i).getName());
+				 bestBook.setRank(existYN.get(i).getRank());
+				 bestBook.setDate(existYN.get(i).getDate());
+				 bestBook.setUpdateDate(existYN.get(i).getUpdateDate());
+				 bestBook.setImage(fileService.encodingImageUrl(existYN.get(i).getImage()));
+				 list.add(bestBook);				 			
+			 }
+			 			 
+			 result.put("HttpStatus","2.00");
+			 result.put("Msg",Constants.SUCCESS);
+			 result.put("bestSeller",list);
+			 log.info("베스트셀러 확인 ------> " + Constants.SUCCESS);
 		 
 		} catch (Exception e) {
 			 result.put("HttpStatus","1.00");

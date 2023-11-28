@@ -22,7 +22,7 @@ public class Constants {
 
 public static final String SUCCESS = "정상적으로 처리가 완료되었습니다.";
 public static final String FAIL = "처리가 완료되지않았습니다.";
-public static final String NOT_EXIST_PARAMETER = "입력값이 존재하지않습니다.";
+public static final String NOT_EXIST_PARAMETER = "값이 존재 하지않는 파라미터가 있습니다.";
 public static final String NOT_EXIST_EMAIL = "존재하지않는 이메일입니다.";
 public static final String DUPLICATE_EMAIL = "중복된 이메일 입니다.";
 public static final String INBALID_EMAIL_PASSWORD = "이메일 혹은 패스워드가 올바르지않습니다";

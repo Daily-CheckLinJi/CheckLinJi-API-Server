@@ -37,14 +37,21 @@ public class MemberController {
 
 	
 	
-	
+	/**
+	 * 회원목록 조회
+	 * @param memberDto
+	 * @return
+	 */
 	@GetMapping 						  /* default size = 10 */
-	public Page<MemberEntity> memberList(@PageableDefault (sort = "email", direction = Sort.Direction.DESC) Pageable pageable  ) {
-				
-				
+	public Page<MemberEntity> memberList(@PageableDefault (sort = "email", direction = Sort.Direction.DESC) Pageable pageable  ) {							
 		return memberService.memberList(pageable);
 	}
 	
+	/**
+	 * 본인 정보 조회
+	 * @param authHeader
+	 * @return
+	 */
 	@PostMapping("/email")
 	public ResponseEntity<Map<String , Object>> selectMember(@RequestHeader("Authorization") String authHeader) {				
 		Map<String , Object> result = new HashMap<String, Object>();	

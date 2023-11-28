@@ -63,56 +63,62 @@ public class MemberService {
 		return  memberRepository.findAll(pageable);							
 	}
 	
+	
 	@Transactional(readOnly = true)
 	public Map<String, Object> selectMember(String email) {	
 		
 		Map<String, Object> result = new HashMap<String, Object>();
-		
-		// Base64로 인코딩된 이미지 파일 문자열로 가져옴
-	    
+					    
 		try {
 					
-		Optional<MemberEntity> data = memberRepository.findById(email);
-		
-		 if(data.isPresent()) {
-			 
-			 MemberDto memberDto = new MemberDto();
-			 memberDto.setEmail(email);
-			 
-	         Map<String, String> ownData = new HashMap<String, String>();              
-	       
-	         ownData.put("email", email);
-			 
-			 Map<String, String> missionRankingOwn = memberMapper.OwnRanking(ownData);
-		
-			 if(missionRankingOwn == null) {
-				 missionRankingOwn = new HashMap<String, String>();
-				 missionRankingOwn.put("rank", "0");
+			Optional<MemberEntity> userInfo = memberRepository.findById(email);
+			
+			 if(userInfo.isPresent()) {
+				 
+				 MemberDto memberDto = new MemberDto();
+				 memberDto.setEmail(email);
+				 
+		         Map<String, String> ownData = new HashMap<String, String>();              
+		       
+		         ownData.put("email", email);
+				 
+		         // 본인 미션 랭킹 가져오기
+				 Map<String, String> missionRankingOwn = memberMapper.OwnRanking(ownData);
+			
+				 // 미션 정보가 없으면 랭크 0 처리
+				 if(missionRankingOwn == null) {
+					 missionRankingOwn = new HashMap<String, String>();
+					 missionRankingOwn.put("rank", "0");
+				 }
+				 
+				 // 저장된 파일을 Base64로 인코딩
+				 String file = fileService.myAuthImage(userInfo.get().getProfile());
+				 
+				 userInfo.get().setPassword(""); // 조회시 패스워드는 공백 처리
+				 userInfo.get().setProfile(file); // 프로필은 base64로 인코딩해서 넘겨줌
+				 
+				 result.put("HttpStatus","2.00");
+				 result.put("Msg",Constants.SUCCESS);
+				 result.put("selectMember",userInfo.get());
+				 result.put("ownRanking",missionRankingOwn.get("rank"));
+				 
+				 // 오늘 첼린지 제출 완료 시 Y 아닐 시 N
+				 if(memberMapper.missionYn(email) != 0) {
+					 result.put("missionSuccess","Y");					 
+				 }else {
+					 result.put("missionSuccess","N");
+				 }
+				 
+				 log.info("본인 정보 조회 ------> " + Constants.SUCCESS);
+				 
+			 } else {				 
+				 result.put("HttpStatus","1.00");
+				 result.put("Msg",Constants.FAIL);
+				 log.info("본인 정보 조회 ------> " + Constants.FAIL);
 			 }
-			 
-			 String file = fileService.myAuthImage(data.get().getProfile());
-			 data.get().setPassword(""); // 조회시 패스워드는 공백 처리
-			 data.get().setProfile(file); // 프로필은 base64로 인코딩해서 넘겨줌
-			 log.info("회원목록 조회 ------> " + Constants.SUCCESS);
-			 result.put("HttpStatus","2.00");
-			 result.put("Msg",Constants.SUCCESS);
-			 result.put("selectMember",data.get());
-			 result.put("ownRanking",missionRankingOwn.get("rank"));
-			 
-			 if(memberMapper.missionYn(email) == 0) {
-				 result.put("missionSuccess","N");
-			 }else {
-				 result.put("missionSuccess","Y");
-			 }
-			 
-		 } else {
-			 log.info("회원목록 조회 ------> " + Constants.FAIL);
-			 result.put("HttpStatus","1.00");
-			 result.put("Msg",Constants.FAIL);
-		 }
 		 
 		} catch (Exception e) {
-			 log.error("회원목록 조회 ------> " + Constants.SYSTEM_ERROR , e);
+			 log.error("본인 정보 조회 ------> " + Constants.SYSTEM_ERROR , e);
 			 result.put("HttpStatus","1.00");
 			 result.put("Msg",Constants.SYSTEM_ERROR);
 		}
@@ -131,165 +137,169 @@ public class MemberService {
 		
 		try {
 			
-		if(memberDto.getEmail() == null || memberDto.getName() == null || memberDto.getNickName() == null || memberDto.getPassword() == null ||
-		     memberDto.getBirth() == null || memberDto.getSex() == null ) {  
-		    									
-			log.info("회원가입 실패 ------> " + Constants.NOT_EXIST_PARAMETER);
-			result.put("HttpStatus","1.01");
-			result.put("Msg",Constants.NOT_EXIST_PARAMETER);
-			return result ; // 요청은 잘 만들어졌지만, 문법 오류로 인하여 따를 수 없습니다.
-		} 						 
-		
-		 Optional<MemberEntity> idSame = memberRepository.findById(memberDto.getEmail());
-		 
-		 if(idSame.isPresent()) {
-			 log.info("회원가입 실패 ------> " + "중복된 이메일 입니다.");
-			 
-			 result.put("HttpStatus","1.02");
-			 result.put("Msg",Constants.DUPLICATE_EMAIL);
-			 
-			 return result ; // 요청은 잘 만들어졌지만, 문법 오류로 인하여 따를 수 없습니다.
-		 }
-		 
-		 Map<String , String> validateDuplicated = validateDuplicatedNickName(memberDto.getNickName());
-		
-		if(validateDuplicated.get("HttpStatus").equals("1.00")) {
-			log.info("회원가입 실패 ------> " + "중복된 닉네임입니다.");
-			 
-			 result.put("HttpStatus","1.00");
-			 result.put("Msg","중복된 닉네임입니다.");
-			 
-			 return result ;
-		}
-		
-		String profileName = "";
-		 
-		if(memberDto.getSex().equals("M")) {			
+			// 값이 존재 하지않는 파라미터가 있는지 확인
+			if(memberDto.getEmail() == null || memberDto.getName() == null || memberDto.getNickName() == null || memberDto.getPassword() == null ||
+			   memberDto.getBirth() == null || memberDto.getSex() == null ) {  
+			    													
+				result.put("HttpStatus","1.00");
+				result.put("Msg",Constants.NOT_EXIST_PARAMETER);
+				log.info("회원가입 실패 ------> " + Constants.NOT_EXIST_PARAMETER);
+				return result ; 
+			} 						 
 			
-			profileName = "M-" + String.valueOf((int)(Math.random() * 5) + 1) + ".png";
-		}else if (memberDto.getSex().equals("W")) {
-			
-			profileName = "W-" + String.valueOf((int)(Math.random() * 5) + 1) + ".png";
-		} else {
-			
-			profileName = "W-" + String.valueOf((int)(Math.random() * 5) + 1) + ".png";
-		}
-		
-		SimpleDateFormat today = new SimpleDateFormat("yyyy-MM-dd hh:mm");        		
-		
-		MemberEntity memberEntity = MemberEntity.builder()
-				.email(memberDto.getEmail())
-				.name(memberDto.getName())
-				.nickName(memberDto.getNickName())
-				.password(passwordEncoder.encode(memberDto.getPassword())) 								
-				.birth(memberDto.getBirth())
-				.sex(memberDto.getSex())
-				.loginDate(today.format(new Date()))
-				.joinDate(today.format(new Date()))
-				.authority("user")
-				.profile(uploadDir + "/" + "profile" + "/" + profileName) // 문자열에서 백슬래시()는 이스케이프 문자(escape character)로 사용되기 때문에 사용할려면 \\ 두개로 해야 \로 인식
-				.grade("책갈피")
-				.build();						        
-		
-		 memberRepository.save(memberEntity);
-		 		 
-		 boolean  exsistUser = memberRepository.findById(memberDto.getEmail()).isPresent();
-		 
-		 if (exsistUser == true) {
-			
-			 Optional<ChallengeEntity> existsChallenge = challengeRepository.findById("첵린지");
-				
-			 Optional<MemberEntity> existsMember = memberRepository.findById(memberDto.getEmail());
+			 Optional<MemberEntity> isDuplicateId = memberRepository.findById(memberDto.getEmail());
 			 
-			 ChallengeEntity challenge =  existsChallenge.get();
-			 
-			 MemberEntity member =  existsMember.get();
-			 
-			 UserChallengeEntity userChallenge =  UserChallengeEntity.builder()
-					   .memberEntity(member)
-					   .challengeEntity(challenge)
-					   .registrationTime(LocalDateTime.now())
-					   .completed(false)
-					   .build();
-
-		 	userChallengeRepository.save(userChallenge);
-			 
-			 log.info("회원가입 성공 ------> " + memberDto.getEmail());
-			 result.put("HttpStatus","2.00");
-			 result.put("UserEmail",memberDto.getEmail());
-			 
-			 Optional<UserChallengeEntity> exsistUserChallenge = userChallengeRepository.findByMemberEntityAndChallengeEntity(member,challenge);
-			 
-			 if(exsistUserChallenge.isPresent()) {
-				 result.put("Msg",Constants.SUCCESS); 
-			 }else {
-				 result.put("Msg","회원가입은 완료했으나 첼린지 참여에 실패하였습니다."); 
+			 if(isDuplicateId.isPresent()) {				 				 
+				 result.put("HttpStatus","1.00");
+				 result.put("Msg",Constants.DUPLICATE_EMAIL);
+				 log.info("회원가입 실패 ------> " + "중복된 이메일 입니다.");
+				 return result ; 
 			 }
-			 			  
-		 } else {
-			 log.info("회원가입 실패 ------> " + Constants.FAIL);
-			 result.put("HttpStatus","1.00");
-			 result.put("Msg",Constants.FAIL);			  
-		 }
-		 
-		} catch (Exception e) {
-			 log.error("회원가입 실패 ------> " + Constants.SYSTEM_ERROR , e);
-			 result.put("HttpStatus","1.00");
-			 result.put("Msg",Constants.SYSTEM_ERROR);	
-		}
+			 
+			 // 닉네임 검증 중복 시 1.00 
+			 Map<String , String> validateDuplicated = validateDuplicatedNickName(memberDto.getNickName());
+			
+			 if(validateDuplicated.get("HttpStatus").equals("1.00")) {		 				 
+				 result.put("HttpStatus","1.00");
+				 result.put("Msg","중복된 닉네임입니다.");
+				 log.info("회원가입 실패 ------> " + "중복된 닉네임입니다.");				 
+				 return result ;
+			 }
+			
+			String profileName = "";
+			 
+			// 회원가입 시 기본 프로필 성별 따라 랜덤 지정
+			if(memberDto.getSex().equals("M")) {							
+				profileName = "M-" + String.valueOf((int)(Math.random() * 5) + 1) + ".png";
+			}else if (memberDto.getSex().equals("W")) {				
+				profileName = "W-" + String.valueOf((int)(Math.random() * 5) + 1) + ".png";
+			}else{				
+				profileName = "W-" + String.valueOf((int)(Math.random() * 5) + 1) + ".png";
+			}
+			
+			SimpleDateFormat today = new SimpleDateFormat("yyyy-MM-dd hh:mm");        		
+			
+			// 회원가입 유저 정보 DB 저장
+			MemberEntity memberEntity = MemberEntity.builder()
+					.email(memberDto.getEmail())
+					.name(memberDto.getName())
+					.nickName(memberDto.getNickName())
+					.password(passwordEncoder.encode(memberDto.getPassword())) 								
+					.birth(memberDto.getBirth())
+					.sex(memberDto.getSex())
+					.loginDate(today.format(new Date()))
+					.joinDate(today.format(new Date()))
+					.authority("user")
+					.profile(uploadDir + "/" + "profile" + "/" + profileName) // 문자열에서 백슬래시()는 이스케이프 문자(escape character)로 사용되기 때문에 사용할려면 \\ 두개로 해야 \로 인식
+					.grade("책갈피")
+					.build();						        
+			
+			 memberRepository.save(memberEntity);
+			 	
+			 // 유저 정보 DB 저장이 잘 됬는지 확인
+			 boolean  exsistUser = memberRepository.findById(memberDto.getEmail()).isPresent();
+			 
+			 if (exsistUser) {
+				
+				 // 유저 첼린지 가입 (원래는 사용자가 직접 가입 해야하지만 룰이 좀 바뀌어서 임시로)				 
+				 ChallengeEntity challenge =  challengeRepository.findById("첵린지").get();
 				 
+				 MemberEntity member =  memberRepository.findById(memberDto.getEmail()).get();
+				 
+				 UserChallengeEntity userChallenge =  UserChallengeEntity.builder()
+						   .memberEntity(member)
+						   .challengeEntity(challenge)
+						   .registrationTime(LocalDateTime.now())
+						   .completed(false)
+						   .build();
+	
+			 	 userChallengeRepository.save(userChallenge);
+				 
+			 	 // 첼린지 가입이 제대로 됬는지 확인
+			 	 Boolean exsistUserChallenge = userChallengeRepository.findByMemberEntityAndChallengeEntity(member,challenge).isPresent();
+			 	 
+				 result.put("HttpStatus","2.00");
+				 result.put("UserEmail",memberDto.getEmail());	
+				 
+				 if(exsistUserChallenge) {
+					 result.put("Msg",Constants.SUCCESS); 
+				 }else {
+					 result.put("Msg","회원가입은 완료했으나 첼린지 참여에 실패하였습니다."); 
+				 }
+				 
+				 log.info("회원가입 성공 ------> " + memberDto.getEmail());
+				 
+			 }else{				 
+				 result.put("HttpStatus","1.00");
+				 result.put("Msg",Constants.FAIL);
+				 log.info("회원가입 실패 ------> " + Constants.FAIL);
+			 }
+		 
+		} catch (Exception e) {			 
+			 result.put("HttpStatus","1.00");
+			 result.put("Msg",Constants.SYSTEM_ERROR);
+			 log.error("회원가입 실패 ------> " + Constants.SYSTEM_ERROR , e);
+		}				 
 		 return result ;
 	}
 	
-	 /**
-     * Unique한 값을 가져야하나, 중복된 값을 가질 경우를 검증
-     * @param nickName
-     */
+	/**
+	 * 닉네임 검증
+	 * @param nickName
+	 * @return
+	 */
     public Map<String , String> validateDuplicatedNickName(String nickName) {
     	   
     	Map<String , String> result = new HashMap<String, String>();
     	
     	try {
-			    	
-        if (memberRepository.findByNickName(nickName).isPresent()) {
-        	log.info("아이디 검증 ------> " + "중복된 닉네임입니다.");
-        	result.put("HttpStatus","1.00");			
-			result.put("Msg","중복된 닉네임입니다.");        	         	
-        } else {
-        	log.info("아이디 검증 ------> " + "사용할 수 있는 닉네임입니다.");
-        	result.put("HttpStatus","2.00");			
-			result.put("Msg","사용할 수있는 닉네임입니다.");        		        	
-        }
+			  
+    		// 중복된 닉네임이 있는지 확인
+    		if(memberRepository.findByNickName(nickName).isPresent()){	        	
+	        	result.put("HttpStatus","1.00");			
+				result.put("Msg","중복된 닉네임입니다.");        	         	
+				log.info("닉네임 검증 ------> " + "중복된 닉네임입니다.");
+    		}else {	        	
+	        	result.put("HttpStatus","2.00");			
+				result.put("Msg","사용할 수 있는 닉네임입니다.");
+				log.info("닉네임 검증 ------> " + "사용할 수 있는 닉네임입니다.");
+    		}
         
-		} catch (Exception e) {
-        	log.error("아이디 검증 ------> " + Constants.SYSTEM_ERROR , e);
+		} catch (Exception e) {			
         	result.put("HttpStatus","1.00");			
-			result.put("Msg",Constants.SYSTEM_ERROR);    
+			result.put("Msg",Constants.SYSTEM_ERROR);
+			log.error("닉네임 검증 ------> " + Constants.SYSTEM_ERROR , e);
 		}
         
         return result ;
     }
 	
+    /**
+     * 이메일 검증
+     * @param email
+     * @return
+     */
     public Map<String , String> validateDuplicatedEmail(String email) {
     	
     	Map<String , String> result = new HashMap<String, String>();
     	
     	try {
-			    	
-        if (memberRepository.findById(email).isPresent()) {
-        	log.info("아이디 검증 ------> " + "중복된 이메일 입니다.");
-        	result.put("HttpStatus","1.00");			
-			result.put("Msg","중복된 이메일입니다.");        		 			         	
-        } else {
-        	log.info("아이디 검증 ------> " + "사용할 수있는 이메일입니다.");
-        	result.put("HttpStatus","2.00");			
-			result.put("Msg","사용할 수있는 이메일입니다.");		        	        	        	
-        }   
+			    
+    		// 중복된 이메일이 있는지 확인
+	        if (memberRepository.findById(email).isPresent()) {	        	
+	        	result.put("HttpStatus","1.00");			
+				result.put("Msg","중복된 이메일입니다.");        		
+				log.info("이메일 검증 ------> " + "중복된 이메일 입니다.");
+	        } else {	        	
+	        	result.put("HttpStatus","2.00");			
+				result.put("Msg","사용할 수있는 이메일입니다.");
+				log.info("이메일 검증 ------> " + "사용할 수있는 이메일입니다.");
+	        }   
         
-		} catch (Exception e) {
-        	log.error("아이디 검증 ------> " + Constants.SYSTEM_ERROR , e);
+		} catch (Exception e) {        	
         	result.put("HttpStatus","1.00");			
-			result.put("Msg",Constants.SYSTEM_ERROR); 
+			result.put("Msg",Constants.SYSTEM_ERROR);
+			log.error("이메일 검증 ------> " + Constants.SYSTEM_ERROR , e);
 		}
         
         return result ;
@@ -307,40 +317,40 @@ public class MemberService {
 		Map<String, String> result = new HashMap<String, String>();
 		
 		try {
+			
+			// 값이 존재 하지않는 파라미터가 있는지 확인
+			if(memberDto.getEmail() == null) {				
+				result.put("HttpStatus","1.00");
+				result.put("Msg",Constants.NOT_EXIST_PARAMETER);
+				log.info("회원정보 업데이트 실패 ------> " + Constants.NOT_EXIST_PARAMETER);
+				return result ; 
+			} 
 					
-		if(memberDto.getEmail() == null ) {
-			log.info("회원정보 업데이트 실패 ------> " + Constants.NOT_EXIST_PARAMETER);
-			result.put("HttpStatus","1.01");
-			result.put("Msg",Constants.NOT_EXIST_PARAMETER);
-			return result ; 
-		} 
-				
-		Optional<MemberEntity> user = memberRepository.findById(memberDto.getEmail());		
-		
-		if(!user.isPresent()) { // 아이디가 없으면
-			log.info("회원정보 업데이트 실패 ------> " + Constants.NOT_EXIST_EMAIL);
-			result.put("HttpStatus","1.04");
-			result.put("Msg",Constants.NOT_EXIST_EMAIL);			
+			// 가입된 유저인지 확인
+			Optional<MemberEntity> user = memberRepository.findById(memberDto.getEmail());		
 			
-		} else if(memberDto.getPassword() != null && !passwordEncoder.matches(memberDto.getPassword(), user.get().getPassword())) { // 패스워드 변경시
-			
-			 MemberEntity updateUser = user.get();
-			 log.info("회원정보 패스워드 업데이트 ------> " + user.get().getEmail());			
-			 updateUser.setPassword(passwordEncoder.encode(memberDto.getPassword()));			 
-			 result.put("HttpStatus","2.00");
-			 result.put("Msg","비밀변호 변경이 완료되었습니다.");		 
-			 	
-		} else {
-			 MemberEntity updateUser = user.get();			 
-			 updateUser.setName(memberDto.getName());
-			 updateUser.setNickName(memberDto.getNickName());			 		 
-			 updateUser.setBirth(memberDto.getBirth());			 
-			 updateUser.setSex(memberDto.getSex());
-			 
-			 result.put("HttpStatus","2.00");
-			 result.put("Msg","회원정보 수정이 완료되었습니다.");
-			 log.info("회원정보 업데이트 ------> " + updateUser.getEmail()); 			 			
-		}
+			// 유저 정보가 DB에 없을 경우
+			if(!user.isPresent()) { 				
+				result.put("HttpStatus","1.00");
+				result.put("Msg",Constants.NOT_EXIST_EMAIL);
+				log.info("회원정보 업데이트 실패 ------> " + Constants.NOT_EXIST_EMAIL);				
+			}else if(memberDto.getPassword() != null && !passwordEncoder.matches(memberDto.getPassword(), user.get().getPassword())) { // 패스워드 변경시				
+				 MemberEntity updateUser = user.get();
+				 log.info("회원정보 패스워드 업데이트 ------> " + user.get().getEmail());			
+				 updateUser.setPassword(passwordEncoder.encode(memberDto.getPassword()));			 
+				 result.put("HttpStatus","2.00");
+				 result.put("Msg","비밀변호 변경이 완료되었습니다.");		 				 	
+			}else {
+				 MemberEntity updateUser = user.get();			 
+				 updateUser.setName(memberDto.getName());
+				 updateUser.setNickName(memberDto.getNickName());			 		 
+				 updateUser.setBirth(memberDto.getBirth());			 
+				 updateUser.setSex(memberDto.getSex());
+				 
+				 result.put("HttpStatus","2.00");
+				 result.put("Msg","회원정보 수정이 완료되었습니다.");
+				 log.info("회원정보 업데이트 ------> " + updateUser.getEmail()); 			 			
+			}
 		
 		} catch (Exception e) {
 			log.error("회원정보 업데이트 실패 ------> " + Constants.SYSTEM_ERROR , e);

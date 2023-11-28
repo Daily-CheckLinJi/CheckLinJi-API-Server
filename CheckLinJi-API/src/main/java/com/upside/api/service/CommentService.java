@@ -43,20 +43,20 @@ public class CommentService {
 		Map<String, String> result = new HashMap<String, String>();
 		
 		try {
-					
-        int insertYn = userCommentMapper.userCommentSubmit(commentDto);
-        
-        if (insertYn == 0) {
-        	result.put("HttpStatus","1.00");		
-    		result.put("Msg",Constants.FAIL);
-    		return result ;
-        }
-        
-        result.put("HttpStatus","2.00");		
-		result.put("Msg",Constants.SUCCESS);
-		
-		log.info("유저 댓글 입력  ------> " + Constants.SUCCESS);
-		
+				
+			// 유저 댓글 등록
+	        int insertYn = userCommentMapper.userCommentSubmit(commentDto);
+	        	        
+	        if (insertYn != 0) {
+	        	result.put("HttpStatus","2.00");		
+	    		result.put("Msg",Constants.SUCCESS);
+	    		log.info("유저 댓글 입력  ------> " + Constants.SUCCESS);
+	        }else {        	
+	    		result.put("HttpStatus","1.00");		
+	    		result.put("Msg",Constants.FAIL);
+	    		log.info("유저 댓글 입력  ------> " + Constants.FAIL);
+	        }
+                						
 		} catch (Exception e) {
         	result.put("HttpStatus","1.00");		
     		result.put("Msg",Constants.SYSTEM_ERROR);
@@ -79,19 +79,18 @@ public class CommentService {
 		
 		try {
 					
-        int insertYn = userCommentMapper.userCommentUpdate(commentDto);
-       
-        if (insertYn == 0) {
-       	  result.put("HttpStatus","1.00");		
-   		  result.put("Msg",Constants.FAIL);
-   		return result ;
-   		
-        } 
-       
-        result.put("HttpStatus","2.00");		
-		result.put("Msg",Constants.SUCCESS);
-		
-		log.info("유저 댓글 수정  ------> " + Constants.SUCCESS);
+			// 유저 댓글 수정
+	        int insertYn = userCommentMapper.userCommentUpdate(commentDto);
+	       
+	        if (insertYn != 0) {
+	        	result.put("HttpStatus","2.00");		
+	     		result.put("Msg",Constants.SUCCESS);
+	     		log.info("유저 댓글 수정  ------> " + Constants.SUCCESS);
+	        }else {
+	        	result.put("HttpStatus","1.00");		
+	     		result.put("Msg",Constants.FAIL); 
+	     		log.info("유저 댓글 수정  ------> " + Constants.FAIL);
+	        }
 		
 		} catch (Exception e) {
 	       	result.put("HttpStatus","1.00");		
@@ -116,25 +115,24 @@ public class CommentService {
 			
 		  try {
 				  
-	      int insertYn = userCommentMapper.userCommentDelete(commentDto);
-	      
-	      if (insertYn == 0) {
-	      	result.put("HttpStatus","1.00");		
-	  		result.put("Msg",Constants.FAIL);
-	  		return result ;
-	      }
-	      
-         result.put("HttpStatus","2.00");		
-		 result.put("Msg",Constants.SUCCESS);
-			
-		 log.info("유저 댓글 삭제  ------> " + Constants.SUCCESS);
+			  // 유저 댓글 삭제
+		      int insertYn = userCommentMapper.userCommentDelete(commentDto);
+		      		      
+		      if (insertYn != 0) {
+		    	  result.put("HttpStatus","2.00");		
+		 		  result.put("Msg",Constants.SUCCESS);
+		 		  log.info("유저 댓글 삭제  ------> " + Constants.SUCCESS);
+		      }else {
+		    	  result.put("HttpStatus","1.00");		
+		    	  result.put("Msg",Constants.FAIL);
+		    	  log.info("유저 댓글 삭제  ------> " + Constants.FAIL);
+		      }	             					 
 			
 		 } catch (Exception e) {
 	      	result.put("HttpStatus","1.00");		
 	  		result.put("Msg",Constants.SYSTEM_ERROR);
 	  		log.error("유저 댓글 삭제  ------> " + Constants.SYSTEM_ERROR , e);
-		 }
-		
+		 }		
 	    return result ;			    		   
 	}
 	
@@ -152,22 +150,25 @@ public class CommentService {
 	   
 	   if(commentDto.getWriterEmail() == null || commentDto.getWriterEmail().equals("")) {
 		 	result.put("HttpStatus","1.00");		
-			result.put("Msg",Constants.FAIL);
+			result.put("Msg",Constants.NOT_EXIST_PARAMETER);
 			return result;
 	   }
 	   
 	   int insertYn = 0 ;
 	   	   
 	   try {		   
-			   	   					
+			   	   	
+		   // 유저 좋아요 등록
 		   insertYn = userCommentMapper.insertLike(commentDto);
 		   
-		   if (insertYn == 0) {
-		   	result.put("HttpStatus","1.00");		
-			result.put("Msg",Constants.FAIL);   		
-		   } else {
-			result.put("HttpStatus","2.00");		
-			result.put("Msg",Constants.SUCCESS);   
+		   if (insertYn != 0) {
+			   result.put("HttpStatus","2.00");		
+			   result.put("Msg",Constants.SUCCESS); 
+			   log.info("유저 좋아요 등록  ------> " + Constants.SUCCESS);
+		   }else{
+			   result.put("HttpStatus","1.00");		
+			   result.put("Msg",Constants.FAIL);
+			   log.info("유저 좋아요 등록  ------> " + Constants.FAIL);
 		   }
               			    		
 	   } catch (Exception e) {
@@ -192,16 +193,19 @@ public class CommentService {
 	   int insertYn = 0 ;
 	   
 	   try {
-			   	   					
-	   insertYn = userCommentMapper.deleteLike(commentDto);
-	   
-	   if (insertYn == 0) {
-	   	result.put("HttpStatus","1.00");		
-		result.put("Msg",Constants.FAIL);   		
-	   } else {
-		result.put("HttpStatus","2.00");		
-		result.put("Msg",Constants.SUCCESS);   
-	   }
+			 
+		   // 유저 좋아요 취소
+		   insertYn = userCommentMapper.deleteLike(commentDto);
+		   
+		   if (insertYn != 0) {
+			   result.put("HttpStatus","2.00");		
+			   result.put("Msg",Constants.SUCCESS);
+			   log.info("유저 좋아요 취소 ------> " + Constants.SUCCESS);
+		   }else{
+			   result.put("HttpStatus","1.00");		
+			   result.put("Msg",Constants.FAIL);
+			   log.info("유저 좋아요 취소 ------> " + Constants.FAIL);
+		   }
              			    		
 	   } catch (Exception e) {
 		result.put("HttpStatus","1.00");		

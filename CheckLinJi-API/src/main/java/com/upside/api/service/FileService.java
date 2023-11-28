@@ -127,7 +127,7 @@ public class FileService {
     }
 		
 	/**
-	 * 저장된 파일을 Base64로 인코딩해서 클라이언트에게 응답 - 첼린지 인증글 리스트 , 본인 미션 상세 페이지
+	 * 저장된 파일을 Base64로 인코딩해서 클라이언트에게 응답 ( base64로 인코딩해야 용량이 줄어듬 | 프론트 측은 base64를 디코딩해서 사용자에게 표출 ) 
 	 * @param fileUploadDto
 	 * @return
 	 */
