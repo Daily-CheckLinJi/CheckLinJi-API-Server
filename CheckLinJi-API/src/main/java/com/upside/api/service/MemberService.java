@@ -372,7 +372,8 @@ public class MemberService {
 									
 		try {		
 			
-			 if(memberRepository.findById(email).isPresent() == true ) {			 
+			 // 존재하는 회원인지 확인 
+			 if(memberRepository.findById(email).isPresent()) {			 
 				 
 				 HashMap<String, String> param = new HashMap<String, String>();			 			 			 
 				 
