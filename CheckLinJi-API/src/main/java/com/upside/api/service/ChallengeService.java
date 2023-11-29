@@ -3,15 +3,12 @@ package com.upside.api.service;
 
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,24 +17,18 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.upside.api.dto.ChallengeDto;
 import com.upside.api.dto.ChallengeSubmissionDto;
 import com.upside.api.dto.MemberDto;
 import com.upside.api.dto.PageDto;
-import com.upside.api.dto.UserChallengeDto;
-import com.upside.api.entity.ChallengeEntity;
 import com.upside.api.entity.ChallengeSubmissionEntity;
 import com.upside.api.entity.HashTagEntity;
 import com.upside.api.entity.MemberEntity;
 import com.upside.api.entity.SubmissionHashTagEntity;
-import com.upside.api.entity.UserChallengeEntity;
 import com.upside.api.mapper.ChallengeMapper;
 import com.upside.api.mapper.MemberMapper;
-import com.upside.api.repository.ChallengeRepository;
 import com.upside.api.repository.ChallengeSubmissionRepository;
 import com.upside.api.repository.HashTagRepository;
 import com.upside.api.repository.MemberRepository;
-import com.upside.api.repository.ReportCommentRepository;
 import com.upside.api.repository.ReportSubmissionRepository;
 import com.upside.api.repository.SubmissionHashTagRepository;
 import com.upside.api.repository.UserChallengeRepository;
@@ -55,7 +46,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class ChallengeService {
 		
-	 private final ChallengeRepository challengeRepository;
+	 
 	 private final UserChallengeRepository userChallengeRepository;
 	 private final MemberRepository memberRepository;
 	 private final ChallengeSubmissionRepository challengeSubmissionRepository;
@@ -134,7 +125,7 @@ public class ChallengeService {
 		public Map<String, Object> userChallengeList (PageDto pageDto) {
 			Map<String, Object> result = new HashMap<String, Object>();
 			
-			log.info("유저 첼린지 인증글 리스트 ------> " + "Start");
+			log.info("유저 첼린지 인증글 리스트 ------> " + "Start");			
 									 						 					
 			  try {
 				  
@@ -260,65 +251,6 @@ public class ChallengeService {
 			  return result ;					 	    		   
 	}
 	 
-//	 /**
-//		 * 본인 첼린지 참가 내역
-//		 * @param memberDto
-//		 * @param challengeDto
-//		 * @return
-//		 */
-//		@Transactional // 트랜잭션 안에서 entity를 조회해야 영속성 상태로 조회가 되고 값을 변경해면 변경 감지(dirty checking)가 일어난다.
-//		public Map<String, Object> viewChallenge (String email) {
-//			Map<String, Object> result = new HashMap<String, Object>();
-//			
-//			log.info("첼린지 참가 내역 ------> " + "Start");
-//			
-//			try {
-//										 			
-//			Optional<MemberEntity> existsMember = memberRepository.findById(email);
-//					
-//			
-//			if(!existsMember.isPresent()) {
-//				 log.info("첼린지 참가 내역 ------> " + "이메일이 존재하지 않습니다.");
-//	             result.put("HttpStatus","1.00");		
-//	     		 result.put("Msg","이메일이 존재하지 않습니다.");
-//	     	   return result ;
-//			}				
-//						 
-//							 
-//			MemberEntity member =  existsMember.get();
-//			 
-//			 List<UserChallengeDto> challenge_list = new ArrayList<UserChallengeDto>() ;
-//			 
-//			 List<UserChallengeEntity> exsistUserChallenge = userChallengeRepository.findByMemberEntity(member);
-//			 
-//			 for(UserChallengeEntity as : exsistUserChallenge) {
-//				 UserChallengeDto i = new UserChallengeDto();
-//				 i.setChallengeName(as.getChallengeEntity().getChallengeName());
-//				 challenge_list.add(i);
-//			 }
-//			 			 			 
-//			 if(exsistUserChallenge == null) {
-//				 log.info("첼린지 참가 내역 ------> " + "참가중인 첼린지가 없습니다.");
-//	             result.put("HttpStatus","1.00");		
-//	     		 result.put("Msg","참가중인 첼린지가 없습니다.");
-//	     	   return result ;
-//			 }
-//			 			
-//			 		 
-//	         log.info("첼린지 참가 내역 ------> " + Constants.SUCCESS);
-//	         result.put("HttpStatus","2.00");		
-//			 result.put("Msg",Constants.SUCCESS);
-//			 result.put("Challenge",challenge_list);
-//			 log.info("첼린지 참가 내역 ------> " + "End");
-//			 
-//			} catch (Exception e) {
-//				 log.error("첼린지 참가 내역 ------> " + Constants.SYSTEM_ERROR , e);
-//	             result.put("HttpStatus","1.00");		
-//	     		 result.put("Msg",Constants.SYSTEM_ERROR);
-//			}
-//			 
-//			  return result ;				 	    		   
-//	}
 	 
 	
 		/**
@@ -396,137 +328,6 @@ public class ChallengeService {
 		}
 		
 	 
-	/**
-	 * 첼린지 생성
-	 * @param challengeDTO
-	 * @return
-	 */
-	@Transactional // 트랜잭션 안에서 entity를 조회해야 영속성 상태로 조회가 되고 값을 변경해면 변경 감지(dirty checking)가 일어난다.
-	public Map<String, String> createChallenge (ChallengeDto challengeDto) {
-		Map<String, String> result = new HashMap<String, String>();
-		
-		log.info("첼린지 생성 ------> " + "Start");
-		
-		 // 현재 날짜와 시간을 LocalDateTime 객체로 가져옵니다.
-        LocalDateTime now = LocalDateTime.now();
-        
-        // 현재 년도와 월을 가져옵니다.
-        int year = now.getYear();
-//        int month = now.getMonthValue();
-        int month = Integer.parseInt(challengeDto.getStartTime());
-        
-        // YearMonth 객체를 생성하여 해당 월의 날짜 범위를 가져옵니다.
-        YearMonth yearMonth = YearMonth.of(year, month);
-        int daysInMonth = yearMonth.lengthOfMonth();
-        
-        // 월초와 월말의 날짜를 LocalDateTime 객체로 생성합니다.
-        LocalDateTime startOfMonth = LocalDateTime.of(year, month, 1, 0, 0, 0);
-        LocalDateTime endOfMonth = LocalDateTime.of(year, month, daysInMonth, 23, 59, 59);
-        
-        // 월초부터 월말까지의 날짜 범위를 생성합니다.
-        LocalDate startDate = startOfMonth.toLocalDate();
-        LocalDate endDate = endOfMonth.toLocalDate();
-		
-		try {
-			        
-        boolean existsChallenge = challengeRepository.findById(challengeDto.getChallengeName()).isPresent();
-        
-        if(existsChallenge == true) {
-        	 log.info("첼린지 생성 ------> " + "존재하는 첼린지입니다.");
-             result.put("HttpStatus","1.00");		
-      		 result.put("Msg","존재하는 첼린지입니다.");
-      		 return result;
-        }
-		
-		
-		ChallengeEntity challenge =  ChallengeEntity.builder()
-									 .challengeName(challengeDto.getChallengeName())
-									 .description(challengeDto.getDescription())
-									 .startTime(startDate)
-									 .endTime(endDate)
-									 .build();
-		
-		
-		
-        challengeRepository.save(challenge);
-                        
-        log.info("첼린지 생성 ------> " + Constants.SUCCESS);
-        result.put("HttpStatus","2.00");		
-		result.put("Msg",Constants.SUCCESS);
-		
-		} catch (Exception e) {
-       	 log.error("첼린지 생성 ------> " + Constants.SYSTEM_ERROR , e);
-         result.put("HttpStatus","1.00");		
-  		 result.put("Msg",Constants.SYSTEM_ERROR);
-		}
-        
-	
-	    return result ;			    		   
-	}
-	
-//	/**
-//	 * 첼린지 참가
-//	 * @param memberDto
-//	 * @param challengeDto
-//	 * @return
-//	 */
-//	@Transactional // 트랜잭션 안에서 entity를 조회해야 영속성 상태로 조회가 되고 값을 변경해면 변경 감지(dirty checking)가 일어난다.
-//	public Map<String, String> joinChallenge (String challengeName , String email) {
-//		Map<String, String> result = new HashMap<String, String>();
-//		
-//		log.info("첼린지 참가 ------> " + "Start");
-//		
-//		 try {
-//					
-//		 Optional<ChallengeEntity> existsChallenge = challengeRepository.findById(challengeName);
-//		
-//		 Optional<MemberEntity> existsMember = memberRepository.findById(email);
-//				
-//		
-//		if(!existsChallenge.isPresent() || !existsMember.isPresent()) {
-//			 log.info("첼린지 참가 ------> " + "첼린지 혹은 이메일이 존재하지 않습니다.");
-//             result.put("HttpStatus","1.00");		
-//     		 result.put("Msg","첼린지 혹은 이메일이 존재하지 않습니다.");
-//     	   return result ;
-//		}				
-//		
-//		 ChallengeEntity challenge =  existsChallenge.get();
-//						 
-//		 MemberEntity member =  existsMember.get();
-//		 
-//		 Optional<UserChallengeEntity> exsistUserChallenge = userChallengeRepository.findByMemberEntityAndChallengeEntity(member,challenge);
-//		 		 
-//		 		 		 
-//		 if(exsistUserChallenge.isPresent()) {
-//			 log.info("첼린지 참가 ------> " + "이미 참여하였습니다.");
-//             result.put("HttpStatus","1.00");		
-//     		 result.put("Msg","이미 참여하였습니다.");
-// 	       return result ;
-//		 }
-//		 
-//		 UserChallengeEntity userChallenge =  UserChallengeEntity.builder()
-//				 							   .memberEntity(member)
-//				 							   .challengeEntity(challenge)
-//				 							   .registrationTime(LocalDateTime.now())
-//				 							   .completed(false)
-//				 							   .build();
-//		 
-//		 userChallengeRepository.save(userChallenge);
-//		 			 		 		 	
-//		 	
-//		 	
-//         log.info("첼린지 참가 ------> " + Constants.SUCCESS);
-//         result.put("HttpStatus","2.00");		
-//		 result.put("Msg",Constants.SUCCESS);	       
-//		 log.info("첼린지 참가 ------> " + "End");
-//			 
-//		} catch (Exception e) {
-//			 log.error("첼린지 참가 ------> " + Constants.SYSTEM_ERROR , e);
-//             result.put("HttpStatus","1.00");		
-//     		 result.put("Msg",Constants.SYSTEM_ERROR);
-//		}
-//		  return result ;				 	    		   
-//}
 	
 	
 	/**
@@ -556,39 +357,26 @@ public class ChallengeService {
 	    
 	    try {
 			
-		    // 첼린지가 존재하는지 확인
-			Optional<ChallengeEntity> existsChallenge = challengeRepository.findById(submissonDto.getChallengeName());
-			
+		    			
 			// 해당 유저가 있는지 확인
 			Optional<MemberEntity> existsMember = memberRepository.findById(userEmail);
-							
+												
 			// 없으면 에러 응답
-			if(!existsChallenge.isPresent() || !existsMember.isPresent()) {
-				 log.info("첼린지 참가 ------> " + "첼린지 혹은 이메일이 존재하지 않습니다.");
+			if(!existsMember.isPresent()) {
+				 log.info("첼린지 참가 ------> " + "이메일이 존재하지 않습니다.");
 	            result.put("HttpStatus","1.00");		
-	    		 result.put("Msg","첼린지 혹은 이메일이 존재하지 않습니다.");
+	    		 result.put("Msg","이메일이 존재하지 않습니다.");
 	    	   return result ;
 			 }				
-			
-			ChallengeEntity challenge =  existsChallenge.get();
-							 
+													 
 			MemberEntity member =  existsMember.get();
 			
-			// 첼린지 참가를 했는지 확인
-	 		Optional<UserChallengeEntity>  exsistUserChallenge = userChallengeRepository.findByMemberEntityAndChallengeEntity(member,challenge); 
-		 	 
-	 		// 참여하고 있지않으면 에러 응답
-		 	if(!exsistUserChallenge.isPresent()) {
-		 		 log.info("첼린지 제출 ------> " + "첼린지에 참여하고 계시지 않습니다.");
-	             result.put("HttpStatus","1.00");		
-	     		 result.put("Msg","첼린지에 참여하고 계시지 않습니다.");
-	     	   return result ; 
-		 	}
-		 	 		 	
-		 	UserChallengeEntity userChallenge = exsistUserChallenge.get();		 			 	
+			
+			// 해당 유저가 있는지 확인
+			Long userChallengeId = userChallengeRepository.findByEmail(userEmail).get().getUserChallengeId();
 		 	
 		 	// 오늘 첼린지 제출했는지 확인
-		 	boolean submitYn = challengeSubmissionRepository.findByUserChallengeAndSubmissionDate(userChallenge, submissionDate).isPresent();
+		 	boolean submitYn = challengeSubmissionRepository.findByUserChallengeIdAndSubmissionDate(userChallengeId, submissionDate).isPresent();
 		 			
 		 	// 제출했으면 에러 응답
 		 	if(submitYn) {
@@ -610,7 +398,7 @@ public class ChallengeService {
 					   											.submissionText(submissonDto.getSubmissionText()) // 내용
 					   											.nickName(member.getNickName()) // 닉네임
 					   											.submissionImageRoute(submissionImageRoute) // 이미지 경로
-					   											.userChallenge(userChallenge) // 유저 첼린지 ID 
+					   											.userChallengeId(userChallengeId) // 유저 첼린지 ID 
 					   											.submissionCompleted("Y") // 인증 성공 유무
 					   											.build();
 		        challengeSubmissionRepository.save(challengeSubmission);	                	       
@@ -620,7 +408,7 @@ public class ChallengeService {
 				
 				
 				// 첼린지 제출이 완료 되었는지 확인 
-				Optional<ChallengeSubmissionEntity> successYn = challengeSubmissionRepository.findByUserChallengeAndSubmissionDate(userChallenge, submissionDate);
+				Optional<ChallengeSubmissionEntity> successYn = challengeSubmissionRepository.findByUserChallengeIdAndSubmissionDate(userChallengeId, submissionDate);
 					
 				String tagExistN = "" ; // 태그 존재 유무
 							
@@ -637,8 +425,8 @@ public class ChallengeService {
 			    		Optional<HashTagEntity> tagExistYn = hashTagRepository.findById((lists.get(i)));
 			    		if(tagExistYn.isPresent()) {		    			
 			    			SubmissionHashTagEntity hashTagEntity = SubmissionHashTagEntity.builder()
-									.challengeSubmissionId(successYn.get())
-									.hashTagId(tagExistYn.get())						
+									.challengeSubmissionId(successYn.get().getChallengeSubmissionId())
+									.hashTagId(tagExistYn.get().getHashTagId())						
 									.build();
 				    		submissionHashTagRepository.save(hashTagEntity);
 				    		log.info("미션인증 해쉬태그 저장 ------> "+list.size() +" 중 " +i+ "번째 " + Constants.SUCCESS);

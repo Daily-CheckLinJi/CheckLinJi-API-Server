@@ -42,7 +42,7 @@ public class MemberController {
 	 * @param memberDto
 	 * @return
 	 */
-	@GetMapping 						  /* default size = 10 */
+	@PostMapping 						  /* default size = 10 */
 	public Page<MemberEntity> memberList(@PageableDefault (sort = "email", direction = Sort.Direction.DESC) Pageable pageable  ) {							
 		return memberService.memberList(pageable);
 	}
@@ -115,7 +115,7 @@ public class MemberController {
 	 * @param pageDto
 	 * @return
 	 */
-	@GetMapping("/joinDate") 
+	@PostMapping("/joinDate") 
 	public ResponseEntity<Map<String, Object>> joinDate (@RequestHeader("Authorization") String authHeader ) {				
 				
 				String userEmail = jwtTokenProvider.getEmail(authHeader); // email을 얻기위해 헤더에서 토큰을 디코딩하는 부분이다.

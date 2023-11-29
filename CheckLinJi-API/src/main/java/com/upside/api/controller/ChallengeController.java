@@ -15,10 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.upside.api.config.JwtTokenProvider;
-import com.upside.api.dto.ChallengeDto;
 import com.upside.api.dto.ChallengeSubmissionDto;
 import com.upside.api.dto.PageDto;
-import com.upside.api.dto.UserChallengeDto;
 import com.upside.api.service.ChallengeService;
 
 import lombok.RequiredArgsConstructor;
@@ -86,7 +84,11 @@ public class ChallengeController {
 	 */
 	@PostMapping("/myList") 
 	public ResponseEntity<Map<String, Object>> viewChallenge (@RequestHeader("Authorization") String authHeader , @RequestBody PageDto pageDto) {
-						
+		
+		String userEmail = jwtTokenProvider.getEmail(authHeader); // email을 얻기위해 헤더에서 토큰을 디코딩하는 부분이다.
+		
+		pageDto.setEmail(userEmail);
+		
 		Map<String, Object> result = challengeSerivce.userChallengeList(pageDto);
 		
 		if (result.get("HttpStatus").equals("2.00")) { // 성공			
@@ -125,7 +127,7 @@ public class ChallengeController {
 	 * @param pageDto
 	 * @return
 	 */
-	@GetMapping("/missionCompletedCnt") 
+	@PostMapping("/missionCompletedCnt") 
 	public ResponseEntity<Map<String, String>> missionCompletedCnt (@RequestHeader("Authorization") String authHeader ) {				
 				
 				String userEmail = jwtTokenProvider.getEmail(authHeader); // email을 얻기위해 헤더에서 토큰을 디코딩하는 부분이다.
@@ -146,7 +148,7 @@ public class ChallengeController {
 	 * @param pageDto
 	 * @return
 	 */
-	@GetMapping("/missionCompletedCntAll") 
+	@PostMapping("/missionCompletedCntAll") 
 	public ResponseEntity<Map<String, String>> missionCompletedCntAll (@RequestHeader("Authorization") String authHeader ) {				
 				
 				String userEmail = jwtTokenProvider.getEmail(authHeader); // email을 얻기위해 헤더에서 토큰을 디코딩하는 부분이다.
@@ -161,45 +163,6 @@ public class ChallengeController {
 					
 	}
 	
-	
-	/**
-	 * 첼린지 생성
-	 * @param challengeDto
-	 * @return
-	 */
-	@PostMapping("/create") 
-	public ResponseEntity<Map<String, String>>createChallenge (@RequestBody ChallengeDto challengeDto) {
-					
-		Map<String, String> result = challengeSerivce.createChallenge(challengeDto);
-				
-		if (result.get("HttpStatus").equals("2.00")) { // 성공						
-			return new ResponseEntity<>(result,HttpStatus.OK);				
-		} else {			
-			return new ResponseEntity<>(result,HttpStatus.BAD_REQUEST);
-		} 
-					
-	}
-	
-//	/**
-//	 * 첼린지 참가
-//	 * @param userChallengeDto
-//	 * @param authHeader
-//	 * @return
-//	 */
-//	@PostMapping("/join") 
-//	public ResponseEntity<Map<String, String>> joinChallenge (@RequestBody UserChallengeDto userChallengeDto , @RequestHeader("Authorization") String authHeader) {
-//							
-//		String userEmail = jwtTokenProvider.getEmail(authHeader); // email을 얻기위해 헤더에서 토큰을 디코딩하는 부분이다.
-//		
-//		Map<String, String> result = challengeSerivce.joinChallenge("첵린지" , userEmail);
-//				
-//		if (result.get("HttpStatus").equals("2.00")) { // 성공						
-//			return new ResponseEntity<>(result,HttpStatus.OK);					
-//		} else {			
-//			return new ResponseEntity<>(result,HttpStatus.BAD_REQUEST);
-//		} 
-//					
-//	}
 	
 	/**
 	 * 첼린지 제출
@@ -224,17 +187,17 @@ public class ChallengeController {
 		} 
 	}
 	
-	@PostMapping("/completed") // 챌린지 완료 처리
-	public ResponseEntity<Map<String, String>> completedChallenge (@RequestBody ChallengeDto challengeDto) {
-							
-		Map<String, String> result = challengeSerivce.createChallenge(challengeDto);
-				
-		if (result.get("HttpStatus").equals("2.00")) { // 성공														
-			return new ResponseEntity<>(result,HttpStatus.OK);					
-		} else {											
-			return new ResponseEntity<>(result,HttpStatus.BAD_REQUEST);
-		} 
-  }
+//	@PostMapping("/completed") // 챌린지 완료 처리
+//	public ResponseEntity<Map<String, String>> completedChallenge (@RequestBody ChallengeDto challengeDto) {
+//							
+//		Map<String, String> result = challengeSerivce.createChallenge(challengeDto);
+//				
+//		if (result.get("HttpStatus").equals("2.00")) { // 성공														
+//			return new ResponseEntity<>(result,HttpStatus.OK);					
+//		} else {											
+//			return new ResponseEntity<>(result,HttpStatus.BAD_REQUEST);
+//		} 
+//  }
 				
 
 		/**

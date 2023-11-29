@@ -3,13 +3,10 @@ package com.upside.api.repository;
 
 
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.upside.api.entity.ChallengeEntity;
-import com.upside.api.entity.MemberEntity;
 import com.upside.api.entity.UserChallengeEntity;
 
 public interface UserChallengeRepository extends JpaRepository<UserChallengeEntity, Long> {
@@ -22,10 +19,10 @@ public interface UserChallengeRepository extends JpaRepository<UserChallengeEnti
 	 * @param completed
 	 * @return
 	 */
-	List<UserChallengeEntity> findByMemberEntityAndCompleted (MemberEntity member , boolean completed);
-	
-	List<UserChallengeEntity> findByMemberEntity(MemberEntity memberEntity);
-	
-	Optional<UserChallengeEntity> findByMemberEntityAndChallengeEntity (MemberEntity member , ChallengeEntity challengeEntity);
+//	List<UserChallengeEntity> findByMemberEntityAndCompleted (MemberEntity member , boolean completed);
+//	
+//	List<UserChallengeEntity> findByMemberEntity(MemberEntity memberEntity);
+//	
+	Optional<UserChallengeEntity> findByEmail (String email);
 }
 

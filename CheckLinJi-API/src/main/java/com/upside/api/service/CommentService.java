@@ -4,11 +4,14 @@ package com.upside.api.service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
 import com.upside.api.dto.CommentDto;
+import com.upside.api.entity.MemberEntity;
 import com.upside.api.mapper.UserCommentMapper;
+import com.upside.api.repository.MemberRepository;
 import com.upside.api.util.Constants;
 
 import lombok.RequiredArgsConstructor;
@@ -24,6 +27,7 @@ public class CommentService {
 		
 	
 	private final UserCommentMapper userCommentMapper ;
+	private final MemberRepository memberRepository ;
 	
 	
 	 	 
@@ -43,7 +47,20 @@ public class CommentService {
 		Map<String, String> result = new HashMap<String, String>();
 		
 		try {
-				
+			
+			// 유저가 존재 하는지 확인
+			Optional<MemberEntity> userExsist = memberRepository.findById(commentDto.getEmail());
+			
+			// 유저가 존재 하지않으면 에러처리
+			if(!userExsist.isPresent()) {
+				result.put("HttpStatus","1.00");		
+	    		result.put("Msg",Constants.FAIL);
+	    		log.info("유저 댓글 입력  ------> " + Constants.FAIL);
+	    		return result;
+			}
+			
+			commentDto.setNickName(userExsist.get().getNickName());
+			
 			// 유저 댓글 등록
 	        int insertYn = userCommentMapper.userCommentSubmit(commentDto);
 	        	        

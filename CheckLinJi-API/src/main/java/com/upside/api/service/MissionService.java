@@ -201,8 +201,7 @@ public class MissionService {
         String date = year+"-"+ month+"%";                                
         
         Map<String, String> data = new HashMap<String, String>();
-        
-        data.put("challengeName", challengeSubmissionDto.getChallengeName());
+                
         data.put("date", date);
         data.put("email", userEmail);
         
@@ -243,18 +242,7 @@ public class MissionService {
 		
 		log.info("본인 미션 상세보기 ------> " + "Start");
 		Map<String, Object> result = new HashMap<String, Object>();
-				        
-        
-        // 현재 년도와 월을 가져옵니다.
-        String year = challengeSubmissionDto.getYear();
-        String month = challengeSubmissionDto.getMonth();
-        String day = challengeSubmissionDto.getDay();
-        String date = year+"-"+ month+"-"+day;                                
-
-        Map<String, String> data = new HashMap<String, String>();
-        
-        data.put("challengeName", challengeSubmissionDto.getChallengeName());
-        data.put("date", date);
+				                                               
                 
         try {
         	Map<String, Object> missionAuthInfo = memberMapper.missionAuthInfo(challengeSubmissionDto); // 해당날짜에 해당하는 본인 데이터
@@ -391,8 +379,8 @@ public class MissionService {
 	    		Optional<ChallengeSubmissionEntity> missionExist = challengeSubmissionRepository.findById((long)chaSubmissionDto.getChallengeSubmissionId());	    		
 	    		if(tagExistYn.isPresent()) {	    			
 	    			SubmissionHashTagEntity hashTagEntity = SubmissionHashTagEntity.builder()
-							.challengeSubmissionId(missionExist.get())
-							.hashTagId(tagExistYn.get())						
+							.challengeSubmissionId(missionExist.get().getChallengeSubmissionId())
+							.hashTagId(tagExistYn.get().getHashTagId())						
 							.build();
 		    		submissionHashTagRepository.save(hashTagEntity);
 		    		log.info("미션인증 해쉬태그 저장 ------> "+list.size() +" 중 " +i+ "번째 " + Constants.SUCCESS);

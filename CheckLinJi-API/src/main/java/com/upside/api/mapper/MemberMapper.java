@@ -135,7 +135,7 @@ public interface MemberMapper {
 	 * @param data
 	 * @return
 	 */
-	HashMap<String,Object> joinDate (String userEmail);
+	int joinDate (String userEmail);
 	
 	/**
 	 * 총 사용자 수 

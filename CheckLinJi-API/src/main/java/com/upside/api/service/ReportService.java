@@ -52,8 +52,16 @@ public class ReportService {
 		
 		log.info("게시글 신고  ------> " + "Start");
 								 						 					
-		  try {
-	        	
+		  try {	        	
+			  
+			  Optional<ChallengeSubmissionEntity> existsSubmission = challengeSubmissionRepository.findById(reSubmissionDto.getChallengeSubmissionId());
+			  
+			  if(!existsSubmission.isPresent()) {
+				    result.put("HttpStatus","2.00");		
+	   				result.put("Msg","존재 하지않는 게시글입니다.");
+		   			return result ;
+			  }
+			  
 			  Long existsReport = reportSubmissionRepository.countByChallengeSubmissionIdAndEmail(reSubmissionDto.getChallengeSubmissionId() , reSubmissionDto.getEmail());
 			  
 			  // 같은 게시글을 신고한 이력이 있으면 이미 신고되었음 처리
@@ -111,6 +119,14 @@ public class ReportService {
 								 						 					
 		  try {
 	        	
+			  Optional<CommentEntity> existsComment = commentRepository.findById(reCommentDto.getCommentSeq());
+			  
+			  if(!existsComment.isPresent()) {
+				    result.put("HttpStatus","2.00");		
+	   				result.put("Msg","존재 하지않는 댓글입니다.");
+		   			return result ;
+			  }
+			  
 			  Long existsReport = reportCommentRepository.countByCommentSeqAndEmail(reCommentDto.getCommentSeq() , reCommentDto.getEmail());
 			  
 			  // 같은 게시글을 신고한 이력이 있으면 이미 신고되었음 처리

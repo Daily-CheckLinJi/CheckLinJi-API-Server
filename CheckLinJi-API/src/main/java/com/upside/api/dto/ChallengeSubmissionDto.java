@@ -8,7 +8,6 @@ import lombok.Data;
 public class ChallengeSubmissionDto { // ChallengeSubmission 테이블: 사용자가 첼린지에 대한 제출 정보를 저장하는 테이블
 
  private int challengeSubmissionId;
- private String challengeName;
  private String email;
  private String hashTag;
  private LocalDateTime submissionTime; 

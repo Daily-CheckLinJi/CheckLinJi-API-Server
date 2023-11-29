@@ -20,13 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.upside.api.config.JwtTokenProvider;
 import com.upside.api.dto.MemberDto;
-import com.upside.api.dto.UserChallengeDto;
-import com.upside.api.entity.ChallengeEntity;
 import com.upside.api.entity.MemberEntity;
 import com.upside.api.entity.UserChallengeEntity;
-import com.upside.api.mapper.ChallengeMapper;
 import com.upside.api.mapper.MemberMapper;
-import com.upside.api.repository.ChallengeRepository;
 import com.upside.api.repository.MemberRepository;
 import com.upside.api.repository.UserChallengeRepository;
 import com.upside.api.util.Constants;
@@ -47,8 +43,7 @@ public class MemberService {
 	private final PasswordEncoder passwordEncoder;	
 	private final MemberMapper memberMapper ;
 	private final RedisTemplate<String, String> redisTemplate;
-	private final FileService fileService ;
-	private final ChallengeRepository challengeRepository;
+	private final FileService fileService ;	
 	private final UserChallengeRepository userChallengeRepository;
 
 	
@@ -200,15 +195,9 @@ public class MemberService {
 			 boolean  exsistUser = memberRepository.findById(memberDto.getEmail()).isPresent();
 			 
 			 if (exsistUser) {
-				
-				 // 유저 첼린지 가입 (원래는 사용자가 직접 가입 해야하지만 룰이 좀 바뀌어서 임시로)				 
-				 ChallengeEntity challenge =  challengeRepository.findById("첵린지").get();
-				 
-				 MemberEntity member =  memberRepository.findById(memberDto.getEmail()).get();
-				 
+												 
 				 UserChallengeEntity userChallenge =  UserChallengeEntity.builder()
-						   .memberEntity(member)
-						   .challengeEntity(challenge)
+						   .email(memberDto.getEmail())						   
 						   .registrationTime(LocalDateTime.now())
 						   .completed(false)
 						   .build();
@@ -216,7 +205,7 @@ public class MemberService {
 			 	 userChallengeRepository.save(userChallenge);
 				 
 			 	 // 첼린지 가입이 제대로 됬는지 확인
-			 	 Boolean exsistUserChallenge = userChallengeRepository.findByMemberEntityAndChallengeEntity(member,challenge).isPresent();
+			 	 Boolean exsistUserChallenge = userChallengeRepository.findByEmail(memberDto.getEmail()).isPresent();
 			 	 
 				 result.put("HttpStatus","2.00");
 				 result.put("UserEmail",memberDto.getEmail());	
@@ -706,38 +695,23 @@ public class MemberService {
          try {
 					
   
-    	 result = memberMapper.joinDate(userEmail);	        
-       
-		 if(result.get("joinDate") == null ) {
-			 result.put("HttpStatus","1.00");		
-			 result.put("Msg",Constants.FAIL); 
-			 return result ;	
-		 }
-    	 
-    	Date joinDate  =  (Date) result.get("joinDate");
-    	Date currentDate = new Date();
-    	
-    	
-    	long differenceInMillis = currentDate.getTime() - joinDate.getTime();
-    	long differenceInDays = differenceInMillis / (24 * 60 * 60 * 1000);
-    	    	
-    	System.out.println(differenceInDays);
-    	
-
-    	
-    	result.put("joinDate", differenceInDays);
-    	
-    	
-        result.put("HttpStatus","2.00");		
-		result.put("Msg",Constants.SUCCESS);
-		
-		
-		log.info("회원 가입 날짜 ------> " + Constants.SUCCESS);
+	    	 int joinDate = memberMapper.joinDate(userEmail);	        
+	       
+			 if(joinDate != 0) {
+		    	result.put("joinDate", joinDate);    	    	
+		        result.put("HttpStatus","2.00");		
+				result.put("Msg",Constants.SUCCESS);
+				log.info("서비스 이용 날짜 계산 ------> " + Constants.SUCCESS);
+			 }else {
+				result.put("HttpStatus","1.00");		
+				result.put("Msg",Constants.FAIL);
+				log.info("서비스 이용 날짜 계산 ------> " + Constants.FAIL);
+			 }
 		
 		} catch (Exception e) {
-			 log.error("회원 가입 날짜 ------> " + Constants.SYSTEM_ERROR , e);
+			 log.error("서비스 이용 날짜 계산 ------> " + Constants.SYSTEM_ERROR , e);
 			 result.put("HttpStatus","1.00");		
-			 result.put("Msg","Data 접근 실패");
+			 result.put("Msg",Constants.SYSTEM_ERROR);
 			 
 		}
        

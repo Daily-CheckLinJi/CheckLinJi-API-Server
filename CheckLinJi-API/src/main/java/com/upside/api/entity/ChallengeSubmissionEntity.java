@@ -29,10 +29,9 @@ public class ChallengeSubmissionEntity { // ChallengeSubmission 테이블: 사�
 	 @GeneratedValue(strategy = GenerationType.IDENTITY)
 	 @Column(name = "challenge_submission_id")
 	 private Long challengeSubmissionId;
-	 
-	 @ManyToOne(fetch = FetchType.LAZY) // Challenge 입장에선 Member와 다대일 관계이므로 @ManyToOne이 됩니다.
-	 @JoinColumn(name = "user_challenge_id") // 외래 키를 매핑할 때 사용합니다. name 속성에는 매핑 할 외래 키 이름을 지정합니다.
-	 private UserChallengeEntity  userChallenge;
+	 	 
+	 @Column(nullable = false) // 제출 일시 (일)
+	 private Long  userChallengeId;
 		 
 	 @Column(nullable = false) // 제출 일시 (일)
 	 private String submissionDate;
@@ -55,10 +54,10 @@ public class ChallengeSubmissionEntity { // ChallengeSubmission 테이블: 사�
 
 
 @Builder
-public ChallengeSubmissionEntity(UserChallengeEntity userChallenge , String submissionDate , String submissionTime 
+public ChallengeSubmissionEntity(Long userChallengeId , String submissionDate , String submissionTime 
 		, String submissionText  , String nickName , String submissionImageRoute , String submissionCompleted) {		
 	super();
-	this.userChallenge = userChallenge;	
+	this.userChallengeId = userChallengeId;	
 	this.submissionDate = submissionDate;
 	this.submissionTime = submissionTime;
 	this.submissionText = submissionText;

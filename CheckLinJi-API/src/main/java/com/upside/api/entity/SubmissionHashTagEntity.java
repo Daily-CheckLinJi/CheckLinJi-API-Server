@@ -1,12 +1,10 @@
 package com.upside.api.entity;
 
-import com.upside.api.util.SubmissiontHashTagId;
-
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.IdClass;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -15,25 +13,25 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@IdClass(SubmissiontHashTagId.class) // 클래스를 복합 키 클래스로 지정합니다. 
+@NoArgsConstructor(access = AccessLevel.PROTECTED) 
 @Table(name = "SubmissionHashTag")
 public class SubmissionHashTagEntity { // SubmissionHashTag 테이블: 미션 테이블과 태그 테이블을 외래키로 삼아 연관관계 설정
 
+	
 @Id
-@ManyToOne
-@JoinColumn(name = "challenge_submission_id")
-private ChallengeSubmissionEntity challengeSubmissionId;
+@GeneratedValue(strategy = GenerationType.IDENTITY)
+private Long SubmissionHashTagSeq;	
+	
+@Column(nullable = false)
+private Long challengeSubmissionId;
 
-@Id
-@ManyToOne
-@JoinColumn(name = "hashTagId")
-private HashTagEntity hashTagId;
+@Column(nullable = false)
+private Long hashTagId;
  
  
  
 @Builder
-public SubmissionHashTagEntity(ChallengeSubmissionEntity challengeSubmissionId , HashTagEntity hashTagId) {
+public SubmissionHashTagEntity(Long challengeSubmissionId , Long hashTagId) {
 	super();
 	this.challengeSubmissionId = challengeSubmissionId;
 	this.hashTagId = hashTagId;

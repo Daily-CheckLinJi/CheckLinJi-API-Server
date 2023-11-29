@@ -100,8 +100,7 @@
 	<!-- 본인 미션 달력 -->
 	<select id="missionCalendarOwn" parameterType="MemberDto" resultType="java.util.Map" >
 		SELECT 	  EMAIL
-				, CHALLENGE_SUBMISSION_ID
-				, CHALLENGE_NAME
+				, CHALLENGE_SUBMISSION_ID				
 				, SUBMISSION_TEXT 
 				, SUBMISSION_DATE
 				, SUBMISSION_TIME
@@ -109,16 +108,14 @@
 		FROM CHALLENGE_SUBMISSION CS 
 	 		JOIN USER_CHALLENGE UC 
 				ON UC.USER_CHALLENGE_ID = CS.USER_CHALLENGE_ID
-		WHERE CS.SUBMISSION_DATE LIKE #{date}
-				AND UC.CHALLENGE_NAME = #{challengeName}
+		WHERE CS.SUBMISSION_DATE LIKE #{date}				
 				AND UC.EMAIL = #{email}
 		GROUP BY CS.SUBMISSION_DATE 
 	</select>
 		
 	<!-- 본인 미션 상세정보 -->
 	<select id="missionAuthInfo" parameterType="ChallengeSubmissionDto" resultType="java.util.Map" >
-				SELECT 	  UC.EMAIL
-						, CHALLENGE_NAME
+				SELECT 	  UC.EMAIL						
 						, CS.CHALLENGE_SUBMISSION_ID						
 						, SUBMISSION_TEXT 
 						, SUBMISSION_DATE as SUBMISSION_DAY
@@ -231,8 +228,8 @@
 	</update>
 	 
 	 <!-- 회원가입 날짜 -->
-	<select id="joinDate" parameterType="String" resultType="java.util.Map" >
-		 SELECT DATE(JOIN_DATE) as joinDate FROM MEMBER_INFO MI 
+	<select id="joinDate" parameterType="String" resultType="int" >
+		SELECT IF(TIMESTAMPDIFF(DAY, DATE(JOIN_DATE), NOW()) = 0, 1, TIMESTAMPDIFF(DAY, DATE(JOIN_DATE), NOW()) + 1) AS joinDate FROM MEMBER_INFO MI  
 			WHERE EMAIL = #{email} ; 
 	</select>
 	

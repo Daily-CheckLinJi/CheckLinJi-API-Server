@@ -7,12 +7,9 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -32,13 +29,8 @@ public class UserChallengeEntity { // 사용자가 참여한 첼린지 정보를
  @Column(name = "user_challenge_id")
  private Long userChallengeId;
  
- @ManyToOne(fetch = FetchType.LAZY) // Challenge 입장에선 Member와 다대일 관계이므로 @ManyToOne이 됩니다.
- @JoinColumn(name = "email") // 외래 키를 매핑할 때 사용합니다. name 속성에는 매핑 할 외래 키 이름을 지정합니다.
- private MemberEntity memberEntity;
-
- @ManyToOne(fetch = FetchType.LAZY , optional = true) // optional = 널값 허용 
- @JoinColumn(name = "challenge_name")
- private ChallengeEntity challengeEntity ;
+ @Column(nullable = false) // 이메일
+ private String email;
  
  @Column(nullable = false) // 등록일
  private LocalDateTime registrationTime;
@@ -48,10 +40,9 @@ public class UserChallengeEntity { // 사용자가 참여한 첼린지 정보를
  
  
 @Builder
-public UserChallengeEntity(MemberEntity memberEntity , ChallengeEntity challengeEntity , LocalDateTime registrationTime , boolean completed) {		
+public UserChallengeEntity(String email , LocalDateTime registrationTime , boolean completed) {		
 	super();
-	this.memberEntity = memberEntity;
-	this.challengeEntity = challengeEntity;	
+	this.email = email;	
 	this.registrationTime = registrationTime;
 	this.completed = completed;
 }
