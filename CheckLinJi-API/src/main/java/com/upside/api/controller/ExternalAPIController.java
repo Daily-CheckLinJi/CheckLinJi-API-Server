@@ -36,7 +36,7 @@ public class ExternalAPIController {
 	 * 명언 API	
 	 * @return
 	 */
-	@GetMapping("/wiseSaying") 						  	
+	@PostMapping("/wiseSaying") 						  	
 	public ResponseEntity<Map<String,String>> wiseSayingAPI () {
 		
 						

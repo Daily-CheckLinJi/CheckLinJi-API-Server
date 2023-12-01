@@ -142,6 +142,7 @@ public class MemberService {
 				return result ; 
 			} 						 
 			
+			 // 이메일 중복 검증
 			 Optional<MemberEntity> isDuplicateId = memberRepository.findById(memberDto.getEmail());
 			 
 			 if(isDuplicateId.isPresent()) {				 				 
@@ -151,7 +152,7 @@ public class MemberService {
 				 return result ; 
 			 }
 			 
-			 // 닉네임 검증 중복 시 1.00 
+			 // 닉네임 중복 검증 중복 시 1.00 
 			 Map<String , String> validateDuplicated = validateDuplicatedNickName(memberDto.getNickName());
 			
 			 if(validateDuplicated.get("HttpStatus").equals("1.00")) {		 				 
@@ -405,33 +406,28 @@ public class MemberService {
 		
 		try {
 					
-		Optional<MemberEntity> memberEntity = memberRepository.findById(memberDto.getEmail());
-		
-		if(!memberEntity.isPresent()) {
-			log.info("회원 로그인 ------> " + Constants.INBALID_EMAIL_PASSWORD); 
-			result.put("HttpStatus", "1.03");
-	    	result.put("UserEmail", null);
-	    	result.put("Msg", Constants.INBALID_EMAIL_PASSWORD);
-	    	 return result ;
-		}
-				
-		MemberEntity member = memberEntity.get();
-		     
-		    if (!passwordEncoder.matches(memberDto.getPassword(), member.getPassword())) {
-		    	log.info("회원 로그인 ------> " + Constants.INBALID_EMAIL_PASSWORD);
-		    	result.put("HttpStatus", "1.03");
+			// 유저가 존재하는지 확인
+			Optional<MemberEntity> userExist = memberRepository.findById(memberDto.getEmail());
+			
+			if(!userExist.isPresent()) {
+				log.info("회원 로그인 ------> " + Constants.INBALID_EMAIL_PASSWORD); 
+				result.put("HttpStatus", "1.00");
 		    	result.put("UserEmail", null);
-		    	result.put("Msg", Constants.INBALID_EMAIL_PASSWORD);		    	
-		    } else {
-		    	
-		    	ValueOperations<String, String> redis = redisTemplate.opsForValue(); // Redis Map 객체 생성		    			    	
-		    	
-		    	redis.set("accessToken_"+member.getEmail(), jwtTokenProvider.createToken(memberDto.getEmail())); // refresh Token Redis 저장 , 키 값이 같으면 덮어 씌워짐
+		    	result.put("Msg", Constants.INBALID_EMAIL_PASSWORD);
+		    	 return result ;
+			}
+					
+			MemberEntity member = userExist.get();
+		     
+			// 패스워드가 일치하는지 확인
+		    if (passwordEncoder.matches(memberDto.getPassword(), member.getPassword())) {		    	
+		    	// redis 캐시 로직
+		    	ValueOperations<String, String> redis = redisTemplate.opsForValue(); // Redis Map 객체 생성		    			    			    	
+		    	redis.set("accessToken_"+member.getEmail(), jwtTokenProvider.createToken(memberDto.getEmail())); // Token Redis 저장 , 키 값이 같으면 덮어 씌워짐
 		    	redis.set("refreshToken_"+member.getEmail(), jwtTokenProvider.createRefreshToken()); // refresh Token Redis 저장 , 키 값이 같으면 덮어 씌워짐		    	
 		    	redisTemplate.expire("accessToken_" + member.getEmail(), 1, TimeUnit.HOURS); // redis accessToken expire 1시간 지정
 		    	redisTemplate.expire("refreshToken_"+member.getEmail(), 31, TimeUnit.DAYS); // redis refreshToken expire 31일 지정
-		    	
-		    	
+		    			    	
 			    result.put("HttpStatus", "2.00");
 			    result.put("Token", redis.get("accessToken_"+member.getEmail()));
 			    result.put("RefreshToken", redis.get("refreshToken_"+member.getEmail()));
@@ -439,6 +435,12 @@ public class MemberService {
 			    result.put("Msg", Constants.SUCCESS);
 			    
 			    log.info("회원 로그인 ------> " + Constants.SUCCESS);
+		    		    	
+		    } else {		    			    	
+		    	result.put("HttpStatus", "1.00");
+		    	result.put("UserEmail", null);
+		    	result.put("Msg", Constants.INBALID_EMAIL_PASSWORD);
+		    	log.info("회원 로그인 ------> " + Constants.INBALID_EMAIL_PASSWORD);
 		    }
 		    
 		} catch (Exception e) {
@@ -468,60 +470,63 @@ public class MemberService {
     	 
     	try {
 		
-    	ValueOperations<String, String> redis = redisTemplate.opsForValue(); // Redis Map 객체 생성
-    		
-    	if (memberDto.getAccessToken() == null || memberDto.getRefreshToken() == null ) {
-    		log.info("Refresh Token 검증 ------> " + Constants.EXPIRATION_TOKEN);
-    		
-    		result.put("HttpStatus", "1.00");	    	
-	    	result.put("Msg", Constants.EXPIRATION_TOKEN);	        	
-	    	return result; 
-		}    	
-    	
-        if (!jwtTokenProvider.validateRefreshTokenExceptExpiration(memberDto.getRefreshToken())) { // 리프레쉬 토큰 만료기간이 지났는지 확인 
-        	log.info("Refresh Token 검증 ------> " + Constants.EXPIRATION_TOKEN);
-        	
-        	result.put("HttpStatus", "1.00");	    	
-	    	result.put("Msg", Constants.EXPIRATION_TOKEN);	        	
-	    	return result; 
-        }
-                        
-        String email = jwtTokenProvider.getEmail(memberDto.getAccessToken()); // 유효한 토큰이라면 AccessToken으로부터 email을 얻기위해 헤더에서 토큰을 디코딩하는 부분.                
-                
-        if(email == null) {
-        	log.error("Refresh Token 검증 ------> " + "accessToken에 email 값이 없음");
-        	
-        	result.put("HttpStatus", "1.00");	    	
-	    	result.put("Msg", Constants.FAIL);	    	
-	    	return result; 
-        }
-        
-        if (redis.get("refreshToken_"+email) == null || !redis.get("refreshToken_"+email).equals(memberDto.getRefreshToken())) {// 파라미터로 입력받은 Refresh Token과 실제 Redis 에 저장된 Refresh Token을 비교하여 검증한다.
-        	log.info("Refresh Token 검증 ------> " + Constants.INBALID_TOKEN);
-        	result.put("HttpStatus", "1.00");	    	
-    		result.put("Msg", Constants.EXPIRATION_TOKEN);
-    		
-    		return result;   
-    		
-        } else {
-        	 
-        	 String accessToken = jwtTokenProvider.createToken(email);
-             String refreshToken = jwtTokenProvider.createRefreshToken();
-             
-             redis.set("accessToken_"+email, accessToken);
-             redis.set("refreshToken_"+email, refreshToken);
-             
-             redisTemplate.expire("accessToken_" +email, 1, TimeUnit.HOURS); // redis accessToken expire 1시간 지정
-             redisTemplate.expire("refreshToken_"+email, 31, TimeUnit.DAYS); // redis refreshToken expire 31일 지정
-             
-                          
-                  
-             log.info("Refresh Token 검증 ------> " + Constants.SUCCESS);
-             result.put("HttpStatus", "2.00");	    	
-     		 result.put("Msg", Constants.SUCCESS);
-     		 result.put("Token", redis.get("accessToken_"+email));
-     		 result.put("RefreshToken", redis.get("refreshToken_"+email));     		      		      	                    	
-        	}        
+    		// Redis Map 객체 생성
+	    	ValueOperations<String, String> redis = redisTemplate.opsForValue(); 
+	    		
+	    	// 토큰 값이 없을 경우
+	    	if (memberDto.getAccessToken() == null || memberDto.getRefreshToken() == null ) {
+	    		log.info("Refresh Token 검증 ------> " + Constants.EXPIRATION_TOKEN);
+	    		
+	    		result.put("HttpStatus", "1.00");	    	
+		    	result.put("Msg", Constants.EXPIRATION_TOKEN);	        	
+		    	return result; 
+			}    	
+	    	
+	    	// 리프레쉬 토큰 만료기간이 지났는지 확인
+	        if (!jwtTokenProvider.validateRefreshTokenExceptExpiration(memberDto.getRefreshToken())) {  	        		        	
+	        	result.put("HttpStatus", "1.00");	    	
+		    	result.put("Msg", Constants.EXPIRATION_TOKEN);	        	
+		    	log.info("Refresh Token 검증 ------> " + Constants.EXPIRATION_TOKEN);
+		    	return result; 
+	        }
+	                        
+	        // 유효한 토큰이라면 AccessToken으로부터 email을 얻기위해 헤더에서 토큰을 디코딩하는 부분.
+	        String email = jwtTokenProvider.getEmail(memberDto.getAccessToken());                 
+	               
+	        // 토큰안에 이메일 값이 없으면 에러
+	        if(email == null) {
+	        	log.error("Refresh Token 검증 ------> " + "accessToken에 email 값이 없음");
+	        	
+	        	result.put("HttpStatus", "1.00");	    	
+		    	result.put("Msg", Constants.FAIL);	    	
+		    	return result; 
+	        }
+	        
+	        // 파라미터로 입력받은 Refresh Token과 실제 Redis 에 저장된 Refresh Token을 비교하여 검증한다.
+	        if (redis.get("refreshToken_"+email) == null || !redis.get("refreshToken_"+email).equals(memberDto.getRefreshToken())) {	        	
+	        	result.put("HttpStatus", "1.00");	    	
+	    		result.put("Msg", Constants.EXPIRATION_TOKEN);
+	    		log.info("Refresh Token 검증 ------> " + Constants.EXPIRATION_TOKEN);
+	    		return result;   
+	    		
+	        } else {
+	        	 
+	        	 String accessToken = jwtTokenProvider.createToken(email);
+	             String refreshToken = jwtTokenProvider.createRefreshToken();
+	             
+	             redis.set("accessToken_"+email, accessToken);
+	             redis.set("refreshToken_"+email, refreshToken);
+	             
+	             redisTemplate.expire("accessToken_" +email, 1, TimeUnit.HOURS); // redis accessToken expire 1시간 지정
+	             redisTemplate.expire("refreshToken_"+email, 31, TimeUnit.DAYS); // redis refreshToken expire 31일 지정
+	             	                          	                  	             
+	             result.put("HttpStatus", "2.00");	    	
+	     		 result.put("Msg", Constants.SUCCESS);
+	     		 result.put("Token", redis.get("accessToken_"+email));
+	     		 result.put("RefreshToken", redis.get("refreshToken_"+email));
+	     		 
+	     		log.info("Refresh Token 검증 ------> " + Constants.SUCCESS);
+	        	}        
 		} catch (Exception e) {
 			log.error("Refresh Token 검증 ------> " + Constants.SYSTEM_ERROR , e);        	
         	result.put("HttpStatus", "1.00");	    	
@@ -588,53 +593,54 @@ public class MemberService {
     	
     	try {
     		
-    	Optional<MemberEntity> user = memberRepository.findById(email);       
-	    	if(!user.isPresent()) { 
-	    		log.info("프로필 사진 업데이트 실패 ------> 존재하지 않는 이메일입니다.");
-	    		result.put("HttpStatus", "1.00");
-	    		result.put("Msg", Constants.FAIL);
-	    		return result;
-	    	}else {
-	    		
-	    		// 기본 프로필 ( M- , or W- 일 경우 삭제 X )
-	    		if(!user.get().getProfile().contains("M-") && !user.get().getProfile().contains("W-")) {
-	    		
-	    			// 파일 삭제
-	        		boolean deleteYn = fileService.deleteFile(user.get().getProfile());
-	        		
-	        		// 삭제 실패 시
-	        		if(!deleteYn) {
-	        			log.info("프로필 사진 삭제 실패 ------> " + user.get().getProfile());
-	    	    		result.put("HttpStatus", "1.00");
-	    	    		result.put("Msg", "프로필 사진 삭제에 실패하였습니다.");
-	    	    		return result;
-	        		}
-	    			
-	    		}    		    		    		
-	    		
-	    		// 파일 업로드 
-	    	 	String submissionImageRoute = fileService.uploadProfile(profile, profileName ,email);
-	    		
-	    	 	if(submissionImageRoute.equals("N")) {
-	    	 		log.info("프로필 사진 업데이트 실패 ------> 파일 에러");
+    		// 유저 정보가 있는지 확인
+	    	Optional<MemberEntity> user = memberRepository.findById(email);       
+		    	if(!user.isPresent()) { 
+		    		log.info("프로필 사진 업데이트 실패 ------> 존재하지 않는 이메일입니다.");
 		    		result.put("HttpStatus", "1.00");
-		    		result.put("Msg", "프로필 사진 업데이트에 실패하였습니다.");
+		    		result.put("Msg", Constants.FAIL);
 		    		return result;
-	    	 	}
-	    	 	    	 	    	        	 	
-	    		MemberEntity member = user.get();
-	    		
-	    		member.setProfile(submissionImageRoute);    		    
-				
-		    	result.put("HttpStatus", "2.00");
-				result.put("Msg", Constants.SUCCESS);
-				log.info("프로필 사진 업데이트 성공 ------>" + email);	
-	
-			 }
-			} catch (Exception e) {
-				log.error("프로필 사진 업데이트 실패 ------> " + Constants.SYSTEM_ERROR , e);
+		    	}else {
+		    		
+		    		// 기본 프로필 ( M- , or W- 일 경우 삭제 X )
+		    		if(!user.get().getProfile().contains("M-") && !user.get().getProfile().contains("W-")) {
+		    		
+		    			// 파일 삭제
+		        		boolean deleteYn = fileService.deleteFile(user.get().getProfile());
+		        		
+		        		// 삭제 실패 시
+		        		if(!deleteYn) {		        			
+		    	    		result.put("HttpStatus", "1.00");
+		    	    		result.put("Msg", "프로필 사진 삭제에 실패하였습니다.");
+		    	    		log.info("프로필 사진 삭제 실패 ------> " + user.get().getProfile());
+		    	    		return result;
+		        		}
+		    			
+		    		}    		    		    		
+		    		
+		    		// 파일 업로드 
+		    	 	String submissionImageRoute = fileService.uploadProfile(profile, profileName ,email);
+		    		
+		    	 	if(submissionImageRoute.equals("N")) {		    	 		
+			    		result.put("HttpStatus", "1.00");
+			    		result.put("Msg", "프로필 사진 업데이트에 실패하였습니다.");
+			    		log.info("프로필 사진 업데이트 실패 ------> 파일 에러");
+			    		return result;
+		    	 	}
+		    	 	    	 	    	        	 	
+		    		MemberEntity member = user.get();
+		    		
+		    		member.setProfile(submissionImageRoute);    		    
+					
+			    	result.put("HttpStatus", "2.00");
+					result.put("Msg", Constants.SUCCESS);
+					log.info("프로필 사진 업데이트 성공 ------>" + email);	
+		
+				 }
+			} catch (Exception e) {				
 	    		result.put("HttpStatus", "1.00");
 	    		result.put("Msg", Constants.SYSTEM_ERROR);
+	    		log.error("프로필 사진 업데이트 실패 ------> " + Constants.SYSTEM_ERROR , e);
 	    		return result;
 			}
     	return result;
@@ -648,14 +654,15 @@ public class MemberService {
 	 * @return
 	 */
 	public int missionCompletedSum(MemberDto memberDto) {		
-		log.info("본인 누적미션 횟수 ------> " + "Start");						                                                 
+		log.info("본인 누적미션 횟수 ------> " + "Start");	
+		
 		int missionCompletedSum = 0 ;
 		
         try {        	
         	missionCompletedSum = memberMapper.missionCompletedSum(memberDto);        	        	        	        	        	
 		} catch (Exception e) {
 			log.error("본인 누적미션 횟수 ------> " + Constants.SYSTEM_ERROR , e);    	   
-   		 return 0 ;   		 
+			missionCompletedSum = 0 ;  		 
 		}
         
 	  return missionCompletedSum ;				 	    			    		   
@@ -674,7 +681,7 @@ public class MemberService {
         	updateGrade = memberMapper.updateGrade(memberDto);        	        	        	        	        	
 		} catch (Exception e) {
 			log.error("본인 누적미션 횟수 ------> " + Constants.SYSTEM_ERROR , e);    	   
-   		 return 0 ;   		 
+			updateGrade = 0 ;   		 
 		}
         
 	  return updateGrade ;				 	    			    		   
@@ -730,29 +737,30 @@ public class MemberService {
 		Map<String, String> result = new HashMap<String, String>();
 		
 		try {
-							
-		Optional<MemberEntity> memberEntity = memberRepository.findById(memberDto.getEmail());
-		
-		// 이메일이 없을경우 
-		if(!memberEntity.isPresent()) {
-			log.info("패스워드 변경 ( 로그인 한 상태 ) ------> " + Constants.INBALID_EMAIL); 
-			result.put("HttpStatus", "1.00");	    	
-	    	result.put("Msg", Constants.INBALID_EMAIL);
-	    	 return result ;
-		}
-								     
-	    if (!passwordEncoder.matches(memberDto.getPassword(), memberEntity.get().getPassword())) {
-	    	log.info("패스워드 변경 ( 로그인 한 상태 ) ------> " + Constants.INBALID_PASSWORD);
-	    	result.put("HttpStatus", "1.00");	    	
-	    	result.put("Msg", Constants.INBALID_PASSWORD);		    	
-	    } else {
-	    	MemberEntity member = memberEntity.get();			 			
-	    	member.setPassword(passwordEncoder.encode(memberDto.getAfterPassword()));	
-		    result.put("HttpStatus", "2.00");
-		    result.put("Msg", Constants.SUCCESS);		
-		    jwtTokenProvider.deleteToken(memberDto.getAccessToken()); // redis 에 저장되어있던 Token 삭제 		    
-		    log.info("패스워드 변경 ( 로그인 한 상태 ) ------> " + Constants.SUCCESS);
-	    }
+						
+			// 유저 정보가 있는지 확인
+			Optional<MemberEntity> memberEntity = memberRepository.findById(memberDto.getEmail());
+			
+			// 이메일이 없을경우 
+			if(!memberEntity.isPresent()) {			 
+				result.put("HttpStatus", "1.00");	    	
+		    	result.put("Msg", Constants.INBALID_EMAIL);
+		    	log.info("패스워드 변경 ( 로그인 한 상태 ) ------> " + Constants.INBALID_EMAIL);
+		    	return result ;
+			}
+									     
+		    if (!passwordEncoder.matches(memberDto.getPassword(), memberEntity.get().getPassword())) {	    	
+		    	result.put("HttpStatus", "1.00");	    	
+		    	result.put("Msg", Constants.INBALID_PASSWORD);		    	
+		    	log.info("패스워드 변경 ( 로그인 한 상태 ) ------> " + Constants.INBALID_PASSWORD);
+		    } else {
+		    	MemberEntity member = memberEntity.get();			 			
+		    	member.setPassword(passwordEncoder.encode(memberDto.getAfterPassword()));	
+			    result.put("HttpStatus", "2.00");
+			    result.put("Msg", Constants.SUCCESS);		
+			    jwtTokenProvider.deleteToken(memberDto.getAccessToken()); // redis 에 저장되어있던 Token 삭제 		    
+			    log.info("패스워드 변경 ( 로그인 한 상태 ) ------> " + Constants.SUCCESS);
+		    }
 	    
 		} catch (Exception e) {
 		    result.put("HttpStatus", "1.00");
@@ -774,22 +782,23 @@ public class MemberService {
 		Map<String, String> result = new HashMap<String, String>();
 		
 		try {
-							
-		Optional<MemberEntity> memberEntity = memberRepository.findById(memberDto.getEmail());
-		
-		// 이메일이 없을경우 
-		if(!memberEntity.isPresent()) {
-			log.info("패스워드 변경 ( 비밀번호 찾기 ) ------> " + Constants.INBALID_EMAIL); 
-			result.put("HttpStatus", "1.00");	    	
-	    	result.put("Msg", Constants.INBALID_EMAIL);
-	    	 return result ;
-		}
-								     
-    	MemberEntity member = memberEntity.get();			 			
-    	member.setPassword(passwordEncoder.encode(memberDto.getPassword()));	
-	    result.put("HttpStatus", "2.00");
-	    result.put("Msg", Constants.SUCCESS);		    
-	    log.info("패스워드 변경 ( 비밀번호 찾기 ) ------> " + Constants.SUCCESS);
+			
+			// 유저 정보가 있는지 확인
+			Optional<MemberEntity> memberEntity = memberRepository.findById(memberDto.getEmail());
+			
+			// 이메일이 없을경우 
+			if(!memberEntity.isPresent()) {				
+				result.put("HttpStatus", "1.00");	    	
+		    	result.put("Msg", Constants.INBALID_EMAIL);
+		    	log.info("패스워드 변경 ( 비밀번호 찾기 ) ------> " + Constants.INBALID_EMAIL);
+		    	return result ;
+			}
+									     
+	    	MemberEntity member = memberEntity.get();			 			
+	    	member.setPassword(passwordEncoder.encode(memberDto.getPassword()));	
+		    result.put("HttpStatus", "2.00");
+		    result.put("Msg", Constants.SUCCESS);		    
+		    log.info("패스워드 변경 ( 비밀번호 찾기 ) ------> " + Constants.SUCCESS);
 	    
 		} catch (Exception e) {
 		    result.put("HttpStatus", "1.00");
@@ -808,18 +817,14 @@ public class MemberService {
 		
 		Map<String, String> result = new HashMap<String, String>();
 				
-		log.info("총 사용자 수 -----------------> Start " );
-	
+		log.info("총 사용자 수 -----------------> Start " );	
        
        try {
 					  	    	    	    
-	    result.put("memberCnt",String.valueOf(memberRepository.count()));
-        result.put("HttpStatus","2.00");		
-		result.put("Msg",Constants.SUCCESS);
-		
-		
-		log.info("총 사용자 수 -----------------> " + Constants.SUCCESS);
-		
+		    result.put("memberCnt",String.valueOf(memberRepository.count()));
+	        result.put("HttpStatus","2.00");		
+			result.put("Msg",Constants.SUCCESS);					
+			log.info("총 사용자 수 -----------------> " + Constants.SUCCESS);		
 		} catch (Exception e) {
 			 result.put("HttpStatus","1.00");		
 			 result.put("Msg",Constants.SYSTEM_ERROR);			 

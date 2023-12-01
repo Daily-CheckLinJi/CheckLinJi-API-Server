@@ -66,32 +66,32 @@ public class MissionService {
 		
 		try {
 					
-		 // 현재 날짜와 시간을 LocalDateTime 객체로 가져옵니다.
-        LocalDateTime now = LocalDateTime.now();
-        
-        // 현재 년도와 월을 가져옵니다.
-        int year = now.getYear();
-        int month = now.getMonthValue();
-                                                 		
-        Map<String, String> data = new HashMap<String, String>();
-        
-        data.put("year", String.valueOf(year));
-        data.put("month", String.valueOf(month));
-        data.put("email", userEmail);
-                        
-        result = memberMapper.missionCompletedCnt(data);
-              
-        
-        if (String.valueOf(result.get("own")) == null || String.valueOf(result.get("own")).equals("0")) {
-        	result.put("HttpStatus","2.00");		
-    		result.put("Msg",Constants.SUCCESS);
-    		return result ;
-        }
-        
-        result.put("HttpStatus","2.00");		
-		result.put("Msg",Constants.SUCCESS);
-		
-		log.info("미션 성공 총 횟수 (월) ------> " + Constants.SUCCESS);
+			// 현재 날짜와 시간을 LocalDateTime 객체로 가져옵니다.
+	        LocalDateTime now = LocalDateTime.now();
+	        
+	        // 현재 년도와 월을 가져옵니다.
+	        int year = now.getYear();
+	        int month = now.getMonthValue();
+	                                                 		
+	        Map<String, String> data = new HashMap<String, String>();
+	        
+	        data.put("year", String.valueOf(year));
+	        data.put("month", String.valueOf(month));
+	        data.put("email", userEmail);
+	                        
+	        result = memberMapper.missionCompletedCnt(data);
+	              
+	        
+	        if (String.valueOf(result.get("own")) == null || String.valueOf(result.get("own")).equals("0")) {
+	        	result.put("HttpStatus","2.00");		
+	    		result.put("Msg",Constants.SUCCESS);
+	    		return result ;
+	        }
+	        
+	        result.put("HttpStatus","2.00");		
+			result.put("Msg",Constants.SUCCESS);
+			
+			log.info("미션 성공 총 횟수 (월) ------> " + Constants.SUCCESS);
 		
 		} catch (Exception e) {			
 	      	result.put("HttpStatus","1.00");		
@@ -110,8 +110,7 @@ public class MissionService {
 		Map<String, Object> result = new HashMap<String, Object>();		
 		
 		try {
-					                                                		
-	   	                       
+					                                                			   	                       
 			int missionCompletedCnt = memberMapper.missionCompletedCntAll(userEmail);
 	             	       
 	        result.put("HttpStatus","2.00");
@@ -122,8 +121,8 @@ public class MissionService {
 		
 		} catch (Exception e) {			
 	      	result.put("HttpStatus","1.00");		
-   		result.put("Msg",Constants.SYSTEM_ERROR);    		   
-   		log.error("미션 성공 총 횟수 (전체) ------> " + Constants.SYSTEM_ERROR , e);    		
+	      	result.put("Msg",Constants.SYSTEM_ERROR);    		   
+	      	log.error("미션 성공 총 횟수 (전체) ------> " + Constants.SYSTEM_ERROR , e);    		
 		}
 	    return result ;			    		   
 	}	
@@ -143,38 +142,38 @@ public class MissionService {
        
        try {
 		             
-       ArrayList<Map<String, Object>> missionRankingTop = memberMapper.missionRankingTop(data);
-       
-       Map<String, String> missionRankingOwn = memberMapper.missionRankingOwn(data);
-                     
-       if (missionRankingTop.get(0) == null ) {
-    	    log.info("실시간 랭킹 ------> " + "TOP 3 조회 실패");
-    	    result.put("HttpStatus","1.00");		
-   			result.put("Msg","TOP 3 조회 실패");
-   		 return result ;
-       }
-       
-
-       
-       for(int i =0; i < missionRankingTop.size(); i++) {    	   
-    	   missionRankingTop.get(i).put("profile",fileService.myAuthImage((String) missionRankingTop.get(i).get("profile")));
-       }
-       
-       result.put("HttpStatus","2.00");		
-	   result.put("Msg",Constants.SUCCESS);
-	   result.put("missionRankingTop",missionRankingTop);
-	   if (missionRankingOwn != null ) {
-		   missionRankingOwn.put("profile",fileService.myAuthImage((String) missionRankingOwn.get("profile")));
-    	   result.put("missionRankingOwn",missionRankingOwn);
-       }else {
-    	   Map<String, String> missionRankingOwnInfo = memberMapper.missionRankingOwnInfo(data);
-    	   missionRankingOwnInfo.put("profile",fileService.myAuthImage((String) missionRankingOwnInfo.get("profile")));
-    	   missionRankingOwnInfo.put("ranking","0");
-    	   result.put("missionRankingOwn",missionRankingOwnInfo);
-       }
-	   
-		
-		log.info("실시간 랭킹 ------> " + Constants.SUCCESS);
+	       ArrayList<Map<String, Object>> missionRankingTop = memberMapper.missionRankingTop(data);
+	       
+	       Map<String, String> missionRankingOwn = memberMapper.missionRankingOwn(data);
+	                     
+	       if (missionRankingTop.get(0) == null ) {
+	    	    log.info("실시간 랭킹 ------> " + "TOP 3 조회 실패");
+	    	    result.put("HttpStatus","1.00");		
+	   			result.put("Msg","TOP 3 조회 실패");
+	   		 return result ;
+	       }
+	       
+	
+	       
+	       for(int i =0; i < missionRankingTop.size(); i++) {    	   
+	    	   missionRankingTop.get(i).put("profile",fileService.myAuthImage((String) missionRankingTop.get(i).get("profile")));
+	       }
+	       
+	       result.put("HttpStatus","2.00");		
+		   result.put("Msg",Constants.SUCCESS);
+		   result.put("missionRankingTop",missionRankingTop);
+		   if (missionRankingOwn != null ) {
+			   missionRankingOwn.put("profile",fileService.myAuthImage((String) missionRankingOwn.get("profile")));
+	    	   result.put("missionRankingOwn",missionRankingOwn);
+	       }else {
+	    	   Map<String, String> missionRankingOwnInfo = memberMapper.missionRankingOwnInfo(data);
+	    	   missionRankingOwnInfo.put("profile",fileService.myAuthImage((String) missionRankingOwnInfo.get("profile")));
+	    	   missionRankingOwnInfo.put("ranking","0");
+	    	   result.put("missionRankingOwn",missionRankingOwnInfo);
+	       }
+		   
+			
+			log.info("실시간 랭킹 ------> " + Constants.SUCCESS);
 		
 		} catch (Exception e) {
     	    log.error("실시간 랭킹 ------> " + Constants.SYSTEM_ERROR , e);
