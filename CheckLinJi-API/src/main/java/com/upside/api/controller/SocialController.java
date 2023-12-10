@@ -17,6 +17,7 @@ import com.upside.api.dto.MemberDto;
 import com.upside.api.dto.MessageDto;
 import com.upside.api.service.KaKaoOAuthService;
 import com.upside.api.service.MemberService;
+import com.upside.api.service.SocialService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -28,6 +29,7 @@ public class SocialController {
     
     private final KaKaoOAuthService oAuthSerivce;
     private final MemberService memberService;    
+    private final SocialService socialService;
 
     // 카카오 로그인 페이지 테스트
     @GetMapping
@@ -39,26 +41,27 @@ public class SocialController {
     
     
     @PostMapping("/login")
-	public ResponseEntity<MessageDto> login (@RequestBody MemberDto memberDto) {
-    	
-    	MessageDto message = new MessageDto();			
+	public ResponseEntity<Map<String , String>> login (@RequestBody MemberDto memberDto) {
+    	    			
     	Map<String, String> result = memberService.validateEmail(memberDto.getEmail());
     	
-    	if(result.get("HttpStatus").equals("1.00")) { // 신규 회원일 경우
-   			message.setStatusCode(result.get("HttpStatus"));
-   			message.setUserEmail(result.get("UserEmail"));
-   			message.setMsg(result.get("Msg"));
-   			
-   		} else { // 로그인    			
-   			message.setStatusCode("2.00");
-   			message.setUserEmail(result.get("UserEmail"));
-   			message.setToKen(result.get("Token"));
-   			message.setRefreshToken(result.get("RefreshToken"));
-   			message.setMsg(result.get("Msg"));
-   			
-   		}
-    	    			
-    	return new ResponseEntity<>(message,HttpStatus.OK);
+   	 	if(result.get("HttpStatus").equals("2.00")) {			 		 
+   	 		return new ResponseEntity<>(result, HttpStatus.OK);
+   	 	} else {			 
+   	 		return new ResponseEntity<>(result,HttpStatus.BAD_REQUEST); 
+   	 	}
+	}
+    
+    @PostMapping("/sign")
+	public ResponseEntity<Map<String , String>> signUp (@RequestBody MemberDto memberDto) {
+    	
+    	Map<String, String> result = socialService.signUpSocial(memberDto);
+		
+		if (result.get("HttpStatus").equals("2.00")) { // 성공						
+			return new ResponseEntity<>(result,HttpStatus.OK);			
+		} else {			
+			return new ResponseEntity<>(result,HttpStatus.BAD_REQUEST);
+		} 		
 	}
     
     

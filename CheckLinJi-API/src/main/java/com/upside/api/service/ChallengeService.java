@@ -158,12 +158,29 @@ public class ChallengeService {
 		        		memberInfo.put("grade", user.get().getGrade());
 		        		memberInfo.put("totalMissionSuccessCnt", memberMapper.missionCompletedCntAll(pageDto.getEmail()));
 		        		memberInfo.put("joinDate", differenceInDays);
-		        				        	 	
+		        					        		
+		        		Map<String, String> data = new HashMap<String, String>();              
+		   		       
+		        		data.put("email", pageDto.getEmail());
+		 				 
+		 		        // 유저 미션 랭킹 가져오기
+		 				Map<String, String> missionRankingUser = memberMapper.OwnRanking(data);
+		 						 						 				
+		 				 // 미션 정보가 없으면 랭크 0 처리
+						 if(missionRankingUser == null) {
+							 missionRankingUser = new HashMap<String, String>();
+							 missionRankingUser.put("rank", "0");
+						 }
+		        				        		
+						 missionRankingUser.remove("email");
+						 
 		        	   	result.put("HttpStatus","2.00");		
 		      			result.put("Msg",Constants.SUCCESS);
 		      			result.put("userInfo",memberInfo); // 유저 정보
 		      			result.put("missionTotalList",challengeMapper.listTotalCnt(pageDto)); // 사용 안하는거 같음 
-		      			result.put("userChallengeList",userChallengeList); // 유저 게시글 리스트		      			
+		      			result.put("userChallengeList",userChallengeList); // 유저 게시글 리스트
+		      			result.put("ranking",missionRankingUser); // 유저 게시글 리스트
+		      			
 		       		 
 		      			log.info("첼린지 인증글 리스트 ------> " + Constants.SUCCESS);
 		           } else {

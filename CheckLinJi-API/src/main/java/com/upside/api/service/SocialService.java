@@ -1,10 +1,14 @@
 package com.upside.api.service;
 
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -16,7 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.upside.api.config.JwtTokenProvider;
 import com.upside.api.dto.MemberDto;
 import com.upside.api.entity.MemberEntity;
+import com.upside.api.entity.UserChallengeEntity;
 import com.upside.api.repository.MemberRepository;
+import com.upside.api.repository.UserChallengeRepository;
 import com.upside.api.util.Constants;
 
 import jakarta.persistence.EntityManager;
@@ -28,11 +34,15 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class SocialService {
 	
+	 @Value("${file.upload-dir}")
+	 private String uploadDir;
 	
-	private final MemberRepository memberRepository;		
+	private final MemberRepository memberRepository;	
+	private final UserChallengeRepository userChallengeRepository;	
 	private final JwtTokenProvider jwtTokenProvider;		
 	private final PasswordEncoder passwordEncoder;
 	private final EntityManager entityManager;
+	private final MemberService memberService;
 	/**
 	 * 회원목록 조회
 	 * @param memberDto
@@ -67,6 +77,117 @@ public class SocialService {
     }
 	
 	
+	/**
+	 * 소셜 회원가입 
+	 * @param memberDto
+	 * @return 
+	 */
+	public Map<String, String> signUpSocial(MemberDto memberDto) {
+		Map<String, String> result = new HashMap<String, String>();
+		
+		try {
+			
+			// 값이 존재 하지않는 파라미터가 있는지 확인
+			if(memberDto.getEmail() == null || memberDto.getName() == null || memberDto.getNickName() == null ||
+			   memberDto.getBirth() == null || memberDto.getSex() == null ) {  
+			    													
+				result.put("HttpStatus","1.00");
+				result.put("Msg",Constants.NOT_EXIST_PARAMETER);
+				log.info("회원가입 실패 ------> " + Constants.NOT_EXIST_PARAMETER);
+				return result ; 
+			} 						 
+			
+			 // 이메일 중복 검증
+			 Optional<MemberEntity> isDuplicateId = memberRepository.findById(memberDto.getEmail());
+			 
+			 if(isDuplicateId.isPresent()) {				 				 
+				 result.put("HttpStatus","1.00");
+				 result.put("Msg",Constants.DUPLICATE_EMAIL);
+				 log.info("회원가입 실패 ------> " + "중복된 이메일 입니다.");
+				 return result ; 
+			 }
+			 
+			 // 닉네임 중복 검증 중복 시 1.00 
+			 Map<String , String> validateDuplicated = memberService.validateDuplicatedNickName(memberDto.getNickName());
+			
+			 if(validateDuplicated.get("HttpStatus").equals("1.00")) {		 				 
+				 result.put("HttpStatus","1.00");
+				 result.put("Msg","중복된 닉네임입니다.");
+				 log.info("회원가입 실패 ------> " + "중복된 닉네임입니다.");				 
+				 return result ;
+			 }
+			
+			String profileName = "";
+			 
+			// 회원가입 시 기본 프로필 성별 따라 랜덤 지정
+			if(memberDto.getSex().equals("M")) {							
+				profileName = "M-" + String.valueOf((int)(Math.random() * 5) + 1) + ".png";
+			}else if (memberDto.getSex().equals("W")) {				
+				profileName = "W-" + String.valueOf((int)(Math.random() * 5) + 1) + ".png";
+			}else{				
+				profileName = "W-" + String.valueOf((int)(Math.random() * 5) + 1) + ".png";
+			}
+			
+			SimpleDateFormat today = new SimpleDateFormat("yyyy-MM-dd hh:mm");        		
+			
+			// 회원가입 유저 정보 DB 저장
+			MemberEntity memberEntity = MemberEntity.builder()
+					.email(memberDto.getEmail())
+					.name(memberDto.getName())
+					.nickName(memberDto.getNickName())
+					.password("X") 								
+					.birth(memberDto.getBirth())
+					.sex(memberDto.getSex())
+					.loginDate(today.format(new Date()))
+					.joinDate(today.format(new Date()))
+					.authority("user")
+					.profile(uploadDir + "/" + "profile" + "/" + profileName) // 문자열에서 백슬래시()는 이스케이프 문자(escape character)로 사용되기 때문에 사용할려면 \\ 두개로 해야 \로 인식
+					.grade("책갈피")
+					.build();						        
+			
+			 memberRepository.save(memberEntity);
+			 	
+			 // 유저 정보 DB 저장이 잘 됬는지 확인
+			 boolean  exsistUser = memberRepository.findById(memberDto.getEmail()).isPresent();
+			 
+			 if (exsistUser) {
+												 
+				 UserChallengeEntity userChallenge =  UserChallengeEntity.builder()
+						   .email(memberDto.getEmail())						   
+						   .registrationTime(LocalDateTime.now())
+						   .completed(false)
+						   .build();
+	
+			 	 userChallengeRepository.save(userChallenge);
+				 
+			 	 // 첼린지 가입이 제대로 됬는지 확인
+			 	 Boolean exsistUserChallenge = userChallengeRepository.findByEmail(memberDto.getEmail()).isPresent();
+			 	 
+				 result.put("HttpStatus","2.00");
+				 result.put("UserEmail",memberDto.getEmail());	
+				 
+				 if(exsistUserChallenge) {
+					 result.put("Msg",Constants.SUCCESS); 
+				 }else {
+					 result.put("Msg","회원가입은 완료했으나 첼린지 참여에 실패하였습니다."); 
+				 }
+				 
+				 log.info("회원가입 성공 ------> " + memberDto.getEmail());
+				 
+			 }else{				 
+				 result.put("HttpStatus","1.00");
+				 result.put("Msg",Constants.FAIL);
+				 log.info("회원가입 실패 ------> " + Constants.FAIL);
+			 }
+		 
+		} catch (Exception e) {			 
+			 result.put("HttpStatus","1.00");
+			 result.put("Msg",Constants.SYSTEM_ERROR);
+			 log.error("회원가입 실패 ------> " + Constants.SYSTEM_ERROR , e);
+		}				 
+		 return result ;
+	}
+    
 	/**
 	 * 회원정보 업데이트
 	 * @param memberDto

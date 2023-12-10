@@ -43,6 +43,7 @@ public class SecurityConfig {
         		.requestMatchers("/api/members/login/**").permitAll()        		       	
         		.requestMatchers("/api/members/validateDuplicated/**").permitAll()
         		.requestMatchers("/api/members/changePasswordMail/**").permitAll()
+        		.requestMatchers("/api/social/sign/**").permitAll()
         		.requestMatchers("/api/social/login/**").permitAll()
         		.requestMatchers("/api/members/refreshToken/**").permitAll()          		
         		.requestMatchers("/api/external/**").permitAll()

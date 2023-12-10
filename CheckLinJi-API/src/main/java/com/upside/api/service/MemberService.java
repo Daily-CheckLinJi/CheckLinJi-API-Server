@@ -545,38 +545,47 @@ public class MemberService {
     @Transactional // 트랜잭션 안에서 entity를 조회해야 영속성 상태로 조회가 되고 값을 변경해면 변경 감지(dirty checking)가 일어난다.
     public Map<String, String> validateEmail(String email) {
     	
-    	Map<String, String> result = new HashMap<String, String>();
-    	log.info("소셜 로그인 ------> Start ");
-    	
-    	try {
-			    	
-    	Optional<MemberEntity> user = memberRepository.findById(email);
-       
-    	if(!user.isPresent()) { 
-    		log.info("소셜 로그인 ------> 이메일이 DB에 없는경우 (신규 회원)");
-    		result.put("HttpStatus", "1.00");
-    		result.put("Msg", "가입 되지않은 사용자입니다. 회원가입을 진행해주세요.");
-	    	result.put("UserEmail", email);	    		    	
-    	}else {
-    		MemberEntity member = user.get();
-    		log.info("소셜 로그인 ------>  이메일이 DB에 있는경우 (로그인)");	
-    		member.setRefreshToken((jwtTokenProvider.createRefreshToken())); // refresh Token DB 저장		    		    
-			result.put("Token", jwtTokenProvider.createToken(member.getEmail()));
-			result.put("RefreshToken", member.getRefreshToken());
-	    	result.put("HttpStatus", "2.00");
-			result.put("Msg", Constants.SUCCESS);
-	    	result.put("UserEmail", member.getEmail());
-
-    	}
-    	
+	Map<String, String> result = new HashMap<String, String>();
+		
+		try {
+					
+			// 유저가 존재하는지 확인
+			Optional<MemberEntity> userExist = memberRepository.findById(email);
+										
+			MemberEntity member = userExist.get();
+		     
+			// 패스워드가 일치하는지 확인
+		    if (member.getPassword().equals("X")) {		    	
+		    	// redis 캐시 로직
+		    	ValueOperations<String, String> redis = redisTemplate.opsForValue(); // Redis Map 객체 생성		    			    			    	
+		    	redis.set("accessToken_"+member.getEmail(), jwtTokenProvider.createToken(member.getEmail())); // Token Redis 저장 , 키 값이 같으면 덮어 씌워짐
+		    	redis.set("refreshToken_"+member.getEmail(), jwtTokenProvider.createRefreshToken()); // refresh Token Redis 저장 , 키 값이 같으면 덮어 씌워짐		    	
+		    	redisTemplate.expire("accessToken_" + member.getEmail(), 1, TimeUnit.HOURS); // redis accessToken expire 1시간 지정
+		    	redisTemplate.expire("refreshToken_"+member.getEmail(), 31, TimeUnit.DAYS); // redis refreshToken expire 31일 지정
+		    			    	
+			    result.put("HttpStatus", "2.00");
+			    result.put("Token", redis.get("accessToken_"+member.getEmail()));
+			    result.put("RefreshToken", redis.get("refreshToken_"+member.getEmail()));
+			    result.put("UserEmail", member.getEmail());
+			    result.put("Msg", Constants.SUCCESS);
+			    
+			    log.info("소셜 회원 로그인 ------> " + Constants.SUCCESS);
+		    		    	
+		    } else {		    			    	
+		    	result.put("HttpStatus", "1.00");
+		    	result.put("UserEmail", null);
+		    	result.put("Msg", "소셜 회원이 아니거나 존재 하지않는 회원입니다.");
+		    	log.info("소셜 회원 로그인 ------> " + "소셜 회원이 아니거나 존재 하지않는 회원입니다.");
+		    }
+		    
 		} catch (Exception e) {
-    		log.error("소셜 로그인 ------> "+ Constants.SYSTEM_ERROR , e);
-    		result.put("HttpStatus", "1.00");
-    		result.put("Msg", Constants.SYSTEM_ERROR);
-	    	result.put("UserEmail", email);	 
+			log.error("소셜 회원 로그인 ------> " + Constants.SYSTEM_ERROR , e); 
+			result.put("HttpStatus", "1.00");
+	    	result.put("UserEmail", null);
+	    	result.put("Msg", Constants.SYSTEM_ERROR);
 		}
-    	
-    	return result;
+		    
+		    return result ;	
    }
     
     
