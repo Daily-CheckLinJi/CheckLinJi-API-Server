@@ -39,8 +39,7 @@ public class ChallengeController {
 	 */
 	@PostMapping("/list") 
 	public ResponseEntity<Map<String, Object>> viewChallengeList (@RequestBody PageDto pageDto) {
-		
-		 						
+				 						
 		Map<String, Object> result = challengeSerivce.viewChallengeList(pageDto);
 				
 		if (result.get("HttpStatus").equals("2.00")) { // 성공			
@@ -93,8 +92,7 @@ public class ChallengeController {
 		
 		if (result.get("HttpStatus").equals("2.00")) { // 성공			
 			return new ResponseEntity<>(result,HttpStatus.OK);					
-		} else {			
-			
+		} else {						
 			return new ResponseEntity<>(result,HttpStatus.BAD_REQUEST);
 		} 
 					
