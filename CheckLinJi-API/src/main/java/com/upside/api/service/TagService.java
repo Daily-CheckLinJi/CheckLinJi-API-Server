@@ -41,17 +41,17 @@ public class TagService {
 		
 		try {
 		
-		List<HashTagEntity> tagList = hashTagRepository.findAll();
-		
-		if(tagList.isEmpty()) {
+			List<HashTagEntity> tagList = hashTagRepository.findAll();
+			
+			if(tagList.isEmpty()) {
+				 result.put("HttpStatus","2.00");		
+	    		 result.put("Msg","태그가 존재하지 않습니다.");
+	    		 log.info("해쉬태그 목록 ------> " + "태그가 존재하지 않습니다.");
+	    		 return result ;
+			}						
 			 result.put("HttpStatus","2.00");		
-    		 result.put("Msg","태그가 존재하지 않습니다.");
-    		 log.info("해쉬태그 목록 ------> " + "태그가 존재하지 않습니다.");
-    		 return result ;
-		}						
-		 result.put("HttpStatus","2.00");		
-		 result.put("tagList",tagList);		 
-		log.info("해쉬태그 목록 ------> " + Constants.SUCCESS);
+			 result.put("tagList",tagList);		 
+			log.info("해쉬태그 목록 ------> " + Constants.SUCCESS);
 		
 		} catch (Exception e) {
 			log.error("해쉬태그 목록 ------> " + Constants.SYSTEM_ERROR , e);
@@ -76,27 +76,27 @@ public class TagService {
 		
 		try {
 		
-		Optional<HashTagEntity> tagExist = hashTagRepository.findByTagName(hashTagDto.getTagName());
-		
-		if(tagExist.isPresent()) {
-			 result.put("HttpStatus","1.00");		
-    		 result.put("Msg","이미 존재하는 태그입니다.");
-    		 log.info("해쉬태그 추가 ------> " + "이미 존재하는 태그입니다.");
-    		 return result ;
-		}
-		
-		HashTagEntity hashTagEntity = HashTagEntity.builder()
-															.tagName(hashTagDto.getTagName())
-															.createDate(LocalDateTime.now())
-															.build();
-		
-		hashTagRepository.save(hashTagEntity);
-		
-		
-		 result.put("HttpStatus","2.00");		
-		 result.put("Msg",Constants.SUCCESS);
-		 result.put("addTag",hashTagDto.getTagName());
-		log.info("해쉬태그 추가 ------> " + Constants.SUCCESS);
+			Optional<HashTagEntity> tagExist = hashTagRepository.findByTagName(hashTagDto.getTagName());
+			
+			if(tagExist.isPresent()) {
+				 result.put("HttpStatus","1.00");		
+	    		 result.put("Msg","이미 존재하는 태그입니다.");
+	    		 log.info("해쉬태그 추가 ------> " + "이미 존재하는 태그입니다.");
+	    		 return result ;
+			}
+			
+			HashTagEntity hashTagEntity = HashTagEntity.builder()
+																.tagName(hashTagDto.getTagName())
+																.createDate(LocalDateTime.now())
+																.build();
+			
+			hashTagRepository.save(hashTagEntity);
+			
+			
+			 result.put("HttpStatus","2.00");		
+			 result.put("Msg",Constants.SUCCESS);
+			 result.put("addTag",hashTagDto.getTagName());
+			log.info("해쉬태그 추가 ------> " + Constants.SUCCESS);
 		
 		} catch (Exception e) {
 			log.error("해쉬태그 추가 ------> " + Constants.SYSTEM_ERROR , e);

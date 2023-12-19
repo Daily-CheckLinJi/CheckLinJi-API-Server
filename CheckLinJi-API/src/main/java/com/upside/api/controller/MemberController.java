@@ -11,7 +11,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -199,24 +198,24 @@ public class MemberController {
 			 }
 		}
 		
-		/**
-		 * 총 사용자 수 
-		 * @return
-		 */
-		@PostMapping("/cnt")
-		public ResponseEntity<Map<String, String>> memberCnt () {
-						 			 
-			 Map<String, String> result = memberService.findMemCnt();
-			 
-			 
-			 if(result.get("HttpStatus").equals("2.00")) {
+	/**
+	 * 총 사용자 수 
+	 * @return
+	 */
+	@PostMapping("/cnt")
+	public ResponseEntity<Map<String, String>> memberCnt () {
+					 			 
+		 Map<String, String> result = memberService.findMemCnt();
+		 
+		 
+		 if(result.get("HttpStatus").equals("2.00")) {
 
-				 return new ResponseEntity<>(result, HttpStatus.OK);
-			 } else {
+			 return new ResponseEntity<>(result, HttpStatus.OK);
+		 } else {
 
-				 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
-			 }		
-		}	
+			 return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+		 }		
+	}	
 	
 	
 		
