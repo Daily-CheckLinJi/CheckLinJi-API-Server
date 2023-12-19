@@ -32,6 +32,11 @@
 		DELETE FROM COMMENT	WHERE comment_seq=#{commentSeq}					
 	</delete>
 	
+	 <!-- 유저 댓글 신고여부 상태 확인 -->
+	<select id="userCommentReportState" parameterType="CommentDto" resultType="int">
+		SELECT COUNT(*) FROM REPORT_COMMENT RC WHERE COMMENT_SEQ = #{commentSeq} AND EMAIL = #{email}				
+	</select>	
+	
 	 <!-- 유저 좋아요 등록 -->
 	<insert id="insertLike" parameterType="CommentDto" >
 		INSERT INTO LIKES

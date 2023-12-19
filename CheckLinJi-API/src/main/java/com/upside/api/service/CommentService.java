@@ -153,6 +153,40 @@ public class CommentService {
 	    return result ;			    		   
 	}
 	
+	 /**
+	  * 유저 댓글 신고여부 상태 확인 
+	  * @param memberDto
+	  * @return
+	  */
+	public Map<String, String> userCommentReportState (CommentDto commentDto) {
+		
+		  log.info("유저 댓글 신고여부 상태 확인  ------> " + "Start");
+			
+		  Map<String, String> result = new HashMap<String, String>();
+			
+		  try {
+				  
+			  // 유저 댓글 신고여부 상태 확인
+		      int insertYn = userCommentMapper.userCommentReportState(commentDto);
+		      		      
+		      if (insertYn != 0) {		    	 
+		 		  result.put("REPORT_YN","Y");		 		  
+		      }else {		    	
+		    	  result.put("REPORT_YN","N");
+		      }	             					 
+		      
+		      result.put("HttpStatus","2.00");		
+	 		  result.put("Msg",Constants.SUCCESS);
+		      log.info("유저 댓글 신고여부 상태 확인 ------> " + Constants.SUCCESS);
+		      
+		 } catch (Exception e) {
+	      	result.put("HttpStatus","1.00");		
+	  		result.put("Msg",Constants.SYSTEM_ERROR);
+	  		log.error("유저 댓글 삭제  ------> " + Constants.SYSTEM_ERROR , e);
+		 }		
+	    return result ;			    		   
+	}	
+	
 	
 	 /**
 	  * 유저 좋아요 등록

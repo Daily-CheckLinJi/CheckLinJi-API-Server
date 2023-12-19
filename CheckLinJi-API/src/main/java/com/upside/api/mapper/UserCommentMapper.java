@@ -29,6 +29,13 @@ public interface UserCommentMapper {
 	 */
 	int userCommentDelete (CommentDto commentDto);
 	
+	/**
+	 * 유저 댓글 신고여부 상태 확인 
+	 * @param memberDto
+	 * @return
+	 */
+	int userCommentReportState (CommentDto commentDto);
+	
 	
 	/**
 	 * 유저 좋아요 등록

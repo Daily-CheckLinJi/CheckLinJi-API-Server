@@ -98,6 +98,28 @@ public class CommentController {
 	}
 	
 	/**
+	  * 유저 댓글 신고여부 상태 확인
+	  * @param commentDto
+	  * @return
+	  */	
+	@PostMapping("/report/state") 
+	public ResponseEntity<Map<String,String>> userCommentReportState (@RequestHeader("Authorization") String authHeader , @RequestBody CommentDto commentDto) {
+				
+		String userEmail = jwtTokenProvider.getEmail(authHeader); // email을 얻기위해 헤더에서 토큰을 디코딩하는 부분이다.
+		
+		commentDto.setEmail(userEmail);
+		
+		Map<String, String> result = commentService.userCommentReportState(commentDto);
+				
+		if (result.get("HttpStatus").equals("2.00")) { // 성공		
+			return new ResponseEntity<>(result,HttpStatus.OK);					
+		} else {					
+			return new ResponseEntity<>(result,HttpStatus.BAD_REQUEST);
+		} 
+					
+	}	
+	
+	/**
 	  * 유저 좋아요 등록
 	  * @param commentDto
 	  * @return
@@ -148,4 +170,6 @@ public class CommentController {
 		} 
 					
 	}
+	
+	
 }
