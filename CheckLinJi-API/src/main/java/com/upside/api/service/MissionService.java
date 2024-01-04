@@ -142,7 +142,7 @@ public class MissionService {
        
        try {
 		             
-	       ArrayList<Map<String, Object>> missionRankingTop = memberMapper.missionRankingTop(data);
+	       ArrayList<Map<String, Object>> missionRankingTop = memberMapper.missionRankingTop();
 	       
 	       Map<String, String> missionRankingOwn = memberMapper.missionRankingOwn(data);
 	                     
@@ -308,19 +308,15 @@ public class MissionService {
 	        	   		        	         			
       			Map<String, String> data = new HashMap<String, String>();              
 	   		       
-        		data.put("email", challengeSubmissionDto.getEmail());
+        		data.put("email", (String) missionAuthInfo.get("EMAIL"));
  				 
  		        // 유저 미션 랭킹 가져오기
- 				Map<String, String> missionRankingUser = memberMapper.OwnRanking(data);
+ 				String missionRankingUser = memberMapper.isTopRank(data);
  						 						 				
  				 // 미션 정보가 없으면 랭크 0 처리
 				 if(missionRankingUser == null) {
-					 missionRankingUser = new HashMap<String, String>();
-					 missionRankingUser.put("rank", "0");
-				 }
-        				        		
-				 missionRankingUser.remove("email");
-      			
+					 missionRankingUser = "0" ;
+				 }        				        						       			
 				 
         	   	log.info("본인 미션 상세보기 ------> " + Constants.SUCCESS);	        	   		        	   	
         	   	missionAuthInfo.put("SUBMISSION_IMAGE_ROUTE", missionImage);	        	   	

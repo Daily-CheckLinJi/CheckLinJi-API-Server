@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Mapper;
 
 import com.upside.api.dto.ChallengeSubmissionDto;
 import com.upside.api.dto.MemberDto;
+import com.upside.api.dto.RankingDto;
 
 @Mapper
 public interface MemberMapper {
@@ -47,7 +48,7 @@ public interface MemberMapper {
 	 * @param data
 	 * @return
 	 */
-	ArrayList<Map<String, Object>> missionRankingTop (Map<String, String> data);
+	ArrayList<Map<String, Object>> missionRankingTop ();
 			
 	/**
 	 * 실시간 본인 랭킹
@@ -157,5 +158,24 @@ public interface MemberMapper {
 	 * @return
 	 */
 	HashMap<String,String> OwnRanking (Map<String, String> data);
+	
+	/**
+	 * 미션 랭킹 Top 3 인지 확인
+	 * @return
+	 */
+	String isTopRank (Map<String, String> data);
+	
+	/**
+	 * 미션 랭킹 Top 3 업데이트
+	 * @param data
+	 * @return
+	 */
+	int insertRankingTop (ArrayList<RankingDto> rankingTopList);
+	
+	/**
+	 * 미션 랭킹 Top 3 삭제
+	 * @return
+	 */
+	int deleteRankingTop ();
 	
 }

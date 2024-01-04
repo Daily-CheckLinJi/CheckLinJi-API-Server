@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -14,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 @Configuration
 @EnableScheduling
 @RequiredArgsConstructor
-public class WebPageCrawling {
+public class WebPageCrawlingScheduler {
 	
 	@Value("${essay.best.book-today}")
 	 private String essayBestBookToday;	 
@@ -39,6 +40,7 @@ public class WebPageCrawling {
 	
 	
     private final WebPageReader webPageReader;
+    private final RankingTopInsert rankingTopInsert ;
       
     
 //    @Scheduled(fixedDelay = 4000000)           
@@ -159,26 +161,28 @@ public class WebPageCrawling {
   	
   }  
   
-//	  @PostConstruct
+	  @PostConstruct
 	  public void initialTask() throws Exception {
+		    
+		  	rankingTopInsert.rankingTopInsert();
 		  
-	  		// 알라딘 현재 베스트셀러 url
-	  		webPageReader.readWebPageToDay(essayBestBookToday,"essay");
-	  		webPageReader.readWebPageToDay(essayBestBookToday,"selfDev");
-	  		webPageReader.readWebPageToDay(essayBestBookToday,"humanities");
-	  		Thread.sleep(3000);
-	  			  		
-	  		// 알라딘 이번주 베스트셀러 url
-	  		webPageReader.readWebPageWeek(essayBestBookWeek,"essay");
-	  		webPageReader.readWebPageWeek(selfDevBestBookWeek,"selfDev");
-	  		webPageReader.readWebPageWeek(humanitiesBestBookWeek,"humanities");
-	  		Thread.sleep(3000);
-		  
-	  		// 알라딘 이번달 베스트셀러 url	  	 
-	  		webPageReader.readWebPageMonthly(essayBestBookMonthly,"essay");
-	  		webPageReader.readWebPageMonthly(selfDevBestBookMonthly,"selfDev");
-	  		webPageReader.readWebPageMonthly(humanitiesBestBookMonthly,"humanities");
-	  		Thread.sleep(3000);
+//	  		// 알라딘 현재 베스트셀러 url
+//	  		webPageReader.readWebPageToDay(essayBestBookToday,"essay");
+//	  		webPageReader.readWebPageToDay(essayBestBookToday,"selfDev");
+//	  		webPageReader.readWebPageToDay(essayBestBookToday,"humanities");
+//	  		Thread.sleep(3000);
+//	  			  		
+//	  		// 알라딘 이번주 베스트셀러 url
+//	  		webPageReader.readWebPageWeek(essayBestBookWeek,"essay");
+//	  		webPageReader.readWebPageWeek(selfDevBestBookWeek,"selfDev");
+//	  		webPageReader.readWebPageWeek(humanitiesBestBookWeek,"humanities");
+//	  		Thread.sleep(3000);
+//		  
+//	  		// 알라딘 이번달 베스트셀러 url	  	 
+//	  		webPageReader.readWebPageMonthly(essayBestBookMonthly,"essay");
+//	  		webPageReader.readWebPageMonthly(selfDevBestBookMonthly,"selfDev");
+//	  		webPageReader.readWebPageMonthly(humanitiesBestBookMonthly,"humanities");
+//	  		Thread.sleep(3000);
 	  		
 	  }
     

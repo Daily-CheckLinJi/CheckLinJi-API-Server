@@ -55,6 +55,29 @@
 			LIMIT 3		 
 	</select>
 	
+	<!-- 실시간 랭킹 TOP 3 업데이트 -->
+	<insert id="insertRankingTop" parameterType="java.util.ArrayList" >
+		 INSERT INTO RANKING_TOP 
+        (
+           	  RANK
+            , EMAIL
+            , UPDATE_DATE            
+        )
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+        (
+			  #{item.rank}
+            , #{item.email}
+            , #{item.updateDate}       
+        )
+        </foreach>
+	</insert>
+	
+	<!-- 실시간 랭킹 TOP 3 삭제 -->
+	<delete id="deleteRankingTop">
+		DELETE FROM ranking_top 
+	</delete>		
+	
 	<!-- 실시간 본인 랭킹 -->
 	<select id="missionRankingOwn" parameterType="MemberDto" resultType="java.util.Map" >
 		SELECT val.rank, val.userSeq, val.email , val.nickName, val.count as successCnt, val.joinDate , val.grade , val.profile
@@ -147,7 +170,7 @@
 	
 	<!-- 본인 미션 상세정보 댓글-->
 	<select id="missionComment" parameterType="ChallengeSubmissionDto" resultType="java.util.Map" >
-		SELECT 	 CM.comment_seq as COMMENT_SEQ
+			SELECT 	 CM.comment_seq as COMMENT_SEQ
 				,CM.email as USER_EMAIL
 				,CM.content as USER_CONTENT
 				,MI.nick_name as USER_NICK_NAME 
@@ -156,7 +179,12 @@
 				,CM.regist_date as USER_REGIST_DATE
 				,MI.PROFILE
 				,MI.GRADE
-				,CM.COMMENT_STATE				 
+				,CM.COMMENT_STATE
+				,  CASE
+        			WHEN (SELECT rank FROM RANKING_TOP WHERE email = MI.EMAIL) IN (1, 2, 3)
+        			THEN (SELECT rank FROM RANKING_TOP WHERE email = MI.EMAIL)
+        			ELSE 0
+    				END AS rank
 				FROM COMMENT CM 		 
 			JOIN CHALLENGE_SUBMISSION CS 
 				ON CM.CHALLENGE_SUBMISSION_ID = CS.CHALLENGE_SUBMISSION_ID
@@ -164,16 +192,27 @@
 				ON UC.USER_CHALLENGE_ID = CS.USER_CHALLENGE_ID
 			JOIN MEMBER_INFO MI
 				ON MI.EMAIL = CM.EMAIL						
-		WHERE CS.CHALLENGE_SUBMISSION_ID = #{challengeSubmissionId} 					
+		WHERE CS.CHALLENGE_SUBMISSION_ID = #{challengeSubmissionId}		
 		ORDER BY COMMENT_SEQ
 	</select>
 	
 	<!-- 본인 미션 상세정보 좋아요-->
-	<select id="missionLikes" parameterType="ChallengeSubmissionDto" resultType="java.util.Map" >		
-		SELECT MI.EMAIL , MI.NICK_NAME as NICKNAME , MI.GRADE , MI.PROFILE FROM LIKES LI
-			JOIN MEMBER_INFO MI
+	<select id="missionLikes" parameterType="ChallengeSubmissionDto" resultType="java.util.Map" >
+		SELECT
+		    MI.EMAIL,
+		    MI.NICK_NAME AS NICKNAME,
+		    MI.GRADE,
+		    MI.PROFILE,
+		    CASE
+		        WHEN (SELECT rank FROM RANKING_TOP WHERE email = MI.EMAIL) IN (1, 2, 3)
+		        THEN (SELECT rank FROM RANKING_TOP WHERE email = MI.EMAIL)
+		        ELSE 0
+		    END AS rank
+		FROM
+		    LIKES LI
+		JOIN MEMBER_INFO MI
 			ON LI.EMAIL = MI.EMAIL 
-		WHERE CHALLENGE_SUBMISSION_ID = #{challengeSubmissionId}						 					
+		WHERE CHALLENGE_SUBMISSION_ID = #{challengeSubmissionId}								 					
 	</select>		
 
 	<!-- 본인 미션 상세정보 해쉬태그-->
@@ -272,6 +311,11 @@
 			) val 
 			WHERE val.email = #{email} 		 
 	</select>	 
+	
+	<!-- 랭킹 Top 3인지 확인 -->
+	<select id="isTopRank" parameterType="RankingDto" resultType="String">
+		select rank from RANKING_TOP WHERE email = #{email} 
+	</select>		
 	 
 	 
 </mapper>

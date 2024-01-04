@@ -9,6 +9,7 @@ public class ChallengeSubmissionDto { // ChallengeSubmission 테이블: 사용�
 
  private int challengeSubmissionId;
  private String email;
+ private String userEmail;
  private String hashTag;
  private LocalDateTime submissionTime; 
  private String  submissionText; 
