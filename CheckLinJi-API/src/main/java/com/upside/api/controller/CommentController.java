@@ -82,7 +82,7 @@ public class CommentController {
 	  * @param commentDto
 	  * @return
 	  */	
-	@PostMapping("/delete") // 첼린지 생성
+	@PostMapping("/delete") 
 	public ResponseEntity<Map<String,String>> userCommentDelete (@RequestBody CommentDto commentDto) {
 							
 		Map<String, String> result = commentService.userCommentDelete(commentDto);

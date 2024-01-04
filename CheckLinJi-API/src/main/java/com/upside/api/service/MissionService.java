@@ -305,23 +305,39 @@ public class MissionService {
 	        	   	
 	        	 // 게시글 신고 유무
 	        	Long existsReport = reportSubmissionRepository.countByChallengeSubmissionIdAndEmail(Long.valueOf(challengeSubmissionDto.getChallengeSubmissionId()),challengeSubmissionDto.getEmail());
-	        	   	
-	        	   	
-	        	   	log.info("본인 미션 상세보기 ------> " + Constants.SUCCESS);	        	   		        	   	
-	        	   	missionAuthInfo.put("SUBMISSION_IMAGE_ROUTE", missionImage);	        	   	
-	        	   	result.put("HttpStatus","2.00");		
-	      			result.put("Msg",Constants.SUCCESS);
-	      			result.put("missionAuthInfo",missionAuthInfo);
-	      			result.put("missionComment",missionComment);
-	      			result.put("missionHashTag",missionHashTag);
-	      			result.put("missionLikes",missionLikes);
-	      			
-	      			 // 같은 게시글을 신고한 이력이 있으면 이미 신고되었음 처리
-		  			  if(existsReport != 0) { 
-		  				  result.put("existsReport","Y");
-		  			  }else {
-		  				  result.put("existsReport","N");
-		  			  }
+	        	   		        	         			
+      			Map<String, String> data = new HashMap<String, String>();              
+	   		       
+        		data.put("email", challengeSubmissionDto.getEmail());
+ 				 
+ 		        // 유저 미션 랭킹 가져오기
+ 				Map<String, String> missionRankingUser = memberMapper.OwnRanking(data);
+ 						 						 				
+ 				 // 미션 정보가 없으면 랭크 0 처리
+				 if(missionRankingUser == null) {
+					 missionRankingUser = new HashMap<String, String>();
+					 missionRankingUser.put("rank", "0");
+				 }
+        				        		
+				 missionRankingUser.remove("email");
+      			
+				 
+        	   	log.info("본인 미션 상세보기 ------> " + Constants.SUCCESS);	        	   		        	   	
+        	   	missionAuthInfo.put("SUBMISSION_IMAGE_ROUTE", missionImage);	        	   	
+        	   	result.put("HttpStatus","2.00");		
+      			result.put("Msg",Constants.SUCCESS);
+      			result.put("missionAuthInfo",missionAuthInfo);
+      			result.put("missionComment",missionComment);
+      			result.put("missionHashTag",missionHashTag);
+      			result.put("missionLikes",missionLikes);				 
+				result.put("ranking",missionRankingUser); // 유저 게시글 리스트
+				 
+      			 // 같은 게시글을 신고한 이력이 있으면 이미 신고되었음 처리
+	  			  if(existsReport != 0) { 
+	  				  result.put("existsReport","Y");
+	  			  }else {
+	  				  result.put("existsReport","N");
+	  			  }
 	      			
 			    }
            }
