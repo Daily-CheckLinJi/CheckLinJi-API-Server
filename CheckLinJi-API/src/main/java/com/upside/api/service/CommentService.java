@@ -132,10 +132,13 @@ public class CommentService {
 			
 		  try {
 				  
+			  // 유저 대댓글 삭제
+			  userCommentMapper.userParentCommentDel(commentDto);
+			  
 			  // 유저 댓글 삭제
-		      int insertYn = userCommentMapper.userCommentDelete(commentDto);
+		      int userCommentDel = userCommentMapper.userCommentDel(commentDto);
 		      		      
-		      if (insertYn != 0) {
+		      if (userCommentDel != 0) {
 		    	  result.put("HttpStatus","2.00");		
 		 		  result.put("Msg",Constants.SUCCESS);
 		 		  log.info("유저 댓글 삭제  ------> " + Constants.SUCCESS);

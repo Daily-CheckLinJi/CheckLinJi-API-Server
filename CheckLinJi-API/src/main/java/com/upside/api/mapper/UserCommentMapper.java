@@ -23,11 +23,18 @@ public interface UserCommentMapper {
 	int userCommentUpdate (CommentDto commentDto);
 	
 	/**
-	 * 유저 코멘트 삭제
+	 * 유저 댓글 삭제
 	 * @param memberDto
 	 * @return
 	 */
-	int userCommentDelete (CommentDto commentDto);
+	int userCommentDel (CommentDto commentDto);
+	
+	/**
+	 * 유저 대댓글 삭제
+	 * @param memberDto
+	 * @return
+	 */
+	int userParentCommentDel (CommentDto commentDto);
 	
 	/**
 	 * 유저 댓글 신고여부 상태 확인 

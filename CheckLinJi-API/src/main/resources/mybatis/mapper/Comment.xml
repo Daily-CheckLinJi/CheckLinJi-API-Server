@@ -28,8 +28,13 @@
 	</update>
 	
 	 <!-- 유저 댓글 삭제 -->
-	<delete id="userCommentDelete" parameterType="CommentDto" >
+	<delete id="userCommentDel" parameterType="CommentDto" >
 		DELETE FROM COMMENT	WHERE comment_seq=#{commentSeq}					
+	</delete>
+	
+	 <!-- 유저 대댓글 삭제 -->
+	<delete id="userParentCommentDel" parameterType="CommentDto" >
+		DELETE FROM COMMENT	WHERE PARENT_ID=#{commentSeq}					
 	</delete>
 	
 	 <!-- 유저 댓글 신고여부 상태 확인 -->
