@@ -1,3 +1,4 @@
+
 package com.upside.api.dto;
 
 import lombok.Data;

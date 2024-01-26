@@ -138,6 +138,12 @@
             <artifactId>spring-boot-starter-security</artifactId>
             <version>2.7.3</version>            
         </dependency>
+    	<!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-openfeign -->
+		<dependency>
+		    <groupId>org.springframework.cloud</groupId>
+		    <artifactId>spring-cloud-starter-openfeign</artifactId>
+		    <version>4.0.4</version>
+		</dependency>	
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -216,12 +222,6 @@
 	    <groupId>jakarta.servlet.jsp.jstl</groupId>
 	    <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
 	</dependency>
-	   	<!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-openfeign -->
-		<dependency>
-		    <groupId>org.springframework.cloud</groupId>
-		    <artifactId>spring-cloud-starter-openfeign</artifactId>
-		    <version>4.0.4</version>
-		</dependency>	
 
 	
 	<!-- JAVA에는 JSON이라는 데이터 타입이 없습니다. 따라서 JSON데이터에 대한 처리를 하는 라이브러리를 추가해야만 하는데 대표적으로 jackson-->
