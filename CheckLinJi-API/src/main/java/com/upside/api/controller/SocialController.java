@@ -123,10 +123,10 @@ public class SocialController {
    		}  		    		    		   		    		 
    	}
     
-    // 인증 완료 후 리다이렉트 페이지
+    // 인증 완료 후 리다이렉트 페이지로
     @PostMapping("/apple")
-  	public ResponseEntity<Map<String , String>> redirectApple (@RequestBody ApplePublicKey applePublicKey )  {							 
-  		    	
+   	public ResponseEntity<Map<String , String>> redirectApple (@RequestBody ApplePublicKey applePublicKey )  {							 
+    	     	    	    	    		  		    	   		 		   		    	
     	Map<String , String> result = appleSerivce.appleLogin(applePublicKey.getIdentityToken() , applePublicKey.getAuthorizationCode());
     	
     	if (result.get("HttpStatus").equals("2.00")){
