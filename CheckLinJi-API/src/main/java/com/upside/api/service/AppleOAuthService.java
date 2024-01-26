@@ -155,7 +155,7 @@ public class AppleOAuthService {
 	/**
 	 * Apple에 인증을 받기위한 JWT 생성
 	 * @return
-	 * @throws IOException
+	 * @throws Exception 
 	 */
 	public String makeClientSecretJwt() throws Exception {
 	    Date expirationDate = Date.from(LocalDateTime.now().plusDays(30).atZone(ZoneId.systemDefault()).toInstant()); // 30일?
