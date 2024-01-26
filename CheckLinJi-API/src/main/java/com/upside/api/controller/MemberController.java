@@ -159,10 +159,9 @@ public class MemberController {
 	public ResponseEntity<Map<String, String>> loginMember(@RequestBody MemberDto memberDto) {			
 				 		 		  		 
 		 Map<String, String> result = memberService.loginMember(memberDto);
-		 
-		 		 
+		 		 		 
 		 if(result.get("HttpStatus").equals("2.00")) {			 		 
-			 return new ResponseEntity<>(result, HttpStatus.OK);
+			 return new ResponseEntity<>(result, HttpStatus.OK);			 
 		 } else {			 
 			 return new ResponseEntity<>(result,HttpStatus.BAD_REQUEST); 
 		 }

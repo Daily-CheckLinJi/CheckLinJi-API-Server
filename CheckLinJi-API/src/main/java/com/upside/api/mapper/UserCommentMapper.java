@@ -57,5 +57,12 @@ public interface UserCommentMapper {
 	 * @return
 	 */
 	int deleteLike (CommentDto commentDto);	
+	
+	/**
+	 * 유저 부모 댓글 이메일 찾기
+	 * @param commentDto
+	 * @return
+	 */
+	String findParentComment (CommentDto commentDto);	
 		
 }

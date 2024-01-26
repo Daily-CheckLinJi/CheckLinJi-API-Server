@@ -20,5 +20,6 @@ public class MemberDto {
  private String grade;
  private String afterPassword;
  private String date;
+ private String fcmToken;
  
 }

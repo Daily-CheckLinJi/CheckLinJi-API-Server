@@ -15,6 +15,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.upside.api.dto.ApplePublicKey;
 import com.upside.api.dto.MemberDto;
 import com.upside.api.dto.MessageDto;
+import com.upside.api.dto.NotificationRequestDto;
 import com.upside.api.service.AppleOAuthService;
 import com.upside.api.service.KaKaoOAuthService;
 import com.upside.api.service.MemberService;
@@ -45,7 +46,7 @@ public class SocialController {
     @PostMapping("/login")
 	public ResponseEntity<Map<String , String>> login (@RequestBody MemberDto memberDto) {
     	    			
-    	Map<String, String> result = memberService.validateEmail(memberDto.getEmail());
+    	Map<String, String> result = memberService.validateEmail(memberDto);
     	
    	 	if(result.get("HttpStatus").equals("2.00")) {			 		 
    	 		return new ResponseEntity<>(result, HttpStatus.OK);
@@ -66,62 +67,7 @@ public class SocialController {
 		} 		
 	}
     
-    
-    
-    // 인증 완료 후 리다이렉트 페이지
-    @GetMapping("/kakao")
-   	public ResponseEntity<MessageDto> redirectKakao (@RequestParam String code)  {							 
-    	 
-    	 MessageDto message = new MessageDto();
-    	 
-   		 String getKakaoAccessToken = kakaoSerivce.getKakaoAccessToken(code);
-   		 
-   		Map<String, String> getKakaoUserInfo = kakaoSerivce.getKakaoUserInfo(getKakaoAccessToken);
-   		 
-   		 if(getKakaoUserInfo.get("Email").equals("N") ) {
-   			message.setStatusCode("1.00");
-   			message.setMsg("이메일 정보 수집동의에 체크 해주시기 바랍니다");
-   			return new ResponseEntity<>(message,HttpStatus.BAD_REQUEST);
-   		 }
-   		 
-   		
-   		Map<String, String> result = memberService.validateEmail(getKakaoUserInfo.get("Email"));
-   		
-   		if(result.get("HttpStatus").equals("2.01")) { // 신규 회원일 경우
-   			message.setStatusCode("2.01");
-   			message.setUserEmail(result.get("UserEmail"));   			
-   			return new ResponseEntity<>(message,HttpStatus.OK);
-   		} else { // 로그인    			
-   			message.setStatusCode("2.00");
-   			message.setUserEmail(result.get("UserEmail"));
-   			message.setToKen(result.get("Token"));
-   			message.setRefreshToken(result.get("RefreshToken"));
-   			return new ResponseEntity<>(message,HttpStatus.OK);
-   		}
-   		    		    		   		    		 
-   	}
-    
-    
-    // 인증 완료 후 리다이렉트 페이지
-    @GetMapping("/google")
-   	public ResponseEntity<MessageDto> redirectGoogle (@RequestParam String Email)  {							 
-    	 
-    	 MessageDto message = new MessageDto();
-    	    		  		    	   		 		   		    	
-   		Map<String, String> result = memberService.validateEmail(Email);
-   		
-   		if(result.get("HttpStatus").equals("2.01")) { // 신규 회원일 경우
-   			message.setStatusCode("2.01");
-   			message.setUserEmail(result.get("UserEmail"));   			
-   			return new ResponseEntity<>(message,HttpStatus.OK);
-   		} else { // 로그인    			
-   			message.setStatusCode("2.00");
-   			message.setUserEmail(result.get("UserEmail"));
-   			message.setToKen(result.get("Token"));
-   			message.setRefreshToken(result.get("RefreshToken"));
-   			return new ResponseEntity<>(message,HttpStatus.OK);
-   		}  		    		    		   		    		 
-   	}
+
     
     // 인증 완료 후 리다이렉트 페이지로
     @PostMapping("/apple")
@@ -136,4 +82,5 @@ public class SocialController {
     	}
    		    	
     }
+    
 }

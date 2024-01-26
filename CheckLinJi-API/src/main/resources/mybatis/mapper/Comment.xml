@@ -53,4 +53,9 @@
 	<delete id="deleteLike" parameterType="CommentDto" >
 		DELETE FROM LIKES WHERE CHALLENGE_SUBMISSION_ID = #{challengeSubmissionId} and EMAIL = #{email}
 	</delete>
+	
+	 <!-- 유저 부모 댓글 닉네임 찾기 -->
+	<select id="findParentComment" parameterType="CommentDto" resultType="String" >
+		SELECT EMAIL FROM COMMENT WHERE COMMENT_SEQ = #{parentId}
+	</select>	
 </mapper>

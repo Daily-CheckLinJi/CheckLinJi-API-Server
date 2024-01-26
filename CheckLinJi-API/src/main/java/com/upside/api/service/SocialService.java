@@ -143,6 +143,7 @@ public class SocialService {
 					.authority("user")
 					.profile(uploadDir + "/" + "profile" + "/" + profileName) // 문자열에서 백슬래시()는 이스케이프 문자(escape character)로 사용되기 때문에 사용할려면 \\ 두개로 해야 \로 인식
 					.grade("책갈피")
+					.fcmToken(memberDto.getFcmToken())
 					.build();						        
 			
 			 memberRepository.save(memberEntity);
@@ -263,35 +264,43 @@ public class SocialService {
 	 */
 	@Transactional // 트랜잭션 안에서 entity를 조회해야 영속성 상태로 조회가 되고 값을 변경해면 변경 감지(dirty checking)가 일어난다.
 	public Map<String, String> loginMember(MemberDto memberDto) {
-		Map<String, String> result = new HashMap<String, String>();
 		
-		Optional<MemberEntity> memberEntity = memberRepository.findById(memberDto.getEmail());
-		
-		if(!memberEntity.isPresent()) {
-			log.info("회원 로그인 ------> " + Constants.INBALID_EMAIL_PASSWORD); 
-			result.put("HttpStatus", "1.03");
-	    	result.put("UserEmail", null);
-	    	result.put("Msg", Constants.INBALID_EMAIL_PASSWORD);
-	    	 return result ;
-		}
-				
-		MemberEntity member = memberEntity.get();
+			Map<String, String> result = new HashMap<String, String>();
+			
+			Optional<MemberEntity> memberEntity = memberRepository.findById(memberDto.getEmail());
+			
+			if(!memberEntity.isPresent()) {
+				log.info("회원 로그인 ------> " + Constants.INBALID_EMAIL_PASSWORD); 
+				result.put("HttpStatus", "1.03");
+		    	result.put("UserEmail", null);
+		    	result.put("Msg", Constants.INBALID_EMAIL_PASSWORD);
+		    	 return result ;
+			}
+					
+			MemberEntity member = memberEntity.get();
 		     
 		    if (!passwordEncoder.matches(memberDto.getPassword(), member.getPassword())) {
 		    	log.info("회원 로그인 ------> " + Constants.INBALID_EMAIL_PASSWORD);
-		    	result.put("HttpStatus", "1.03");
+		    	result.put("HttpStatus", "1.00");
 		    	result.put("UserEmail", null);
-		    	result.put("Msg", Constants.INBALID_EMAIL_PASSWORD);		    	
-		    } else {
-		    	log.info("회원 로그인 ------> " + Constants.SUCCESS);
-		    	member.setRefreshToken((jwtTokenProvider.createRefreshToken())); // refresh Token DB 저장		    
-			    result.put("HttpStatus", "2.00");
-			    result.put("Token", jwtTokenProvider.createToken(memberDto.getEmail()));
-			    result.put("RefreshToken", member.getRefreshToken());
-			    result.put("UserEmail", member.getEmail());
-			    result.put("Msg", Constants.SUCCESS);
+		    	result.put("Msg", Constants.INBALID_EMAIL_PASSWORD);
+		    	return result ;
+		    } 
 		    
-		    }
+	    	// 로그인 시 fcmToken을 업데이트 
+	    	if(memberDto.getFcmToken() != null && !memberDto.getFcmToken().equals("")) {
+	    		member.setFcmToken(memberDto.getFcmToken());
+	    	}		    	    	
+	    	member.setRefreshToken((jwtTokenProvider.createRefreshToken())); // refresh Token DB 저장		    
+		    result.put("HttpStatus", "2.00");
+		    result.put("Token", jwtTokenProvider.createToken(memberDto.getEmail()));
+		    result.put("RefreshToken", member.getRefreshToken());
+		    result.put("UserEmail", member.getEmail());
+		    result.put("Msg", Constants.SUCCESS);
+		    
+		    
+	    	log.info("회원 로그인 ------> " + Constants.SUCCESS);	
+	    	
 		    return result ;	
 		    
 		    

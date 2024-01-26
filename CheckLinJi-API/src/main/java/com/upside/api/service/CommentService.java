@@ -9,10 +9,14 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.upside.api.dto.CommentDto;
+import com.upside.api.dto.NotificationRequestDto;
+import com.upside.api.entity.ChallengeSubmissionEntity;
 import com.upside.api.entity.MemberEntity;
 import com.upside.api.mapper.UserCommentMapper;
+import com.upside.api.repository.ChallengeSubmissionRepository;
 import com.upside.api.repository.MemberRepository;
 import com.upside.api.util.Constants;
+import com.upside.api.util.Notification;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +32,8 @@ public class CommentService {
 	
 	private final UserCommentMapper userCommentMapper ;
 	private final MemberRepository memberRepository ;
+	private final ChallengeSubmissionRepository challengeSubmissionRepository;
+	private final Notification notification ;
 	
 	
 	 	 
@@ -73,6 +79,67 @@ public class CommentService {
 	    		result.put("Msg",Constants.FAIL);
 	    		log.info("유저 댓글 입력  ------> " + Constants.FAIL);
 	        }
+	        
+	        // 대댓글이 확인
+	        if(commentDto.getParentId() != null && commentDto.getParentId() > 0) {
+	        	// 대댓글 유저 정보 가져와서 fcm 값 확인
+	        	String userEmail = userCommentMapper.findParentComment(commentDto);
+	        	Optional<MemberEntity> user = memberRepository.findById(userEmail);
+	        		        	
+	        	if(user.isPresent() && user.get().getFcmToken() != null) {
+	        		
+	        		// 댓글이 10자 이상일경우 10자 이상부턴 ... 표시
+//	        		String content = commentDto.getContent();
+//	        		int maxLength = 10;
+//
+//	        		if (content.length() > maxLength) {
+//	        		    content = content.substring(0, maxLength) + "...";	        		    
+//	        		} 
+	        			        		
+	        		// 알림 기능 유저 fcm 토큰 , 타이틀 : 앱 이름 , 메시지 : 알림 입력
+	        		NotificationRequestDto notiDto = new NotificationRequestDto();
+	        		
+	        		notiDto.setFcmToken(user.get().getFcmToken());
+	        		notiDto.setTitle("데일리 책린지 알림");
+	        		notiDto.setMessage(user.get().getNickName() + Constants.parentCommentAlarm);
+	        		
+	        		notification.pushNofication(notiDto);
+	        			        		
+	        	}else {
+	        		log.error("부모 댓글이 없거나 FcmToken이 없어서 알림을 보내지 못했습니다.!!!");
+	        	}
+	        	
+	        } else {
+        		
+    		   	// 게시글에서 유저 정보 가져오기        	
+            	Optional<ChallengeSubmissionEntity> userSubmission = challengeSubmissionRepository.findById(commentDto.getChallengeSubmissionId());
+            	        	
+            	if(userSubmission.isPresent() && userSubmission.get().getNickName() != null) {
+            		
+            		// 유저 닉네임으로 fcm토큰 값 가져오기
+            		Optional<MemberEntity> userInfo = memberRepository.findByNickName(userSubmission.get().getNickName());
+            		
+            		if(userInfo.isPresent() && userInfo.get().getFcmToken() != null) {
+            			        		
+            			// 알림 기능 유저 fcm 토큰 , 타이틀 : 앱 이름 , 메시지 : 알림 입력
+                		NotificationRequestDto notiDto = new NotificationRequestDto();
+                		
+                		notiDto.setFcmToken(userInfo.get().getFcmToken());
+                		notiDto.setTitle("데일리 책린지 알림");
+                		notiDto.setMessage(userInfo.get().getNickName() + Constants.commentAlarm);
+                		
+                		notification.pushNofication(notiDto);
+                		
+            		}else {
+            			log.error("유자 정보가 없거나 fcm 토큰을 찾지 못해서 알람을 보내지 못했습니다.");
+            		}
+            		        			        			        	        			        		
+            	}else {
+            		log.error("게시글이 없거나 닉네임을 찾지 못해서 알림을 보내지 못했습니다.");
+            	}
+        		
+        		log.error("부모 댓글이 없거나 FcmToken이 없어서 알림을 보내지 못했습니다.!!!");
+        	}
                 						
 		} catch (Exception e) {
         	result.put("HttpStatus","1.00");		
@@ -224,6 +291,36 @@ public class CommentService {
 			   result.put("Msg",Constants.FAIL);
 			   log.info("유저 좋아요 등록  ------> " + Constants.FAIL);
 		   }
+		   
+		   	// 게시글에서 유저 정보 가져오기        	
+        	Optional<ChallengeSubmissionEntity> userSubmission = challengeSubmissionRepository.findById(commentDto.getChallengeSubmissionId());
+        	        	
+        	if(userSubmission.isPresent() && userSubmission.get().getNickName() != null) {
+        		
+        		// 유저 닉네임으로 fcm토큰 값 가져오기
+        		Optional<MemberEntity> user = memberRepository.findByNickName(userSubmission.get().getNickName());
+        		
+        		if(user.isPresent() && user.get().getFcmToken() != null) {
+        			        		
+        			// 알림 기능 유저 fcm 토큰 , 타이틀 : 앱 이름 , 메시지 : 알림 입력
+            		NotificationRequestDto notiDto = new NotificationRequestDto();
+            		
+            		notiDto.setFcmToken(user.get().getFcmToken());
+            		notiDto.setTitle("데일리 책린지 알림");
+            		notiDto.setMessage(user.get().getNickName() + Constants.likeAlarm);
+            		
+            		notification.pushNofication(notiDto);
+            		
+        		}else {
+        			log.error("유자 정보가 없거나 fcm 토큰을 찾지 못해서 알람을 보내지 못했습니다.");
+        		}
+        		        			        			        	        			        		
+        	}else {
+        		log.error("게시글이 없거나 닉네임을 찾지 못해서 알림을 보내지 못했습니다.");
+        	}
+	        	
+	        
+		   
               			    		
 	   } catch (Exception e) {
 		result.put("HttpStatus","1.00");		

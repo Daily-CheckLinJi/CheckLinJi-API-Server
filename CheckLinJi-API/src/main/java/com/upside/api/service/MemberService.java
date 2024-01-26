@@ -20,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.upside.api.config.JwtTokenProvider;
 import com.upside.api.dto.MemberDto;
+import com.upside.api.dto.NotificationDto;
+import com.upside.api.dto.NotificationRequestDto;
 import com.upside.api.entity.MemberEntity;
 import com.upside.api.entity.UserChallengeEntity;
 import com.upside.api.mapper.MemberMapper;
@@ -35,9 +37,9 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class MemberService {
 	
-	 @Value("${file.upload-dir}")
-	 private String uploadDir;
-	
+	@Value("${file.upload-dir}")
+	private String uploadDir;
+	 	
 	private final MemberRepository memberRepository;		
 	private final JwtTokenProvider jwtTokenProvider;		
 	private final PasswordEncoder passwordEncoder;	
@@ -134,7 +136,7 @@ public class MemberService {
 			
 			// 값이 존재 하지않는 파라미터가 있는지 확인
 			if(memberDto.getEmail() == null || memberDto.getName() == null || memberDto.getNickName() == null || memberDto.getPassword() == null ||
-			   memberDto.getBirth() == null || memberDto.getSex() == null ) {  
+			   memberDto.getBirth() == null || memberDto.getSex() == null || memberDto.getFcmToken() == null) {  
 			    													
 				result.put("HttpStatus","1.00");
 				result.put("Msg",Constants.NOT_EXIST_PARAMETER);
@@ -187,6 +189,7 @@ public class MemberService {
 					.joinDate(today.format(new Date()))
 					.authority("user")
 					.profile(uploadDir + "/" + "profile" + "/" + profileName) // 문자열에서 백슬래시()는 이스케이프 문자(escape character)로 사용되기 때문에 사용할려면 \\ 두개로 해야 \로 인식
+					.fcmToken(memberDto.getFcmToken())
 					.grade("책갈피")
 					.build();						        
 			
@@ -331,7 +334,7 @@ public class MemberService {
 				 result.put("HttpStatus","2.00");
 				 result.put("Msg","비밀변호 변경이 완료되었습니다.");		 				 	
 			}else {
-				 MemberEntity updateUser = user.get();			 
+				 MemberEntity updateUser = user.get();						 
 				 updateUser.setName(memberDto.getName());
 				 updateUser.setNickName(memberDto.getNickName());			 		 
 				 updateUser.setBirth(memberDto.getBirth());			 
@@ -427,6 +430,11 @@ public class MemberService {
 		    	redis.set("refreshToken_"+member.getEmail(), jwtTokenProvider.createRefreshToken()); // refresh Token Redis 저장 , 키 값이 같으면 덮어 씌워짐		    	
 		    	redisTemplate.expire("accessToken_" + member.getEmail(), 1, TimeUnit.HOURS); // redis accessToken expire 1시간 지정
 		    	redisTemplate.expire("refreshToken_"+member.getEmail(), 31, TimeUnit.DAYS); // redis refreshToken expire 31일 지정
+		    			 
+		    	// 로그인 시 fcmToken을 업데이트 
+		    	if(memberDto.getFcmToken() != null && !memberDto.getFcmToken().equals("")) {
+		    		member.setFcmToken(memberDto.getFcmToken());
+		    	}
 		    			    	
 			    result.put("HttpStatus", "2.00");
 			    result.put("Token", redis.get("accessToken_"+member.getEmail()));
@@ -543,14 +551,14 @@ public class MemberService {
      * @return
      */ 
     @Transactional // 트랜잭션 안에서 entity를 조회해야 영속성 상태로 조회가 되고 값을 변경해면 변경 감지(dirty checking)가 일어난다.
-    public Map<String, String> validateEmail(String email) {
+    public Map<String, String> validateEmail(MemberDto memberDto) {
     	
 	Map<String, String> result = new HashMap<String, String>();
 		
 		try {
 					
 			// 유저가 존재하는지 확인
-			Optional<MemberEntity> userExist = memberRepository.findById(email);
+			Optional<MemberEntity> userExist = memberRepository.findById(memberDto.getEmail());
 										
 			MemberEntity member = userExist.get();
 		     
@@ -570,6 +578,13 @@ public class MemberService {
 			    result.put("Msg", Constants.SUCCESS);
 			    
 			    log.info("소셜 회원 로그인 ------> " + Constants.SUCCESS);
+			    
+		    	// 로그인 시 fcmToken을 업데이트 
+		    	if(memberDto.getFcmToken() != null && !memberDto.getFcmToken().equals("")) {
+		    		member.setFcmToken(memberDto.getFcmToken());
+		    	}else {
+		    		log.error("소셜 회원 로그인 ----------- > fcm 토큰이 없어서 저장 X ");
+		    	}
 		    		    	
 		    } else {		    			    	
 		    	result.put("HttpStatus", "1.00");
@@ -842,5 +857,5 @@ public class MemberService {
        
 	    return result ;			    		   
 	}
-	
+		
 }
