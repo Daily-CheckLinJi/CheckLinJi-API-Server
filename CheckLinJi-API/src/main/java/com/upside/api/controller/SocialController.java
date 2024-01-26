@@ -9,12 +9,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.upside.api.dto.ApplePublicKey;
 import com.upside.api.dto.MemberDto;
 import com.upside.api.dto.MessageDto;
+import com.upside.api.service.AppleOAuthService;
 import com.upside.api.service.KaKaoOAuthService;
 import com.upside.api.service.MemberService;
 import com.upside.api.service.SocialService;
@@ -27,7 +28,8 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/social")
 public class SocialController {
     
-    private final KaKaoOAuthService oAuthSerivce;
+    private final AppleOAuthService appleSerivce;
+    private final KaKaoOAuthService kakaoSerivce;
     private final MemberService memberService;    
     private final SocialService socialService;
 
@@ -72,9 +74,9 @@ public class SocialController {
     	 
     	 MessageDto message = new MessageDto();
     	 
-   		 String getKakaoAccessToken = oAuthSerivce.getKakaoAccessToken(code);
+   		 String getKakaoAccessToken = kakaoSerivce.getKakaoAccessToken(code);
    		 
-   		Map<String, String> getKakaoUserInfo = oAuthSerivce.getKakaoUserInfo(getKakaoAccessToken);
+   		Map<String, String> getKakaoUserInfo = kakaoSerivce.getKakaoUserInfo(getKakaoAccessToken);
    		 
    		 if(getKakaoUserInfo.get("Email").equals("N") ) {
    			message.setStatusCode("1.00");
@@ -120,4 +122,18 @@ public class SocialController {
    			return new ResponseEntity<>(message,HttpStatus.OK);
    		}  		    		    		   		    		 
    	}
+    
+    // 인증 완료 후 리다이렉트 페이지
+    @PostMapping("/apple")
+  	public ResponseEntity<Map<String , String>> redirectApple (@RequestBody ApplePublicKey applePublicKey )  {							 
+  		    	
+    	Map<String , String> result = appleSerivce.appleLogin(applePublicKey.getIdentityToken() , applePublicKey.getAuthorizationCode());
+    	
+    	if (result.get("HttpStatus").equals("2.00")){
+    		return new ResponseEntity<>(result,HttpStatus.OK);
+    	}else {
+    		return new ResponseEntity<>(result,HttpStatus.BAD_REQUEST);
+    	}
+   		    	
+    }
 }

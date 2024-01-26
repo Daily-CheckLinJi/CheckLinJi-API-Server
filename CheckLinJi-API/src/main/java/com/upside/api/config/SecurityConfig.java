@@ -45,6 +45,7 @@ public class SecurityConfig {
         		.requestMatchers("/api/members/changePasswordMail/**").permitAll()
         		.requestMatchers("/api/social/sign/**").permitAll()
         		.requestMatchers("/api/social/login/**").permitAll()
+        		.requestMatchers("/api/social/apple/**").permitAll()
         		.requestMatchers("/api/members/refreshToken/**").permitAll()          		
         		.requestMatchers("/api/external/**").permitAll()
         		.requestMatchers("/api/send/**").permitAll()
