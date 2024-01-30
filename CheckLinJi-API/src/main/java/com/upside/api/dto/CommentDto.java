@@ -8,6 +8,9 @@ public class CommentDto { // 게시글 테이블
 
  private Long commentSeq; // 댓글 고유 식별자
  
+ private Long comment_seq; // 댓글 고유 식별자
+ 
+ 
  private Long challengeSubmissionId ; // 댓글이 달린 게시글의 식별자
  
  private String email; // 이메일

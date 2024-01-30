@@ -2,7 +2,9 @@ package com.upside.api.service;
 
 
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -18,6 +20,7 @@ import com.upside.api.repository.MemberRepository;
 import com.upside.api.util.Constants;
 import com.upside.api.util.Notification;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -46,6 +49,7 @@ public class CommentService {
 	  * @param memberDto
 	  * @return
 	  */
+	@Transactional
 	public Map<String, String> userCommentSubmit (CommentDto commentDto) {
 		
 		log.info("유저 댓글 입력  ------> " + "Start");
@@ -68,8 +72,8 @@ public class CommentService {
 			commentDto.setNickName(userExsist.get().getNickName());
 			
 			// 유저 댓글 등록
-	        int insertYn = userCommentMapper.userCommentSubmit(commentDto);
-	        	        
+	        Long insertYn = userCommentMapper.userCommentSubmit(commentDto);
+	        	        	        	        
 	        if (insertYn != 0) {
 	        	result.put("HttpStatus","2.00");		
 	    		result.put("Msg",Constants.SUCCESS);
@@ -78,9 +82,10 @@ public class CommentService {
 	    		result.put("HttpStatus","1.00");		
 	    		result.put("Msg",Constants.FAIL);
 	    		log.info("유저 댓글 입력  ------> " + Constants.FAIL);
-	        }
+	        }	        	        
+	        	        	        	        
 	        
-	        // 대댓글이 확인
+	        // 대댓글인지 확인
 	        if(commentDto.getParentId() != null && commentDto.getParentId() > 0) {
 	        	// 대댓글 유저 정보 가져와서 fcm 값 확인
 	        	String userEmail = userCommentMapper.findParentComment(commentDto);
@@ -102,7 +107,23 @@ public class CommentService {
 	        		notiDto.setFcmToken(user.get().getFcmToken());
 	        		notiDto.setTitle("데일리 책린지 알림");
 	        		notiDto.setMessage(user.get().getNickName() + Constants.parentCommentAlarm);
+	        		notiDto.setParamsDepsYn("Y");
 	        		
+            		// 게시글 param
+            		List<NotificationRequestDto.Params> paramsList = new ArrayList<>();
+            		NotificationRequestDto.Params params_1 = new NotificationRequestDto.Params();            		
+            		params_1.setRoute(Constants.mission);
+            		params_1.setPostId(commentDto.getChallengeSubmissionId());                 		
+            		paramsList.add(params_1);
+	        		                       			        		
+	        		// 댓글 param
+              		NotificationRequestDto.Params params_2 = new NotificationRequestDto.Params();            		
+              		params_2.setRoute(Constants.comment);
+              		params_2.setPostId(commentDto.getParentId());              		
+              		paramsList.add(params_2);
+              		
+              		notiDto.setParams(paramsList);
+	        			        			        			        	        		
 	        		notification.pushNofication(notiDto);
 	        			        		
 	        	}else {
@@ -127,7 +148,24 @@ public class CommentService {
                 		notiDto.setFcmToken(userInfo.get().getFcmToken());
                 		notiDto.setTitle("데일리 책린지 알림");
                 		notiDto.setMessage(userInfo.get().getNickName() + Constants.commentAlarm);
+                		notiDto.setParamsDepsYn("Y");
+                		                		                		                		
+                		// 게시글 param
+                		List<NotificationRequestDto.Params> paramsList = new ArrayList<>();
+                		NotificationRequestDto.Params params_1 = new NotificationRequestDto.Params();            		
+                		params_1.setRoute(Constants.mission);
+                		params_1.setPostId(commentDto.getChallengeSubmissionId());     
+                		paramsList.add(params_1);
+    	        		                            		                		                		                		
+    	        		// 댓글 param
+                		int userCommentSeq = userCommentMapper.findCommentSeq(commentDto);
+                  		NotificationRequestDto.Params params_2 = new NotificationRequestDto.Params();            		
+                  		params_2.setRoute(Constants.comment);
+                  		params_2.setPostId((long) userCommentSeq);              		
+                  		paramsList.add(params_2);
                 		
+                  		notiDto.setParams(paramsList);
+                  		
                 		notification.pushNofication(notiDto);
                 		
             		}else {
@@ -308,6 +346,17 @@ public class CommentService {
             		notiDto.setFcmToken(user.get().getFcmToken());
             		notiDto.setTitle("데일리 책린지 알림");
             		notiDto.setMessage(user.get().getNickName() + Constants.likeAlarm);
+            		notiDto.setParamsDepsYn("N");
+            		
+            		// 게시글 param
+            		List<NotificationRequestDto.Params> paramsList = new ArrayList<>();
+            		NotificationRequestDto.Params params = new NotificationRequestDto.Params();            		
+            		params.setRoute(Constants.mission);
+            		params.setPostId(commentDto.getChallengeSubmissionId());     
+            		
+            		paramsList.add(params);
+	        		            
+            		notiDto.setParams(paramsList);
             		
             		notification.pushNofication(notiDto);
             		

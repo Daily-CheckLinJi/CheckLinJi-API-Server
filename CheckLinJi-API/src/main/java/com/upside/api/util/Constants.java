@@ -17,10 +17,12 @@ public static final String SYSTEM_ERROR = "시스템 에러로 인해 처리가 
 
 
 
-// 댓글 관련 
+// 알림 관련 
 
 public static final String commentAlarm = "님에게 댓글이 도착했어요!";
 public static final String parentCommentAlarm = "님에게 답글이 도착했어요!";
 public static final String likeAlarm = "님 게시글에 하트가 도착했어요!";
+public static final String mission = "CertificationDetail";
+public static final String comment = "CommentDetail";
 
 }

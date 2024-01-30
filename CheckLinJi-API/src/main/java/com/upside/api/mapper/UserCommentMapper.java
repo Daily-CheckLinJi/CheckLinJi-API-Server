@@ -13,7 +13,7 @@ public interface UserCommentMapper {
 	 * @param memberDto
 	 * @return
 	 */
-	int userCommentSubmit (CommentDto commentDto);
+	Long userCommentSubmit (CommentDto commentDto);
 	
 	/**
 	 * 유저 코멘트 수정
@@ -64,5 +64,12 @@ public interface UserCommentMapper {
 	 * @return
 	 */
 	String findParentComment (CommentDto commentDto);	
+	
+	/**
+	 * 유저 댓글 찾기
+	 * @param commentDto
+	 * @return
+	 */
+	int findCommentSeq (CommentDto commentDto);	
 		
 }

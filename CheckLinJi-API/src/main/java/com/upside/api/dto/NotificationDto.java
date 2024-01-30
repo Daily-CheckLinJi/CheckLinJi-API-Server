@@ -20,6 +20,7 @@ public class NotificationDto {
     public static class Data {
         private String title;
         private String message;
+        private Params params;
 
         
     }
@@ -28,7 +29,27 @@ public class NotificationDto {
     @Getter
     public static class Notification {
         private String title;
-        private String body;
+        private String body;        
+
+        
+    }
+    
+    @Setter
+    @Getter
+    public static class Params {
+        private String route;
+        private Long postId;
+        private Param params;
+
+        
+    }
+    
+    @Setter
+    @Getter
+    public static class Param {
+        private String route;
+        private Long postId;
+        private String params;
 
         
     }

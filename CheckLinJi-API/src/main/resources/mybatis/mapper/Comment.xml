@@ -12,12 +12,12 @@
 		INSERT INTO COMMENT (content, nick_name, regist_date, update_date, challenge_submission_id, parent_id, email , comment_state)
 			<choose>
       			<when test="parentId == null">
-        			VALUES(#{content},#{nickName},#{registDate}, NULL, #{challengeSubmissionId}, NULL, #{email} , 'Y')
+        			VALUES(#{content},#{nickName},#{registDate}, NULL, #{challengeSubmissionId}, NULL, #{email} , 'Y') ; 
       			</when>
       		  <otherwise>
-        			VALUES(#{content},#{nickName},#{registDate}, NULL, #{challengeSubmissionId}, #{parentId}, #{email} , 'Y' )
+        			VALUES(#{content},#{nickName},#{registDate}, NULL, #{challengeSubmissionId}, #{parentId}, #{email} , 'Y' ) ;
       		  </otherwise>
-    		</choose>	
+    		</choose>     		   		
 	</insert>
 
 	 <!-- 유저 댓글 수정 -->
@@ -57,5 +57,10 @@
 	 <!-- 유저 부모 댓글 닉네임 찾기 -->
 	<select id="findParentComment" parameterType="CommentDto" resultType="String" >
 		SELECT EMAIL FROM COMMENT WHERE COMMENT_SEQ = #{parentId}
+	</select>	
+	
+		 <!-- 유저 댓글 찾기 -->
+	<select id="findCommentSeq" parameterType="CommentDto" resultType="int" >
+		SELECT COMMENT_SEQ FROM COMMENT C WHERE EMAIL = #{email} order by REGIST_DATE desc limit 1 
 	</select>	
 </mapper>
