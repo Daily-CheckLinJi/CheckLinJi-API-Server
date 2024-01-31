@@ -3,6 +3,7 @@ package com.upside.api.repository;
 
 
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,10 +18,10 @@ public interface ChallengeSubmissionRepository extends JpaRepository<ChallengeSu
 	 * @param userChallenge
 	 * @return
 	 */
-//	 List<ChallengeSubmissionEntity> findByUserChallengeOrderBySubmissionDateDesc (UserChallengeEntity userChallenge);
+	 List<ChallengeSubmissionEntity> findByUserChallengeId(Long userChallengeId);
 	 
 	 Optional<ChallengeSubmissionEntity> findByUserChallengeIdAndSubmissionDate (Long userChallengeId , String submissionDate);
-	 
+	 	 	 
 	 long count();
 	 	 
 }

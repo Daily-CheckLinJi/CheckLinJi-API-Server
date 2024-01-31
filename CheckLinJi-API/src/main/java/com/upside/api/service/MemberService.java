@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -20,11 +21,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.upside.api.config.JwtTokenProvider;
 import com.upside.api.dto.MemberDto;
-import com.upside.api.dto.NotificationDto;
-import com.upside.api.dto.NotificationRequestDto;
+import com.upside.api.entity.ChallengeSubmissionEntity;
+import com.upside.api.entity.CommentEntity;
+import com.upside.api.entity.LikeEntity;
 import com.upside.api.entity.MemberEntity;
 import com.upside.api.entity.UserChallengeEntity;
 import com.upside.api.mapper.MemberMapper;
+import com.upside.api.repository.ChallengeSubmissionRepository;
+import com.upside.api.repository.CommentRepository;
+import com.upside.api.repository.LikeRepository;
 import com.upside.api.repository.MemberRepository;
 import com.upside.api.repository.UserChallengeRepository;
 import com.upside.api.util.Constants;
@@ -40,13 +45,18 @@ public class MemberService {
 	@Value("${file.upload-dir}")
 	private String uploadDir;
 	 	
-	private final MemberRepository memberRepository;		
+			
 	private final JwtTokenProvider jwtTokenProvider;		
 	private final PasswordEncoder passwordEncoder;	
 	private final MemberMapper memberMapper ;
 	private final RedisTemplate<String, String> redisTemplate;
-	private final FileService fileService ;	
+	private final FileService fileService ;
+	
+	private final MemberRepository memberRepository;
 	private final UserChallengeRepository userChallengeRepository;
+	private final ChallengeSubmissionRepository chaSubmissionRepository;
+	private final CommentRepository commentRepository;
+	private final LikeRepository likeRepository;
 
 	
 	
@@ -359,6 +369,7 @@ public class MemberService {
 	 * @param memberId
 	 * @return
 	 */
+	@Transactional
 	public Map<String, String> deleteMember(String email) {
 		
 			Map<String, String> result = new HashMap<String, String>();
@@ -368,22 +379,36 @@ public class MemberService {
 			 // 존재하는 회원인지 확인 
 			 if(memberRepository.findById(email).isPresent()) {			 
 				 
-				 HashMap<String, String> param = new HashMap<String, String>();			 			 			 
 				 
-				 param.put("email", email);
-				 param.put("COMPLETED", "");
+				 Long usrData = userChallengeRepository.findByEmail(email).get().getUserChallengeId();
 				 
-				 memberMapper.memberDelete(param);
-				 			 			 			 
-				 if (param.get("COMPLETED").equals("Y")) {
-					 log.info("회원정보 삭제 성공 ------> " + email);
-					 result.put("HttpStatus", "2.00");
-					 result.put("Msg", Constants.SUCCESS);
-				 }else {
-					 log.info("회원정보 삭제 실패 ------> " + email);
-					 result.put("HttpStatus", "1.00");
-					 result.put("Msg", Constants.FAIL);
-				 }			 			 			 
+				 // 유저 좋아요 삭제
+				 List<LikeEntity> usrLikeList = likeRepository.findByEmail(email);				 
+				 likeRepository.deleteAll(usrLikeList);
+				 
+				 // 유저 댓글 삭제 
+				 List<CommentEntity> usrCommentList = commentRepository.findByEmail(email);				 
+				 commentRepository.deleteAll(usrCommentList);
+				 
+				 // 유저 게시글 삭제
+				 List<ChallengeSubmissionEntity> usrMissionList = chaSubmissionRepository.findByUserChallengeId(usrData);
+				 chaSubmissionRepository.deleteAll(usrMissionList);
+				 
+				 // 유저 첼린지 삭제
+				 userChallengeRepository.deleteByEmail(email);
+				 				
+				 // 유저 삭제
+				 memberRepository.deleteById(email);
+				 
+			     redisTemplate.delete("accessToken_"+email);
+			     redisTemplate.delete("refreshToken_"+email);
+			     
+			     fileService.deleteFileList(email);			     			     
+				 
+				 log.info("회원정보 삭제 성공 ------> " + Constants.SUCCESS);
+				 result.put("HttpStatus", "2.00");
+				 result.put("Msg", Constants.SUCCESS);
+				 					 			 			 
 			 } else {
 				 log.info("회원정보 삭제 실패 ------> " + email);
 				 result.put("HttpStatus", "1.00");
@@ -430,7 +455,7 @@ public class MemberService {
 		    	redis.set("refreshToken_"+member.getEmail(), jwtTokenProvider.createRefreshToken()); // refresh Token Redis 저장 , 키 값이 같으면 덮어 씌워짐		    	
 		    	redisTemplate.expire("accessToken_" + member.getEmail(), 1, TimeUnit.HOURS); // redis accessToken expire 1시간 지정
 		    	redisTemplate.expire("refreshToken_"+member.getEmail(), 31, TimeUnit.DAYS); // redis refreshToken expire 31일 지정
-		    			 
+		    			 		    	
 		    	// 로그인 시 fcmToken을 업데이트 
 		    	if(memberDto.getFcmToken() != null && !memberDto.getFcmToken().equals("")) {
 		    		member.setFcmToken(memberDto.getFcmToken());

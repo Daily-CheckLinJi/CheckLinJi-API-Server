@@ -247,12 +247,7 @@
 	<delete id="missionDeleteSubmission" parameterType="ChallengeSubmissionDto" >
 		DELETE FROM CHALLENGE_SUBMISSION WHERE CHALLENGE_SUBMISSION_ID = #{challengeSubmissionId} 
 	</delete>
-	
-	<!-- 본인 미션 정보 삭제 parameterType="String" resultType="String" -->
-	<select id="memberDelete" statementType="CALLABLE" resultType="hashmap"> 
-		 CALL DELETE_MEMBER (#{email, mode=IN}, #{COMPLETED , mode=OUT, jdbcType=VARCHAR}) 
-	</select>	
-	
+		
 	<!-- 내 미션 누적 달성 횟수 -->
 	<select id="missionCompletedSum" parameterType="String" resultType="int" >
 		SELECT count(*) as own 		

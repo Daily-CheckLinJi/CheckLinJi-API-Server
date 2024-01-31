@@ -5,12 +5,9 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -62,15 +59,13 @@ public class CommentEntity { // 게시글 테이블
   * 댓글 : parent_id = null | 대댓글 : parent_id = 댓글의 식별자. 
   */
  
- @ManyToOne
- @JoinColumn(name = "parent_id")
- private CommentEntity parentId; // 대댓글일 경우, 부모 댓글의 식별자
+ private Long parentId; // 대댓글일 경우, 부모 댓글의 식별자
  
  
 
 @Builder
 public CommentEntity(Long challengeSubmissionId, String content, String nickName, 
-		CommentEntity parentId , String registDate , String updateDate , String commentState  
+		Long parentId , String registDate , String updateDate , String commentState  
 		) {
 	super();
 	this.challengeSubmissionId = challengeSubmissionId;

@@ -24,5 +24,7 @@ public interface UserChallengeRepository extends JpaRepository<UserChallengeEnti
 //	List<UserChallengeEntity> findByMemberEntity(MemberEntity memberEntity);
 //	
 	Optional<UserChallengeEntity> findByEmail (String email);
+	
+	void deleteByEmail(String email);
 }
 

@@ -108,15 +108,7 @@ public interface MemberMapper {
 	int missionDeleteLikes (ChallengeSubmissionDto challengeSubmissionDto);
 	int missionDeleteHashTag (ChallengeSubmissionDto challengeSubmissionDto);
 	int missionDeleteSubmission (ChallengeSubmissionDto challengeSubmissionDto);
-	
-	/**
-	 * 본인 미션 삭제
-	 * @param param
-	 * @return
-	 */
-	HashMap<String, Object> memberDelete (HashMap<String, String> param);
-	
-	
+		
 	/**
 	 * 본인 누적미션 횟수
 	 * @param email

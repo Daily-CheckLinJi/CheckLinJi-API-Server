@@ -143,9 +143,11 @@ public class MemberController {
 	}
 	
 	@PostMapping("/delete")
-	public ResponseEntity<Map<String, String>> deleteMember(@RequestBody MemberDto memberDto) {
+	public ResponseEntity<Map<String, String>> deleteMember(@RequestHeader("Authorization") String authHeader) {
 		
-		Map<String, String> result = memberService.deleteMember(memberDto.getEmail());
+		String userEmail = jwtTokenProvider.getEmail(authHeader); // email을 얻기위해 헤더에서 토큰을 디코딩하는 부분이다.
+		
+		Map<String, String> result = memberService.deleteMember(userEmail);
 		 		 		
 		 if(result.get("HttpStatus").equals("2.00")) {			 			
 			 return new ResponseEntity<>(result, HttpStatus.OK);

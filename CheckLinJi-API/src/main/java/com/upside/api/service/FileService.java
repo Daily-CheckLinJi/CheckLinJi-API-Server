@@ -193,6 +193,69 @@ public class FileService {
 		 return result ;				 	 	    			    		   
 	}
 	
+	/**
+	 * 파일 삭제 ( 프로필 , 인증사진 등 )
+	 * @param fileUploadDto
+	 * @return
+	 */
+	public boolean deleteFileList(String email) {
+		
+	    log.info("회원탈퇴 유저 파일 전체 삭제 ------> " + email);
+
+	    boolean result = false;
+	    
+	    try {
+	        // 삭제할 디렉터리의 경로
+	        String directoryPath = uploadDir;
+	        
+	        // 디렉터리 객체 생성
+	        File directory = new File(directoryPath);
+
+	        // 디렉터리가 존재하는 경우 파일들을 삭제
+	        if (directory.exists() && directory.isDirectory()) {
+	            result = deleteFilesWithPattern(directory, email);
+	            if (result) {
+	                log.info("파일 삭제 완료 ------> " + uploadDir);
+	            } else {
+	                log.info("삭제할 파일이 없습니다.");
+	            }
+	        } else {
+	            result = true;
+	            log.info("삭제할 디렉터리가 존재하지 않거나 디렉터리가 아닙니다.");
+	        }
+
+	    } catch (Exception e) {
+	        result = false;
+	        log.error("파일 삭제 ------> " + Constants.SYSTEM_ERROR, e);
+	    }
+	    return result;
+	}
+	
+	// 디렉터리 내의 파일들을 삭제하는 메서드
+	private boolean deleteFilesWithPattern(File directory, String pattern) {
+	    File[] files = directory.listFiles();
+	    boolean result = true;
+
+	    if (files != null) {
+	        for (File file : files) {
+	            if (file.isDirectory()) {
+	                // 서브디렉터리가 있다면 재귀적으로 삭제
+	                result &= deleteFilesWithPattern(file, pattern);
+	            } else {
+	                // 파일의 이름이 pattern을 포함하면 삭제
+	                if (file.getName().contains(pattern)) {
+	                    if (!file.delete()) {
+	                        result = false;
+	                        log.info("파일 삭제 실패 ------> " + file.getAbsolutePath());
+	                    }
+	                }
+	            }
+	        }
+	    }
+
+	    return result;
+	}
+	
 	
 	/**
 	 * URL로 이미지 다운로드 Base64 인코딩 방식
