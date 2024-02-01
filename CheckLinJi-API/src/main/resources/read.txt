@@ -1,0 +1,11 @@
+## 랭킹 집계 작업 
+
+SELECT
+    NICK_NAME,
+    IF(DATEDIFF(CURDATE(), MAX(SUBMISSION_DATE)) = 0, 30, 0) as daily_success_rate,
+    IFNULL(SUM(DATEDIFF(CURDATE(), SUBMISSION_DATE) BETWEEN 1 AND 7), 0) * 4.3 as weekly_success_rate,
+    IFNULL(SUM(DATEDIFF(CURDATE(), SUBMISSION_DATE) BETWEEN 1 AND 31), 0) * 1 as monthly_success_rate    
+FROM
+    CHALLENGE_SUBMISSI그ON CS
+GROUP BY
+    USER_CHALLENGE_ID 

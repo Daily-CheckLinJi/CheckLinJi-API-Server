@@ -403,9 +403,11 @@ public class MemberService {
 				 // 유저 삭제
 				 memberRepository.deleteById(email);
 				 
+				 // redis에 저장된 유저 토큰 삭제 
 			     redisTemplate.delete("accessToken_"+email);
 			     redisTemplate.delete("refreshToken_"+email);
 			     
+			     // 유저 게시글 이미지 및 프로필 삭제
 			     fileService.deleteFileList(email);			     			     
 				 
 				 log.info("회원정보 삭제 성공 ------> " + Constants.SUCCESS);
