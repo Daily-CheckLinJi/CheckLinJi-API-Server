@@ -18,11 +18,19 @@ public interface CommentRepository extends JpaRepository<CommentEntity, Long> {
 	List<CommentEntity> findByEmail(String email);
 		
 		
-	// 댓글 및 하위 댓글 삭제하는 쿼리
+	/* 회원 탈퇴 시 댓글 및 하위 댓글 삭제하는 쿼리
+	 * 테이블명과 컬럼명은 Entity에 설정한 컬럼명과 변수명이 같아야한다. */	   
     @Transactional
     @Modifying
     @Query("DELETE FROM CommentEntity c WHERE c.commentSeq IN :commentSeqs OR c.parentId IN :commentSeqs")
     void deleteCommentsAndChildren(@Param("commentSeqs") List<Long> commentSeqs);
+    
+	/* 게시글 삭제 시 댓글들을 삭제하는 쿼리
+	 * 테이블명과 컬럼명은 Entity에 설정한 컬럼명과 변수명이 같아야한다. */       
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM CommentEntity c WHERE c.challengeSubmissionId IN :challengeSubmissionId")
+    void deleteMissionComments(@Param("challengeSubmissionId") List<Long> challengeSubmissionId);
 
 
 

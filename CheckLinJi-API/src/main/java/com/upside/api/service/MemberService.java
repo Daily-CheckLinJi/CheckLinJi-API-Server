@@ -380,21 +380,21 @@ public class MemberService {
 			 // 존재하는 회원인지 확인 
 			 if(memberRepository.findById(email).isPresent()) {			 
 				 
-				 
+				 // 유저 첼린지 정보 가져오기
 				 Long usrData = userChallengeRepository.findByEmail(email).get().getUserChallengeId();
 				 
 				 // 유저 좋아요 삭제
 				 List<LikeEntity> usrLikeList = likeRepository.findByEmail(email);				 
 				 likeRepository.deleteAll(usrLikeList);
 				 
-				 // 유저 이메일로 단 댓글 내역 가져오기 
-				 List<CommentEntity> usrCommentList = commentRepository.findByEmail(email);
-				 
 				 // 유저 댓글과 그 하위 댓글 삭제
+				 List<CommentEntity> usrCommentList = commentRepository.findByEmail(email);				 				 
 			     commentRepository.deleteCommentsAndChildren(Utill.extractCommentSeqs(usrCommentList));				 				 
 				 
-				 // 유저 게시글 삭제
+				 // 유저 게시글 삭제 및 게시글 내부 좋아요,댓글 삭제 
 				 List<ChallengeSubmissionEntity> usrMissionList = chaSubmissionRepository.findByUserChallengeId(usrData);
+				 commentRepository.deleteMissionComments((Utill.extractMissionSeq(usrMissionList)));
+				 likeRepository.deleteMissionLikes((Utill.extractMissionSeq(usrMissionList)));
 				 chaSubmissionRepository.deleteAll(usrMissionList);
 				 
 				 // 유저 첼린지 삭제

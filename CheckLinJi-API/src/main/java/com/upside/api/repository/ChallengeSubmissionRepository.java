@@ -23,6 +23,7 @@ public interface ChallengeSubmissionRepository extends JpaRepository<ChallengeSu
 	 Optional<ChallengeSubmissionEntity> findByUserChallengeIdAndSubmissionDate (Long userChallengeId , String submissionDate);
 	 	 	 
 	 long count();
+	 
 	 	 
 }
 
