@@ -33,6 +33,7 @@ import com.upside.api.repository.LikeRepository;
 import com.upside.api.repository.MemberRepository;
 import com.upside.api.repository.UserChallengeRepository;
 import com.upside.api.util.Constants;
+import com.upside.api.util.Utill;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -386,9 +387,11 @@ public class MemberService {
 				 List<LikeEntity> usrLikeList = likeRepository.findByEmail(email);				 
 				 likeRepository.deleteAll(usrLikeList);
 				 
-				 // 유저 댓글 삭제 
-				 List<CommentEntity> usrCommentList = commentRepository.findByEmail(email);				 
-				 commentRepository.deleteAll(usrCommentList);
+				 // 유저 이메일로 단 댓글 내역 가져오기 
+				 List<CommentEntity> usrCommentList = commentRepository.findByEmail(email);
+				 
+				 // 유저 댓글과 그 하위 댓글 삭제
+			     commentRepository.deleteCommentsAndChildren(Utill.extractCommentSeqs(usrCommentList));				 				 
 				 
 				 // 유저 게시글 삭제
 				 List<ChallengeSubmissionEntity> usrMissionList = chaSubmissionRepository.findByUserChallengeId(usrData);
