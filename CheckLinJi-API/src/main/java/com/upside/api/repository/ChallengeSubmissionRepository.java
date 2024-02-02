@@ -21,6 +21,8 @@ public interface ChallengeSubmissionRepository extends JpaRepository<ChallengeSu
 	 List<ChallengeSubmissionEntity> findByUserChallengeId(Long userChallengeId);
 	 
 	 Optional<ChallengeSubmissionEntity> findByUserChallengeIdAndSubmissionDate (Long userChallengeId , String submissionDate);
+	 
+	 List<ChallengeSubmissionEntity> findByNickName (String nickName);
 	 	 	 
 	 long count();
 	 

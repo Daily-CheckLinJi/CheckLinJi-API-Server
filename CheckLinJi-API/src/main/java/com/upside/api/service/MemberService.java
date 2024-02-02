@@ -25,12 +25,14 @@ import com.upside.api.entity.ChallengeSubmissionEntity;
 import com.upside.api.entity.CommentEntity;
 import com.upside.api.entity.LikeEntity;
 import com.upside.api.entity.MemberEntity;
+import com.upside.api.entity.RankingEntity;
 import com.upside.api.entity.UserChallengeEntity;
 import com.upside.api.mapper.MemberMapper;
 import com.upside.api.repository.ChallengeSubmissionRepository;
 import com.upside.api.repository.CommentRepository;
 import com.upside.api.repository.LikeRepository;
 import com.upside.api.repository.MemberRepository;
+import com.upside.api.repository.RankingRepository;
 import com.upside.api.repository.UserChallengeRepository;
 import com.upside.api.util.Constants;
 import com.upside.api.util.Utill;
@@ -58,6 +60,7 @@ public class MemberService {
 	private final ChallengeSubmissionRepository chaSubmissionRepository;
 	private final CommentRepository commentRepository;
 	private final LikeRepository likeRepository;
+	private final RankingRepository rankingRepository;
 
 	
 	
@@ -345,7 +348,10 @@ public class MemberService {
 				 result.put("HttpStatus","2.00");
 				 result.put("Msg","비밀변호 변경이 완료되었습니다.");		 				 	
 			}else {
-				 MemberEntity updateUser = user.get();						 
+				 MemberEntity updateUser = user.get();
+				 
+				 String beforeNickName = updateUser.getNickName();
+				 
 				 updateUser.setName(memberDto.getName());
 				 updateUser.setNickName(memberDto.getNickName());			 		 
 				 updateUser.setBirth(memberDto.getBirth());			 
@@ -353,8 +359,47 @@ public class MemberService {
 				 
 				 result.put("HttpStatus","2.00");
 				 result.put("Msg","회원정보 수정이 완료되었습니다.");
-				 log.info("회원정보 업데이트 ------> " + updateUser.getEmail()); 			 			
+				 log.info("회원정보 업데이트 ------> " + updateUser.getEmail());
+				 
+				 // 닉네임 업데이트 일 경우 게시글 
+				if(memberDto.getNickName() != null || !memberDto.getNickName().equals("")) {
+					
+					// 유저 닉네임에 해당하는 게시글 가져오기
+					List<ChallengeSubmissionEntity> userMissions = chaSubmissionRepository.findByNickName(beforeNickName);
+
+					// 게시글 닉네임 전부 변경 
+					for (ChallengeSubmissionEntity updateMissions : userMissions) {				    
+					    updateMissions.setNickName(memberDto.getNickName());			 		 				    			 				    
+					    chaSubmissionRepository.save(updateMissions);
+					}
+					
+					log.info("회원 닉네임 변경으로 인한 게시글 닉네임 업데이트 ------> " + beforeNickName + " -> "+ memberDto.getNickName()); 
+					
+					// 유저 닉네임에 해당하는 댓글 가져오기
+					List<CommentEntity> userComment = commentRepository.findByNickName(beforeNickName);
+
+					// 댓글 닉네임 전부 변경 
+					for (CommentEntity userComments : userComment) {				    
+						userComments.setNickName(memberDto.getNickName());			 		 				    			 				    
+						commentRepository.save(userComments);
+					}
+					
+					log.info("회원 닉네임 변경으로 인한 댓글 닉네임 업데이트 ------> " + beforeNickName + " -> "+ memberDto.getNickName());
+					
+					// 유저 닉네임에 해당하는 랭킹 가져오기
+					List<RankingEntity> userRank = rankingRepository.findByNickName(beforeNickName);
+
+					// 랭킹 닉네임 전부 변경 
+					for (RankingEntity userRanks : userRank) {				    
+						userRanks.setNickName(memberDto.getNickName());			 		 				    			 				    
+						rankingRepository.save(userRanks);
+					}
+					
+					log.info("회원 닉네임 변경으로 인한 랭킹 닉네임 업데이트 ------> " + beforeNickName + " -> "+ memberDto.getNickName());
+							
+				}
 			}
+						
 		
 		} catch (Exception e) {
 			log.error("회원정보 업데이트 실패 ------> " + Constants.SYSTEM_ERROR , e);

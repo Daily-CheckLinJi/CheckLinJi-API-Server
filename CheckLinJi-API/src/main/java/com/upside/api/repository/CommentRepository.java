@@ -16,6 +16,8 @@ import com.upside.api.entity.CommentEntity;
 public interface CommentRepository extends JpaRepository<CommentEntity, Long> {
 	
 	List<CommentEntity> findByEmail(String email);
+	
+	List<CommentEntity> findByNickName(String nickName);
 		
 		
 	/* 회원 탈퇴 시 댓글 및 하위 댓글 삭제하는 쿼리
