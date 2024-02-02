@@ -36,42 +36,34 @@
 
 	<!-- 실시간 랭킹 TOP 3 -->
 	<select id="missionRankingTop" parameterType="MemberDto" resultType="java.util.Map" >
-		SELECT @rank := @rank + 1 AS ranking ,t.userSeq , t.email , t.NICK_NAME, t.count as successCnt , t.joinDate , t.grade , t.profile
-			FROM (
-			    SELECT MI.NICK_NAME
-			    	   , COUNT(*) AS count
-			    	   , IF(TIMESTAMPDIFF(DAY, DATE(MI.JOIN_DATE), NOW()) = 0, 1, TIMESTAMPDIFF(DAY, DATE(MI.JOIN_DATE), NOW()) + 1) AS joinDate
-			    	   , MI.grade
-			    	   , MI.profile
-			    	   , UC.user_challenge_id as userSeq
-			    	   , uc.email
-			    FROM CHALLENGE_SUBMISSION CS 
-			    JOIN USER_CHALLENGE UC ON CS.USER_CHALLENGE_ID = UC.USER_CHALLENGE_ID
-			    JOIN MEMBER_INFO MI ON UC.EMAIL = MI.EMAIL 			    
-			    GROUP BY UC.EMAIL 
-			    ORDER BY COUNT(*) DESC 
-			) t, (SELECT @rank := 0) r 
-			ORDER BY ranking ASC 
-			LIMIT 3		 
+		SELECT * FROM RANKING_TOP RT ORDER BY RANKING  
 	</select>
 	
-	<!-- 실시간 랭킹 TOP 3 업데이트 -->
-	<insert id="insertRankingTop" parameterType="java.util.ArrayList" >
-		 INSERT INTO RANKING_TOP 
-        (
-           	  RANK
-            , EMAIL
-            , UPDATE_DATE            
-        )
-        VALUES
-        <foreach collection="list" item="item" separator=",">
-        (
-			  #{item.rank}
-            , #{item.email}
-            , #{item.updateDate}       
-        )
-        </foreach>
-	</insert>
+	<!-- 랭킹 업데이트 -->
+	<update id="insertRankingTop" >
+		INSERT INTO RANKING_TOP
+		   select
+		            ROW_NUMBER() OVER (ORDER BY 
+			        IF(DATEDIFF(CURDATE(), MAX(SUBMISSION_DATE)) = 0, 30, 0) 
+			        + IFNULL(SUM(DATEDIFF(CURDATE(), SUBMISSION_DATE) BETWEEN 1 AND 7), 0) * 4.3 
+			        + IFNULL(SUM(DATEDIFF(CURDATE(), SUBMISSION_DATE) BETWEEN 1 AND 31), 0) * 1        
+			        DESC
+			    	) as ranking
+		    	  , MI.EMAIL 
+		    	  , MI.GRADE   	
+		    	  , IF(TIMESTAMPDIFF(DAY, DATE(MI.JOIN_DATE), NOW()) = 0, 1, TIMESTAMPDIFF(DAY, DATE(MI.JOIN_DATE), NOW()) + 1) AS join_date 
+		  		  , MI.nick_name
+		  		  , MI.PROFILE   		  
+		  		  , COUNT(*) AS success_cnt  	
+		  		  , NOW() as update_date
+		  		  , UC.user_challenge_id as user_seq  		  
+			FROM
+		    	CHALLENGE_SUBMISSION CS
+		    JOIN USER_CHALLENGE UC ON CS.USER_CHALLENGE_ID = UC.USER_CHALLENGE_ID
+		    JOIN MEMBER_INFO MI ON UC.EMAIL = MI.EMAIL 		
+			GROUP BY
+		    	UC.EMAIL ;
+	</update>
 	
 	<!-- 실시간 랭킹 TOP 3 삭제 -->
 	<delete id="deleteRankingTop">
@@ -80,27 +72,7 @@
 	
 	<!-- 실시간 본인 랭킹 -->
 	<select id="missionRankingOwn" parameterType="MemberDto" resultType="java.util.Map" >
-		SELECT val.rank, val.userSeq, val.email , val.nickName, val.count as successCnt, val.joinDate , val.grade , val.profile
-			FROM (
-			  SELECT @rank := @rank + 1 AS rank, t.userSeq , t.email, t.nickName, t.count , t.joinDate , t.grade , t.profile
-			  FROM (
-			    SELECT   UC.EMAIL
-			    	   , MI.NICK_NAME as nickName
-			    	   , COUNT(*) AS count			    	   
-			    	   , IF(TIMESTAMPDIFF(DAY, DATE(MI.JOIN_DATE), NOW()) = 0, 1, TIMESTAMPDIFF(DAY, DATE(MI.JOIN_DATE), NOW()) + 1) AS joinDate
-   			    	   , MI.grade
-   			    	   , MI.profile
-			    	   , UC.user_challenge_id as userSeq			    	   
-			    FROM CHALLENGE_SUBMISSION CS 
-			    JOIN USER_CHALLENGE UC 
-			    ON CS.USER_CHALLENGE_ID = UC.USER_CHALLENGE_ID
-			    JOIN MEMBER_INFO MI 
-			    ON UC.EMAIL = MI.EMAIL 			    
-			    GROUP BY UC.EMAIL 
-			    ORDER BY COUNT(*) DESC
-			  ) t, (SELECT @rank := 0) r 
-			) val 
-			WHERE val.email = #{email} 		 
+		SELECT * FROM RANKING_TOP RT WHERE EMAIL = #{email} order by ranking 
 	</select>
 	
 		<!-- 실시간 본인 랭킹 -->
@@ -181,8 +153,8 @@
 				,MI.GRADE
 				,CM.COMMENT_STATE
 				,  CASE
-        			WHEN (SELECT rank FROM RANKING_TOP WHERE email = MI.EMAIL) IN (1, 2, 3)
-        			THEN (SELECT rank FROM RANKING_TOP WHERE email = MI.EMAIL)
+        			WHEN (SELECT ranking FROM RANKING_TOP WHERE email = MI.EMAIL) IN (1, 2, 3)
+        			THEN (SELECT ranking FROM RANKING_TOP WHERE email = MI.EMAIL)
         			ELSE 0
     				END AS rank
 				FROM COMMENT CM 		 
@@ -309,7 +281,7 @@
 	
 	<!-- 랭킹 Top 3인지 확인 -->
 	<select id="isTopRank" parameterType="RankingDto" resultType="String">
-		select rank from RANKING_TOP WHERE email = #{email} 
+		select ranking from RANKING_TOP WHERE email = #{email} 
 	</select>		
 	 
 	 

@@ -5,12 +5,9 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -22,29 +19,36 @@ import lombok.NoArgsConstructor;
 @Table(name = "RankingTop")
 public class RankingEntity { // User 테이블: 사용자 정보를 저장하는 테이블
 
+
  @Id
- @GeneratedValue(strategy = GenerationType.IDENTITY)
- private Long rankSeq;
- 
- @Column(name = "rank")
- private Integer rank;
+ @Column(name = "ranking")
+ private Integer ranking;
  
  @Column(name = "email")
  private String email;
+ 
+ @Column(name = "nickName")
+ private String nickName;
+ 
+ @Column(name = "userSeq")
+ private String userSeq;
+ 
+ @Column(name = "successCnt")
+ private String successCnt;
+ 
+ @Column(name = "joinDate")
+ private String joinDate;
+ 
+ @Column(name = "grade")
+ private String grade;
+ 
+ @Column(name = "profile")
+ private String profile;
  
  @Column(name = "updateDate")
  private String updateDate;
  
  
-@Builder
-public RankingEntity(Integer rank , String email , String updateDate) {
-	super();
-	this.rank = rank;
-	this.email = email;
-	this.updateDate = updateDate;
-
-	
-	}
 
 }
 

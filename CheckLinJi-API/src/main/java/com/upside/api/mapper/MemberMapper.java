@@ -162,7 +162,7 @@ public interface MemberMapper {
 	 * @param data
 	 * @return
 	 */
-	int insertRankingTop (ArrayList<RankingDto> rankingTopList);
+	int insertRankingTop ();
 	
 	/**
 	 * 미션 랭킹 Top 3 삭제
