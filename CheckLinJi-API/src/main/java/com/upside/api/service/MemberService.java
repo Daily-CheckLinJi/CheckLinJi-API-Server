@@ -729,11 +729,23 @@ public class MemberService {
 		    	 	    	 	    	        	 	
 		    		MemberEntity member = user.get();
 		    		
-		    		member.setProfile(submissionImageRoute);    		    
+		    		member.setProfile(submissionImageRoute);  
+		    		
+		    		log.info("회원 프로필 변경으로 인한 멤버 프로필 업데이트 ------> " + member.getProfile() + " -> "+ submissionImageRoute);		    			
+		    		
+					// 유저 이메일에 해당하는 랭킹 가져오기
+					List<RankingEntity> userRank = rankingRepository.findByEmail(email);
+
+					// 랭킹 프로필 변경 
+					for (RankingEntity userRanks : userRank) {				    
+						userRanks.setProfile(submissionImageRoute);			 		 				    			 				    
+						rankingRepository.save(userRanks);
+					}
+					
+					log.info("회원 프로필 변경으로 인한 랭킹 프로필 업데이트 ------> " + member.getProfile() + " -> "+ submissionImageRoute);
 					
 			    	result.put("HttpStatus", "2.00");
-					result.put("Msg", Constants.SUCCESS);
-					log.info("프로필 사진 업데이트 성공 ------>" + email);	
+					result.put("Msg", Constants.SUCCESS);					
 		
 				 }
 			} catch (Exception e) {				
