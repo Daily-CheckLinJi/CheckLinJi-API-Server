@@ -318,6 +318,8 @@ public class CommentService {
 		
 	   Map<String, String> result = new HashMap<String, String>();
 	   
+	   boolean alarmYn = true ;
+	   
 	   if(commentDto.getWriterEmail() == null || commentDto.getWriterEmail().equals("")) {
 		 	result.put("HttpStatus","1.00");		
 			result.put("Msg",Constants.NOT_EXIST_PARAMETER);
@@ -341,46 +343,50 @@ public class CommentService {
 			   log.info("유저 좋아요 등록  ------> " + Constants.FAIL);
 		   }
 		   
-		   	// 게시글에서 유저 정보 가져오기        	
-        	Optional<ChallengeSubmissionEntity> userSubmission = challengeSubmissionRepository.findById(commentDto.getChallengeSubmissionId());
-        	        	
-        	if(userSubmission.isPresent() && userSubmission.get().getNickName() != null) {
-        		
-        		// 유저 닉네임으로 fcm토큰 값 가져오기
-        		Optional<MemberEntity> user = memberRepository.findByNickName(userSubmission.get().getNickName());
-        		
-        		if(user.isPresent() && user.get().getFcmToken() != null) {
-        			        		
-        			// 알림 기능 유저 fcm 토큰 , 타이틀 : 앱 이름 , 메시지 : 알림 입력
-            		NotificationRequestDto notiDto = new NotificationRequestDto();
-            		
-            		notiDto.setFcmToken(user.get().getFcmToken());
-            		notiDto.setTitle("데일리 책린지 알림");
-            		notiDto.setMessage(user.get().getNickName() + Constants.likeAlarm);
-            		notiDto.setParamsDepsYn("N");
-            		
-            		// 게시글 param
-            		List<NotificationRequestDto.Params> paramsList = new ArrayList<>();
-            		NotificationRequestDto.Params params = new NotificationRequestDto.Params();            		
-            		params.setRoute(Constants.mission);
-            		params.setPostId(commentDto.getChallengeSubmissionId());     
-            		
-            		paramsList.add(params);
-	        		            
-            		notiDto.setParams(paramsList);
-            		
-            		notification.pushNofication(notiDto);
-            		
-        		}else {
-        			log.error("유자 정보가 없거나 fcm 토큰을 찾지 못해서 알람을 보내지 못했습니다.");
-        		}
-        		        			        			        	        			        		
-        	}else {
-        		log.error("게시글이 없거나 닉네임을 찾지 못해서 알림을 보내지 못했습니다.");
-        	}
-	        	
-	        
+		   // 작성자 이메일과 좋아요 누른 이메일이 같으면 알람 X 
+		   if(commentDto.getEmail().equals(commentDto.getWriterEmail())) {
+			   alarmYn = false ;
+		   }
 		   
+		   if(alarmYn) {
+			   	// 게시글에서 유저 정보 가져오기        	
+	        	Optional<ChallengeSubmissionEntity> userSubmission = challengeSubmissionRepository.findById(commentDto.getChallengeSubmissionId());
+	        	        	
+	        	if(userSubmission.isPresent() && userSubmission.get().getNickName() != null) {
+	        		
+	        		// 유저 닉네임으로 fcm토큰 값 가져오기
+	        		Optional<MemberEntity> user = memberRepository.findByNickName(userSubmission.get().getNickName());
+	        		
+	        		if(user.isPresent() && user.get().getFcmToken() != null) {
+	        			        		
+	        			// 알림 기능 유저 fcm 토큰 , 타이틀 : 앱 이름 , 메시지 : 알림 입력
+	            		NotificationRequestDto notiDto = new NotificationRequestDto();
+	            		
+	            		notiDto.setFcmToken(user.get().getFcmToken());
+	            		notiDto.setTitle("데일리 책린지 알림");
+	            		notiDto.setMessage(user.get().getNickName() + Constants.likeAlarm);
+	            		notiDto.setParamsDepsYn("N");
+	            		
+	            		// 게시글 param
+	            		List<NotificationRequestDto.Params> paramsList = new ArrayList<>();
+	            		NotificationRequestDto.Params params = new NotificationRequestDto.Params();            		
+	            		params.setRoute(Constants.mission);
+	            		params.setPostId(commentDto.getChallengeSubmissionId());     
+	            		
+	            		paramsList.add(params);
+		        		            
+	            		notiDto.setParams(paramsList);
+	            		
+	            		notification.pushNofication(notiDto);
+	            		
+	        		}else {
+	        			log.error("유자 정보가 없거나 fcm 토큰을 찾지 못해서 알람을 보내지 못했습니다.");
+	        		}
+	        		        			        			        	        			        		
+	        	}else {
+	        		log.error("게시글이 없거나 닉네임을 찾지 못해서 알림을 보내지 못했습니다.");
+	        	}
+		   }
               			    		
 	   } catch (Exception e) {
 		result.put("HttpStatus","1.00");		
