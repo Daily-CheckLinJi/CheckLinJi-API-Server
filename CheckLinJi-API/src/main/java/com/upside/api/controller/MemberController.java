@@ -249,5 +249,19 @@ public class MemberController {
 			 return new ResponseEntity<>(result,HttpStatus.BAD_REQUEST); 
 		 }
 	}
+	
+	@PostMapping("/fcm/delete")
+	public ResponseEntity<Map<String, String>> fcmDelete (@RequestHeader("Authorization") String authHeader) {			
+		
+		 String userEmail = jwtTokenProvider.getEmail(authHeader); // email을 얻기위해 헤더에서 토큰을 디코딩하는 부분이다. 		 	
+		
+		 Map<String, String> result = memberService.fcmDelete(userEmail);
+		 		 		 
+		 if(result.get("HttpStatus").equals("2.00")) {			 		 
+			 return new ResponseEntity<>(result, HttpStatus.OK);
+		 } else {			 
+			 return new ResponseEntity<>(result,HttpStatus.BAD_REQUEST); 
+		 }
+	}	
 
   }

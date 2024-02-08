@@ -948,4 +948,40 @@ public class MemberService {
 	    return result ;			    		   
 	}
 		
+	/**
+	 * fcm 삭제  
+	 * @param userEmail
+	 * @return
+	 */
+	@Transactional // 트랜잭션 안에서 entity를 조회해야 영속성 상태로 조회가 되고 값을 변경해면 변경 감지(dirty checking)가 일어난다.
+	public Map<String, String> fcmDelete (String email) {
+		
+		Map<String, String> result = new HashMap<String, String>();
+				
+		log.info("유저 FCM 토큰 삭제  -----------------> Start " );	
+       
+       try {    	   
+	    	// 가입된 유저인지 확인
+			Optional<MemberEntity> user = memberRepository.findById(email);		
+						 
+			if(user.isPresent()) { 
+				MemberEntity updateUser = user.get();	 			 
+				updateUser.setFcmToken("");
+		        result.put("HttpStatus","2.00");		
+				result.put("Msg",Constants.SUCCESS);					
+				log.info("유저 FCM 토큰 삭제  -----------------> " + Constants.SUCCESS);					
+			}else {
+				result.put("HttpStatus","1.00");
+				result.put("Msg",Constants.NOT_EXIST_EMAIL);
+				log.info("유저 FCM 토큰 삭제  ------> " + Constants.NOT_EXIST_EMAIL);		
+			}
+		} catch (Exception e) {
+			 result.put("HttpStatus","1.00");		
+			 result.put("Msg",Constants.SYSTEM_ERROR);			 
+			 log.error("유저 FCM 토큰 삭제  -----------------> " + Constants.SYSTEM_ERROR , e);
+		}
+       
+	    return result ;			    		   
+	}	
+	
 }
