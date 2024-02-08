@@ -508,7 +508,11 @@ public class MemberService {
 		    	redis.set("refreshToken_"+member.getEmail(), jwtTokenProvider.createRefreshToken()); // refresh Token Redis 저장 , 키 값이 같으면 덮어 씌워짐		    	
 		    	redisTemplate.expire("accessToken_" + member.getEmail(), 1, TimeUnit.HOURS); // redis accessToken expire 1시간 지정
 		    	redisTemplate.expire("refreshToken_"+member.getEmail(), 31, TimeUnit.DAYS); // redis refreshToken expire 31일 지정
-		    			 		    	
+		    	
+		    	SimpleDateFormat today = new SimpleDateFormat("yyyy-MM-dd hh:mm");        	
+		    	
+		    	member.setLoginDate(today.format(new Date()));
+		    	
 		    	// 로그인 시 fcmToken을 업데이트 
 		    	if(memberDto.getFcmToken() != null && !memberDto.getFcmToken().equals("")) {
 		    		member.setFcmToken(memberDto.getFcmToken());
@@ -656,6 +660,10 @@ public class MemberService {
 			    result.put("Msg", Constants.SUCCESS);
 			    
 			    log.info("소셜 회원 로그인 ------> " + Constants.SUCCESS);
+			    
+		    	SimpleDateFormat today = new SimpleDateFormat("yyyy-MM-dd hh:mm");        	
+		    	
+		    	member.setLoginDate(today.format(new Date()));
 			    
 		    	// 로그인 시 fcmToken을 업데이트 
 		    	if(memberDto.getFcmToken() != null && !memberDto.getFcmToken().equals("")) {
