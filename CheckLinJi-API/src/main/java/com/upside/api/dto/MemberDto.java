@@ -21,5 +21,9 @@ public class MemberDto {
  private String afterPassword;
  private String date;
  private String fcmToken;
+ private String authAlarm;
+ private String missionAndCommentAlarm;
+ private String eventAlarm;
+
  
 }

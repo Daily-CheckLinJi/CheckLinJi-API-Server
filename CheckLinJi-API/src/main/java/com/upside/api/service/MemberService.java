@@ -957,6 +957,86 @@ public class MemberService {
 	}
 		
 	/**
+	 * 유저 알람 설정 정보 가져오기
+	 * @param userEmail
+	 * @return
+	 */	
+	public Map<String, Object> alarmInfo (String email) {
+		
+		Map<String, Object> result = new HashMap<String, Object>();
+				
+		log.info("유저 알람 설정 정보 가져오기  -----------------> Start " );	
+       
+       try {    	   
+	    	// 가입된 유저인지 확인
+			Optional<MemberEntity> user = memberRepository.findById(email);		
+						 
+			Map<String,String> userAlarmInfo = new HashMap<String, String>();
+			
+			if(user.isPresent()) { 
+				MemberEntity userInfo = user.get();	
+				userAlarmInfo.put("authAlarm", userInfo.getAuthAlarm());
+				userAlarmInfo.put("missionAndCommentAlarm", userInfo.getMissionAndCommentAlarm());
+				userAlarmInfo.put("eventAlarm", userInfo.getEventAlarm());
+				
+				result.put("alarmInfo",userAlarmInfo);
+		        result.put("HttpStatus","2.00");		
+				result.put("Msg",Constants.SUCCESS);					
+				log.info("유저 알람 설정 정보 가져오기  -----------------> " + Constants.SUCCESS);					
+			}else {
+				result.put("HttpStatus","1.00");
+				result.put("Msg",Constants.NOT_EXIST_EMAIL);
+				log.info("유저 알람 설정 정보 가져오기  ------> " + Constants.NOT_EXIST_EMAIL);		
+			}
+		} catch (Exception e) {
+			 result.put("HttpStatus","1.00");		
+			 result.put("Msg",Constants.SYSTEM_ERROR);			 
+			 log.error("유저 알람 설정 정보 가져오기  -----------------> " + Constants.SYSTEM_ERROR , e);
+		}
+       
+	    return result ;			    		   
+	}	
+	
+	/**
+	 * 유저 알람 설정 정보 업데이트
+	 * @param userEmail
+	 * @return
+	 */	
+	@Transactional // 트랜잭션 안에서 entity를 조회해야 영속성 상태로 조회가 되고 값을 변경해면 변경 감지(dirty checking)가 일어난다.
+	public Map<String, String> alarmUpdate (MemberDto memberDto) {
+		
+		Map<String, String> result = new HashMap<String, String>();
+				
+		log.info("유저 알람 설정 정보 업데이트  -----------------> Start " );	
+       
+       try {    	   
+	    	// 가입된 유저인지 확인
+			Optional<MemberEntity> user = memberRepository.findById(memberDto.getEmail());		
+						 						
+			if(user.isPresent()) { 
+				MemberEntity userInfo = user.get();	
+				userInfo.setAuthAlarm(memberDto.getAuthAlarm());
+				userInfo.setMissionAndCommentAlarm(memberDto.getMissionAndCommentAlarm());
+				userInfo.setEventAlarm(memberDto.getEventAlarm());				
+								
+		        result.put("HttpStatus","2.00");		
+				result.put("Msg",Constants.SUCCESS);					
+				log.info("유저 알람 설정 정보 업데이트  -----------------> " + Constants.SUCCESS);					
+			}else {
+				result.put("HttpStatus","1.00");
+				result.put("Msg",Constants.NOT_EXIST_EMAIL);
+				log.info("유저 알람 설정 정보 업데이트  ------> " + Constants.NOT_EXIST_EMAIL);		
+			}
+		} catch (Exception e) {
+			 result.put("HttpStatus","1.00");		
+			 result.put("Msg",Constants.SYSTEM_ERROR);			 
+			 log.error("유저 알람 설정 정보 업데이트  -----------------> " + Constants.SYSTEM_ERROR , e);
+		}
+       
+	    return result ;			    		   
+	}	
+	
+	/**
 	 * fcm 삭제  
 	 * @param userEmail
 	 * @return
@@ -991,5 +1071,5 @@ public class MemberService {
        
 	    return result ;			    		   
 	}	
-	
+
 }
