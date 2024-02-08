@@ -59,10 +59,19 @@ public class MemberEntity { // User 테이블: 사용자 정보를 저장하는 
  @Column(name = "refreshToken")
  private String refreshToken;
  
+ @Column(name = "authAlarm")
+ private String authAlarm;
+ 
+ @Column(name = "missionAndCommentAlarm")
+ private String missionAndCommentAlarm;
+ 
+ @Column(name = "eventAlarm")
+ private String eventAlarm;
+ 
 
 @Builder
 public MemberEntity(String email, String password, String name, String nickName, String birth, String sex,
-		String joinDate, String loginDate , String authority , String profile , String fcmToken , String grade) {
+		String joinDate, String loginDate , String authority , String profile , String fcmToken , String grade , String authAlarm , String missionAndCommentAlarm , String eventAlarm) {
 	super();
 	this.email = email;
 	this.password = password;
@@ -76,6 +85,9 @@ public MemberEntity(String email, String password, String name, String nickName,
 	this.profile = profile;
 	this.fcmToken = fcmToken;
 	this.grade = grade;
+	this.authAlarm = authAlarm;
+	this.missionAndCommentAlarm = missionAndCommentAlarm;
+	this.eventAlarm = eventAlarm;
 	
 }
 }

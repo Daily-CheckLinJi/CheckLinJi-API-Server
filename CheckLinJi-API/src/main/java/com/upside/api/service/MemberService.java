@@ -94,7 +94,7 @@ public class MemberService {
 		         ownData.put("email", email);
 				 
 		         // 본인 미션 랭킹 가져오기
-				 Map<String, String> missionRankingOwn = memberMapper.OwnRanking(ownData);
+				 Map<String, String> missionRankingOwn = memberMapper.missionRankingOwn(ownData);
 			
 				 // 미션 정보가 없으면 랭크 0 처리
 				 if(missionRankingOwn == null) {
@@ -205,6 +205,9 @@ public class MemberService {
 					.profile(uploadDir + "/" + "profile" + "/" + profileName) // 문자열에서 백슬래시()는 이스케이프 문자(escape character)로 사용되기 때문에 사용할려면 \\ 두개로 해야 \로 인식
 					.fcmToken(memberDto.getFcmToken())
 					.grade("책갈피")
+					.authAlarm("Y")
+					.missionAndCommentAlarm("Y")
+					.eventAlarm("Y")
 					.build();						        
 			
 			 memberRepository.save(memberEntity);

@@ -144,6 +144,9 @@ public class SocialService {
 					.profile(uploadDir + "/" + "profile" + "/" + profileName) // 문자열에서 백슬래시()는 이스케이프 문자(escape character)로 사용되기 때문에 사용할려면 \\ 두개로 해야 \로 인식
 					.grade("책갈피")
 					.fcmToken(memberDto.getFcmToken())
+					.authAlarm("Y")
+					.missionAndCommentAlarm("Y")
+					.eventAlarm("Y")
 					.build();						        
 			
 			 memberRepository.save(memberEntity);

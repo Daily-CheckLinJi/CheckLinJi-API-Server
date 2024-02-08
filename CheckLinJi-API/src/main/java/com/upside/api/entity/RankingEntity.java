@@ -21,8 +21,8 @@ public class RankingEntity { // User 테이블: 사용자 정보를 저장하는
 
 
  @Id
- @Column(name = "ranking")
- private Integer ranking;
+ @Column(name = "rank")
+ private Integer rank;
  
  @Column(name = "email")
  private String email;

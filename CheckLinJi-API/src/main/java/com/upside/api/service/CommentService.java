@@ -14,9 +14,11 @@ import com.upside.api.dto.CommentDto;
 import com.upside.api.dto.NotificationRequestDto;
 import com.upside.api.entity.ChallengeSubmissionEntity;
 import com.upside.api.entity.MemberEntity;
+import com.upside.api.entity.UserChallengeEntity;
 import com.upside.api.mapper.UserCommentMapper;
 import com.upside.api.repository.ChallengeSubmissionRepository;
 import com.upside.api.repository.MemberRepository;
+import com.upside.api.repository.UserChallengeRepository;
 import com.upside.api.util.Constants;
 import com.upside.api.util.Notification;
 
@@ -37,6 +39,7 @@ public class CommentService {
 	private final MemberRepository memberRepository ;
 	private final ChallengeSubmissionRepository challengeSubmissionRepository;
 	private final Notification notification ;
+	private final UserChallengeRepository userChallengeRepository;
 	
 	
 	 	 
@@ -55,6 +58,8 @@ public class CommentService {
 		log.info("유저 댓글 입력  ------> " + "Start");
 		
 		Map<String, String> result = new HashMap<String, String>();
+		
+		boolean alarmYn = true ;
 		
 		try {
 			
@@ -85,99 +90,105 @@ public class CommentService {
 	        }	        	        
 	        	        	        	        
 	        
-	        // 대댓글인지 확인
-	        if(commentDto.getParentId() != null && commentDto.getParentId() > 0) {
-	        	// 대댓글 유저 정보 가져와서 fcm 값 확인
-	        	String userEmail = userCommentMapper.findParentComment(commentDto);
-	        	Optional<MemberEntity> user = memberRepository.findById(userEmail);
-	        		        	
-	        	if(user.isPresent() && user.get().getFcmToken() != null) {
+	        // 첼린지 정보에서 유저정보 가져오기
+	        Optional<UserChallengeEntity> userChallenge = userChallengeRepository.findByEmail(commentDto.getEmail());	 
+	        
+	        // 게시글에서 유저 정보 가져오기        	
+        	Optional<ChallengeSubmissionEntity> userSubmission = challengeSubmissionRepository.findById(commentDto.getChallengeSubmissionId());
+	        
+        	// 첼린지 정보와 게시글이 전부 존재하면 UserChallengeId를 비교해서 작성자와 코멘트 단 사람이 같은지 확인 
+	        if(userChallenge.isPresent() && userSubmission.isPresent()) {	  
+	        	// 작성자와 코멘트 단 사람이 같으면 알람 X 
+	        	if(userChallenge.get().getUserChallengeId() == userSubmission.get().getUserChallengeId()) {
+	        		alarmYn = false ;
+	        	}
+	        }
+	        	        
+	        if(alarmYn) {
+	        	 // 대댓글인지 확인
+		        if(commentDto.getParentId() != null && commentDto.getParentId() > 0) {
+		        	// 대댓글 유저 정보 가져와서 fcm 값 확인
+		        	String userEmail = userCommentMapper.findParentComment(commentDto);
+		        	Optional<MemberEntity> user = memberRepository.findById(userEmail);
+		        		        	
+		        	if(user.isPresent() && user.get().getFcmToken() != null) {
+		        			        			        		
+		        		// 알림 기능 유저 fcm 토큰 , 타이틀 : 앱 이름 , 메시지 : 알림 입력
+		        		NotificationRequestDto notiDto = new NotificationRequestDto();
+		        		
+		        		notiDto.setFcmToken(user.get().getFcmToken());
+		        		notiDto.setTitle("데일리 책린지 알림");
+		        		notiDto.setMessage(user.get().getNickName() + Constants.parentCommentAlarm);
+		        		notiDto.setParamsDepsYn("Y");
+		        		
+	            		// 게시글 param
+	            		List<NotificationRequestDto.Params> paramsList = new ArrayList<>();
+	            		NotificationRequestDto.Params params_1 = new NotificationRequestDto.Params();            		
+	            		params_1.setRoute(Constants.mission);
+	            		params_1.setPostId(commentDto.getChallengeSubmissionId());                 		
+	            		paramsList.add(params_1);
+		        		                       			        		
+		        		// 댓글 param
+	              		NotificationRequestDto.Params params_2 = new NotificationRequestDto.Params();            		
+	              		params_2.setRoute(Constants.comment);
+	              		params_2.setPostId(commentDto.getParentId());              		
+	              		paramsList.add(params_2);
+	              		
+	              		notiDto.setParams(paramsList);
+		        			        			        			        	        		
+		        		notification.pushNofication(notiDto);
+		        			        		
+		        	}else {
+		        		log.error("부모 댓글이 없거나 FcmToken이 없어서 알림을 보내지 못했습니다.!!!");
+		        	}
+		        	
+		        } else {
+	        		            	        	
+	            	if(userSubmission.isPresent() && userSubmission.get().getNickName() != null) {
+	            		
+	            		// 유저 닉네임으로 fcm토큰 값 가져오기
+	            		Optional<MemberEntity> userInfo = memberRepository.findByNickName(userSubmission.get().getNickName());
+	            		
+	            		if(userInfo.isPresent() && userInfo.get().getFcmToken() != null) {
+	            			        		
+	            			// 알림 기능 유저 fcm 토큰 , 타이틀 : 앱 이름 , 메시지 : 알림 입력
+	                		NotificationRequestDto notiDto = new NotificationRequestDto();
+	                		
+	                		notiDto.setFcmToken(userInfo.get().getFcmToken());
+	                		notiDto.setTitle("데일리 책린지 알림");
+	                		notiDto.setMessage(userInfo.get().getNickName() + Constants.commentAlarm);
+	                		notiDto.setParamsDepsYn("Y");
+	                		                		                		                		
+	                		// 게시글 param
+	                		List<NotificationRequestDto.Params> paramsList = new ArrayList<>();
+	                		NotificationRequestDto.Params params_1 = new NotificationRequestDto.Params();            		
+	                		params_1.setRoute(Constants.mission);
+	                		params_1.setPostId(commentDto.getChallengeSubmissionId());     
+	                		paramsList.add(params_1);
+	    	        		                            		                		                		                		
+	    	        		// 댓글 param
+	                		int userCommentSeq = userCommentMapper.findCommentSeq(commentDto);
+	                  		NotificationRequestDto.Params params_2 = new NotificationRequestDto.Params();            		
+	                  		params_2.setRoute(Constants.comment);
+	                  		params_2.setPostId((long) userCommentSeq);              		
+	                  		paramsList.add(params_2);
+	                		
+	                  		notiDto.setParams(paramsList);
+	                  		
+	                		notification.pushNofication(notiDto);
+	                		
+	            		}else {
+	            			log.error("유자 정보가 없거나 fcm 토큰을 찾지 못해서 알람을 보내지 못했습니다.");
+	            		}
+	            		        			        			        	        			        		
+	            	}else {
+	            		log.error("게시글이 없거나 닉네임을 찾지 못해서 알림을 보내지 못했습니다.");
+	            	}
 	        		
-	        		// 댓글이 10자 이상일경우 10자 이상부턴 ... 표시
-//	        		String content = commentDto.getContent();
-//	        		int maxLength = 10;
-//
-//	        		if (content.length() > maxLength) {
-//	        		    content = content.substring(0, maxLength) + "...";	        		    
-//	        		} 
-	        			        		
-	        		// 알림 기능 유저 fcm 토큰 , 타이틀 : 앱 이름 , 메시지 : 알림 입력
-	        		NotificationRequestDto notiDto = new NotificationRequestDto();
-	        		
-	        		notiDto.setFcmToken(user.get().getFcmToken());
-	        		notiDto.setTitle("데일리 책린지 알림");
-	        		notiDto.setMessage(user.get().getNickName() + Constants.parentCommentAlarm);
-	        		notiDto.setParamsDepsYn("Y");
-	        		
-            		// 게시글 param
-            		List<NotificationRequestDto.Params> paramsList = new ArrayList<>();
-            		NotificationRequestDto.Params params_1 = new NotificationRequestDto.Params();            		
-            		params_1.setRoute(Constants.mission);
-            		params_1.setPostId(commentDto.getChallengeSubmissionId());                 		
-            		paramsList.add(params_1);
-	        		                       			        		
-	        		// 댓글 param
-              		NotificationRequestDto.Params params_2 = new NotificationRequestDto.Params();            		
-              		params_2.setRoute(Constants.comment);
-              		params_2.setPostId(commentDto.getParentId());              		
-              		paramsList.add(params_2);
-              		
-              		notiDto.setParams(paramsList);
-	        			        			        			        	        		
-	        		notification.pushNofication(notiDto);
-	        			        		
-	        	}else {
 	        		log.error("부모 댓글이 없거나 FcmToken이 없어서 알림을 보내지 못했습니다.!!!");
 	        	}
-	        	
-	        } else {
-        		
-    		   	// 게시글에서 유저 정보 가져오기        	
-            	Optional<ChallengeSubmissionEntity> userSubmission = challengeSubmissionRepository.findById(commentDto.getChallengeSubmissionId());
-            	        	
-            	if(userSubmission.isPresent() && userSubmission.get().getNickName() != null) {
-            		
-            		// 유저 닉네임으로 fcm토큰 값 가져오기
-            		Optional<MemberEntity> userInfo = memberRepository.findByNickName(userSubmission.get().getNickName());
-            		
-            		if(userInfo.isPresent() && userInfo.get().getFcmToken() != null) {
-            			        		
-            			// 알림 기능 유저 fcm 토큰 , 타이틀 : 앱 이름 , 메시지 : 알림 입력
-                		NotificationRequestDto notiDto = new NotificationRequestDto();
-                		
-                		notiDto.setFcmToken(userInfo.get().getFcmToken());
-                		notiDto.setTitle("데일리 책린지 알림");
-                		notiDto.setMessage(userInfo.get().getNickName() + Constants.commentAlarm);
-                		notiDto.setParamsDepsYn("Y");
-                		                		                		                		
-                		// 게시글 param
-                		List<NotificationRequestDto.Params> paramsList = new ArrayList<>();
-                		NotificationRequestDto.Params params_1 = new NotificationRequestDto.Params();            		
-                		params_1.setRoute(Constants.mission);
-                		params_1.setPostId(commentDto.getChallengeSubmissionId());     
-                		paramsList.add(params_1);
-    	        		                            		                		                		                		
-    	        		// 댓글 param
-                		int userCommentSeq = userCommentMapper.findCommentSeq(commentDto);
-                  		NotificationRequestDto.Params params_2 = new NotificationRequestDto.Params();            		
-                  		params_2.setRoute(Constants.comment);
-                  		params_2.setPostId((long) userCommentSeq);              		
-                  		paramsList.add(params_2);
-                		
-                  		notiDto.setParams(paramsList);
-                  		
-                		notification.pushNofication(notiDto);
-                		
-            		}else {
-            			log.error("유자 정보가 없거나 fcm 토큰을 찾지 못해서 알람을 보내지 못했습니다.");
-            		}
-            		        			        			        	        			        		
-            	}else {
-            		log.error("게시글이 없거나 닉네임을 찾지 못해서 알림을 보내지 못했습니다.");
-            	}
-        		
-        		log.error("부모 댓글이 없거나 FcmToken이 없어서 알림을 보내지 못했습니다.!!!");
-        	}
+	        }
+	       
                 						
 		} catch (Exception e) {
         	result.put("HttpStatus","1.00");		
