@@ -137,58 +137,55 @@ public class ChallengeService {
 		        	ArrayList<Map<String, Object>> userChallengeList = challengeMapper.userChallengeList(pageDto);
 		        	        	        	
 		        	// 리스트 사이즈만큼 돌면서 DB에 저장된 이미지 경로로 이미지를 base64로 인코딩해서 값 덮어씌우기
-		        	if (userChallengeList.size() != 0 ) { 
-		        		for(int i = 0; i < userChallengeList.size(); i++) { 
-		        			String image = fileService.myAuthImage((String) userChallengeList.get(i).get("SUBMISSION_IMAGE"));
-		        				if(!image.equals("N")) {
-		        					userChallengeList.get(i).put("SUBMISSION_IMAGE", image);
-		        				}
-		        		}
-		        		
-		        		// 사용자의 가입 날짜 가져오기
-		        		Optional<MemberEntity> user = memberRepository.findById(pageDto.getEmail());		        			        		
-		        		
-		        		// 사용자의 가입일로부터 현재까지의 경과 일수를 계산
-		            	long differenceInDays =  DateTime.userJoinDate(user.get().getJoinDate());
-		            	
-		            	HashMap<String, Object> memberInfo = new HashMap<String, Object>();
-		            			        		
-		        		memberInfo.put("nickName", user.get().getNickName());
-		        		memberInfo.put("profile", fileService.myAuthImage(user.get().getProfile()));
-		        		memberInfo.put("grade", user.get().getGrade());
-		        		memberInfo.put("totalMissionSuccessCnt", memberMapper.missionCompletedCntAll(pageDto.getEmail()));
-		        		memberInfo.put("joinDate", differenceInDays);
-		        					        		
-		        		Map<String, String> data = new HashMap<String, String>();              
-		   		       
-		        		data.put("email", pageDto.getEmail());
-		 				 
-		 		        // 유저 미션 랭킹 가져오기
-		 				Map<String, String> missionRankingUser = memberMapper.OwnRanking(data);
-		 						 						 				
-		 				 // 미션 정보가 없으면 랭크 0 처리
-						 if(missionRankingUser == null) {
-							 missionRankingUser = new HashMap<String, String>();
-							 missionRankingUser.put("rank", "0");
-						 }
-		        				        		
-						 missionRankingUser.remove("email");
-						 
-		        	   	result.put("HttpStatus","2.00");		
-		      			result.put("Msg",Constants.SUCCESS);
-		      			result.put("userInfo",memberInfo); // 유저 정보
-		      			result.put("missionTotalList",challengeMapper.listTotalCnt(pageDto)); // 사용 안하는거 같음 
-		      			result.put("userChallengeList",userChallengeList); // 유저 게시글 리스트
-		      			result.put("ranking",missionRankingUser); // 유저 게시글 리스트
-		      			
-		       		 
-		      			log.info("첼린지 인증글 리스트 ------> " + Constants.SUCCESS);
-		           } else {
-		        	   log.info("첼린지 인증글 리스트 ------> " + "게시글이 없습니다.");
-		        	    result.put("HttpStatus","1.00");		
-		       			result.put("Msg","게시글이 없습니다.");
-		       			return result ;
-		           }
+		        	
+		        	 
+	        		for(int i = 0; i < userChallengeList.size(); i++) { 
+	        			String image = fileService.myAuthImage((String) userChallengeList.get(i).get("SUBMISSION_IMAGE"));
+	        				if(!image.equals("N")) {
+	        					userChallengeList.get(i).put("SUBMISSION_IMAGE", image);
+	        				}
+	        		}
+	        		
+	        		// 사용자의 가입 날짜 가져오기
+	        		Optional<MemberEntity> user = memberRepository.findById(pageDto.getEmail());		        			        		
+	        		
+	        		// 사용자의 가입일로부터 현재까지의 경과 일수를 계산
+	            	long differenceInDays =  DateTime.userJoinDate(user.get().getJoinDate());
+	            	
+	            	HashMap<String, Object> memberInfo = new HashMap<String, Object>();
+	            			        		
+	        		memberInfo.put("nickName", user.get().getNickName());
+	        		memberInfo.put("profile", fileService.myAuthImage(user.get().getProfile()));
+	        		memberInfo.put("grade", user.get().getGrade());
+	        		memberInfo.put("totalMissionSuccessCnt", memberMapper.missionCompletedCntAll(pageDto.getEmail()));
+	        		memberInfo.put("joinDate", differenceInDays);
+	        					        		
+	        		Map<String, String> data = new HashMap<String, String>();              
+	   		       
+	        		data.put("email", pageDto.getEmail());
+	 				 
+	 		        // 유저 미션 랭킹 가져오기
+	 				Map<String, String> missionRankingUser = memberMapper.OwnRanking(data);
+	 						 						 				
+	 				 // 미션 정보가 없으면 랭크 0 처리
+					 if(missionRankingUser == null) {
+						 missionRankingUser = new HashMap<String, String>();
+						 missionRankingUser.put("rank", "0");
+					 }
+	        				        		
+					 missionRankingUser.remove("email");
+					 
+	        	   	result.put("HttpStatus","2.00");		
+	      			result.put("Msg",Constants.SUCCESS);
+	      			result.put("userInfo",memberInfo); // 유저 정보
+	      			result.put("missionTotalList",challengeMapper.listTotalCnt(pageDto)); // 사용 안하는거 같음 
+	      			result.put("userChallengeList",userChallengeList); // 유저 게시글 리스트
+	      			result.put("ranking",missionRankingUser); // 유저 게시글 리스트
+	      			
+	       		 
+	      			log.info("첼린지 인증글 리스트 ------> " + Constants.SUCCESS);
+	           
+		        	
 		        	
 				} catch (Exception e) {
 					log.error("첼린지 인증글 리스트 ------> " + Constants.SYSTEM_ERROR , e);					
