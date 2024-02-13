@@ -643,7 +643,7 @@ public class MemberService {
 			Optional<MemberEntity> userExist = memberRepository.findById(memberDto.getEmail());
 				
 			if(!userExist.isPresent()) {
-				result.put("HttpStatus", "1.00");
+				result.put("HttpStatus", "1.02");
 		    	result.put("UserEmail", null);
 		    	result.put("Msg", "존재하지 않는 사용자입니다.");
 		    	return result ;
@@ -653,7 +653,7 @@ public class MemberService {
 			
 			// 소셜 가입자가 아닌 이메일 가입자가 소셜 로그인시 에러 반환
 			if(!member.getPassword().equals("X")) {
-				result.put("HttpStatus", "1.00");
+				result.put("HttpStatus", "1.01");
 		    	result.put("UserEmail", null);
 		    	result.put("Msg", "소셜 로그인 유저가 아닙니다.");
 		    	return result ;
