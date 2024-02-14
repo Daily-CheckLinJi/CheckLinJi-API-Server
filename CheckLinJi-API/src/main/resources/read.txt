@@ -1,28 +1,49 @@
-## 랭킹 집계 작업 
+-- 랭킹 집계 작업 
 
-	SELECT
-  		   MI.NICK_NAME
-  		  ,MI.EMAIL 
-  		  ,MI.PROFILE 
-  		  ,MI.GRADE   		  
-  		  ,IF(TIMESTAMPDIFF(DAY, DATE(MI.JOIN_DATE), NOW()) = 0, 1, TIMESTAMPDIFF(DAY, DATE(MI.JOIN_DATE), NOW()) + 1) AS joinDate  		  
-      	  ,IF(DATEDIFF(CURDATE(), MAX(SUBMISSION_DATE)) = 0, 30, 0) as daily_success // 하루 30점 
-		  ,IFNULL(SUM(DATEDIFF(CURDATE(), SUBMISSION_DATE) BETWEEN 1 AND 7), 0) * 4.3 as weekly_success // 하루당 4.3점 7일 시 30점 
-	      ,IFNULL(SUM(DATEDIFF(CURDATE(), SUBMISSION_DATE) BETWEEN 1 AND 31), 0) * 1 as monthly_success // 하루당 1점 31일시 31점
-	      ,IF(DATEDIFF(CURDATE(), MAX(SUBMISSION_DATE)) = 0, 30, 0) 	// 하루 + 주 + 월 합산      
-	       + IFNULL(SUM(DATEDIFF(CURDATE(), SUBMISSION_DATE) BETWEEN 1 AND 7), 0) * 4.3 
-     	   + IFNULL(SUM(DATEDIFF(CURDATE(), SUBMISSION_DATE) BETWEEN 1 AND 31), 0) * 1   	    	    
-	       as point 
-          ,ROW_NUMBER() OVER (ORDER BY 
-        IF(DATEDIFF(CURDATE(), MAX(SUBMISSION_DATE)) = 0, 30, 0) 
-        + IFNULL(SUM(DATEDIFF(CURDATE(), SUBMISSION_DATE) BETWEEN 1 AND 7), 0) * 4.3 
-        + IFNULL(SUM(DATEDIFF(CURDATE(), SUBMISSION_DATE) BETWEEN 1 AND 31), 0) * 1        
-        DESC
-    ) as rank
+	select
+	        ROW_NUMBER() OVER (ORDER BY 
+		    IF(DATEDIFF(CURDATE(), MAX(SUBMISSION_DATE)) = 0, 30, 0) 
+		    + IFNULL(SUM(DATEDIFF(CURDATE(), SUBMISSION_DATE) BETWEEN 1 AND 7), 0) * 4.3 
+		    + IFNULL(SUM(DATEDIFF(CURDATE(), SUBMISSION_DATE) BETWEEN 1 AND 31), 0) * 1        
+		    DESC
+			) as rank
+		  ,MI.EMAIL		      	  
+  		  ,MI.NICK_NAME  		  		  
+  		  ,COUNT(*) AS success_cnt  		  		  
+		  ,IF(DATEDIFF(CURDATE(), MAX(SUBMISSION_DATE)) = 0, 30, 0) 	-- 하루 + 주 + 월 합산      
+	      	+ IFNULL(SUM(DATEDIFF(CURDATE(), SUBMISSION_DATE) BETWEEN 1 AND 7), 0) * 4.3 
+   			+ IFNULL(SUM(DATEDIFF(CURDATE(), SUBMISSION_DATE) BETWEEN 1 AND 31), 0) * 1
+	 	   	+ ROUND((RANK () OVER (ORDER BY success_cnt) / COUNT(*) OVER ()) * 100) / 10
+	       	as point 
+  		  ,ROUND((RANK () OVER (ORDER BY success_cnt) / COUNT(*) OVER ()) * 100) / 10 AS '누적 성공' -- 1등을 기준으로 백분율 / 10 (누적 성공률은 최대 10점이라 / 10 )  		     		     		     		    		  
+      	  ,IF(DATEDIFF(CURDATE(), MAX(SUBMISSION_DATE)) = 0, 30, 0) as '일일 성공' -- 하루 30점 
+		  ,IFNULL(SUM(DATEDIFF(CURDATE(), SUBMISSION_DATE) BETWEEN 1 AND 7), 0) * 4.3 as '주간 성공 '-- 하루당 4.3점 7일 시 30점 
+	      ,IFNULL(SUM(DATEDIFF(CURDATE(), SUBMISSION_DATE) BETWEEN 1 AND 31), 0) * 1 as '월 성공' -- 하루당 1점 31일시 31점
 	FROM
     	CHALLENGE_SUBMISSION CS
     JOIN USER_CHALLENGE UC ON CS.USER_CHALLENGE_ID = UC.USER_CHALLENGE_ID
     JOIN MEMBER_INFO MI ON UC.EMAIL = MI.EMAIL 		
 	GROUP BY
-    	CS.USER_CHALLENGE_ID
-    order by RANK ; 
+    	UC.EMAIL    	
+    order by RANK ;
+    
+    
+-- 누적 성공률 집계 작업 (1등 10점 나머지 1등 기준 백분율 / 10 )
+
+  SELECT 	 
+	    RANK,  -- 순위     
+	    Score_Percent, -- 1등을 기준으로 백분율  
+	 	Score_Percent / 10 as SCORE , -- 1등이 최대 10점이라 백분율한 값에서 / 10   
+	    SUBMISSION_COUNT,
+	    NICK_NAME  	
+FROM (
+    SELECT
+        RANK() OVER (ORDER BY COUNT(*) DESC) AS RANK,
+        COUNT(*) AS SUBMISSION_COUNT,
+        NICK_NAME,        
+        ROUND((RANK() OVER (ORDER BY SUBMISSION_COUNT) / COUNT(*) OVER ()) * 100) / 10 AS Score_Percent -- 1등을 기준으로 백분율          
+    FROM CHALLENGE_SUBMISSION CS 
+     JOIN USER_CHALLENGE UC ON CS.USER_CHALLENGE_ID = UC.USER_CHALLENGE_ID
+    GROUP BY CS.USER_CHALLENGE_ID
+) AS ranked_data
+ORDER BY RANK;

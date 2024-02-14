@@ -50,27 +50,51 @@
 	<!-- 랭킹 업데이트 -->
 	<update id="insertRankingTop" >
 		INSERT INTO RANKING_TOP
-		   select
-		            ROW_NUMBER() OVER (ORDER BY 
-			        IF(DATEDIFF(CURDATE(), MAX(SUBMISSION_DATE)) = 0, 30, 0) 
-			        + IFNULL(SUM(DATEDIFF(CURDATE(), SUBMISSION_DATE) BETWEEN 1 AND 7), 0) * 4.3 
-			        + IFNULL(SUM(DATEDIFF(CURDATE(), SUBMISSION_DATE) BETWEEN 1 AND 31), 0) * 1        
-			        DESC
-			    	) as rank
-		    	  , MI.EMAIL 
-		    	  , MI.GRADE   	
-		    	  , IF(TIMESTAMPDIFF(DAY, DATE(MI.JOIN_DATE), NOW()) = 0, 1, TIMESTAMPDIFF(DAY, DATE(MI.JOIN_DATE), NOW()) + 1) AS join_date 
-		  		  , MI.nick_name
-		  		  , MI.PROFILE   		  
-		  		  , COUNT(*) AS success_cnt  	
-		  		  , NOW() as update_date
-		  		  , UC.user_challenge_id as user_seq  		  
-			FROM
-		    	CHALLENGE_SUBMISSION CS
-		    JOIN USER_CHALLENGE UC ON CS.USER_CHALLENGE_ID = UC.USER_CHALLENGE_ID
-		    JOIN MEMBER_INFO MI ON UC.EMAIL = MI.EMAIL 		
-			GROUP BY
-		    	UC.EMAIL ;
+				SELECT 
+				 rank
+				,EMAIL
+				,GRADE
+				,join_date
+				,nick_name
+				,PROFILE
+				,success_cnt
+				,update_date
+				,user_seq
+			from
+			 	(   
+				select
+				        ROW_NUMBER() OVER (ORDER BY 
+					    IF(DATEDIFF(CURDATE(), MAX(SUBMISSION_DATE)) = 0, 30, 0) 
+					    + IFNULL(SUM(DATEDIFF(CURDATE(), SUBMISSION_DATE) BETWEEN 1 AND 7), 0) * 4.3 
+					    + IFNULL(SUM(DATEDIFF(CURDATE(), SUBMISSION_DATE) BETWEEN 1 AND 31), 0) * 1        
+					    DESC
+						) as rank
+					  ,MI.EMAIL
+					  ,MI.GRADE
+			    	  ,IF(TIMESTAMPDIFF(DAY, DATE(MI.JOIN_DATE), NOW()) = 0, 1, TIMESTAMPDIFF(DAY, DATE(MI.JOIN_DATE), NOW()) + 1) AS join_date 		  
+			  		  ,MI.NICK_NAME  		  
+					  ,MI.PROFILE
+			  		  ,COUNT(*) AS success_cnt
+			  		  ,NOW() as update_date
+					  ,UC.user_challenge_id as user_seq
+					  ,IF(DATEDIFF(CURDATE(), MAX(SUBMISSION_DATE)) = 0, 30, 0)      
+				      	+ IFNULL(SUM(DATEDIFF(CURDATE(), SUBMISSION_DATE) BETWEEN 1 AND 7), 0) * 4.3 
+			   			+ IFNULL(SUM(DATEDIFF(CURDATE(), SUBMISSION_DATE) BETWEEN 1 AND 31), 0) * 1
+				 	   	+ ROUND((RANK () OVER (ORDER BY success_cnt) / COUNT(*) OVER ()) * 100) / 10
+				       	as point 
+			  		  ,ROUND((RANK () OVER (ORDER BY success_cnt) / COUNT(*) OVER ()) * 100) / 10 AS Score_Percent   		     		     		     		  
+			  		  ,IF(TIMESTAMPDIFF(DAY, DATE(MI.JOIN_DATE), NOW()) = 0, 1, TIMESTAMPDIFF(DAY, DATE(MI.JOIN_DATE), NOW()) + 1) AS joinDate  		  
+			      	  ,IF(DATEDIFF(CURDATE(), MAX(SUBMISSION_DATE)) = 0, 30, 0) as daily_success  
+					  ,IFNULL(SUM(DATEDIFF(CURDATE(), SUBMISSION_DATE) BETWEEN 1 AND 7), 0) * 4.3 as weekly_success  
+				      ,IFNULL(SUM(DATEDIFF(CURDATE(), SUBMISSION_DATE) BETWEEN 1 AND 31), 0) * 1 as monthly_success 
+				FROM
+			    	CHALLENGE_SUBMISSION CS
+			    JOIN USER_CHALLENGE UC ON CS.USER_CHALLENGE_ID = UC.USER_CHALLENGE_ID
+			    JOIN MEMBER_INFO MI ON UC.EMAIL = MI.EMAIL 		
+				GROUP BY
+			    	UC.EMAIL
+			    	) sub
+			    order by RANK					    	
 	</update>
 	
 	<!-- 실시간 랭킹 TOP 3 삭제 -->

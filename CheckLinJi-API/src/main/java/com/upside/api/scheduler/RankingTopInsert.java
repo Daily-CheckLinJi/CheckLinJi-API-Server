@@ -29,7 +29,7 @@ public class RankingTopInsert  {
 			   
 			   int result = memberMapper.insertRankingTop();
 		  	
-			   log.info("랭킹 스케쥴러 종료 ------> " + result);
+			   log.info("랭킹 스케쥴러 성공 ------> " + result);
 			   
 				} catch (Exception e) {
 					log.error("랭킹 스케쥴러 에러 ------> " + LocalDate.now() , e);					

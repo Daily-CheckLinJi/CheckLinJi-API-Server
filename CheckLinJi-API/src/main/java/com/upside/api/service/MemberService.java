@@ -642,6 +642,7 @@ public class MemberService {
 			// 유저가 존재하는지 확인
 			Optional<MemberEntity> userExist = memberRepository.findById(memberDto.getEmail());
 				
+			// 사용자 정보가 없으면 에러 반환
 			if(!userExist.isPresent()) {
 				result.put("HttpStatus", "1.02");
 		    	result.put("UserEmail", null);
