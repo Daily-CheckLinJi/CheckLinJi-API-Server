@@ -3,15 +3,18 @@ package com.upside.api.controller;
 
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.upside.api.config.JwtTokenProvider;
@@ -216,6 +219,49 @@ public class ChallengeController {
 				return new ResponseEntity<>(result,HttpStatus.BAD_REQUEST);
 			} 
 						
-		}			
+		}
 		
+		/**
+		 * 첼린지 인증글 리스트
+		 * @param pageDto
+		 * @return
+		 */
+		@PostMapping("/test") 
+		public ResponseEntity<Map<String, Object>> viewChallengeListTest (@RequestBody PageDto pageDto) {
+					 						
+			Map<String, Object> result = challengeSerivce.viewChallengeListTest(pageDto);
+					
+			if (result.get("HttpStatus").equals("2.00")) { // 성공			
+				return new ResponseEntity<>(result,HttpStatus.OK);					
+			} else {			
+				
+				return new ResponseEntity<>(result,HttpStatus.BAD_REQUEST);
+			} 
+						
+		}		
+		
+		/**
+		 * 첼린지 인증글 리스트
+		 * @param pageDto
+		 * @return
+		 */
+		@PostMapping("/subImage")		
+		public ResponseEntity<byte[]> subImage (@RequestBody ChallengeSubmissionDto challengeSubmissionDto) {
+					 						
+			   try {
+		            // 이미지를 읽어옴
+		            Path imagePath = Paths.get(challengeSubmissionDto.getSubmissionImageRoute());
+		            byte[] imageData = Files.readAllBytes(imagePath);
+
+		            // 이미지의 Content-Type 설정
+//		            HttpHeaders headers = new HttpHeaders();
+//		            headers.setContentType(MediaType.IMAGE_JPEG);
+
+		            // ResponseEntity로 이미지 데이터와 헤더를 포함한 응답
+		            return new ResponseEntity<>(imageData, HttpStatus.OK);
+		        } catch (IOException e) {
+		            e.printStackTrace();
+		            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		        }
+		    }
 }

@@ -85,10 +85,8 @@ public class ChallengeService {
 		        	// 리스트 사이즈만큼 돌면서 DB에 저장된 이미지 경로로 이미지를 base64로 인코딩해서 값 덮어씌우기
 		        	if (viewChallengeList.size() != 0 ) { 
 		        		for(int i = 0; i < viewChallengeList.size(); i++) { 
-		        			String image = fileService.myAuthImage((String) viewChallengeList.get(i).get("SUBMISSION_IMAGE"));
-		        				if(!image.equals("N")) {
-		        					viewChallengeList.get(i).put("SUBMISSION_IMAGE", image);
-		        				}
+		        			String image = fileService.myAuthImage((String) viewChallengeList.get(i).get("SUBMISSION_IMAGE"));	       			
+		        			viewChallengeList.get(i).put("SUBMISSION_IMAGE", image);
 		        		}
 		        		
 		        	 	log.info("첼린지 인증글 리스트 ------> " + Constants.SUCCESS);
@@ -554,6 +552,57 @@ public class ChallengeService {
 		        	
 				} catch (Exception e) {
 					log.error("사람들이 많이 구경하는 첵린저 리스트 ------> " + Constants.SYSTEM_ERROR , e);					
+		    	    result.put("HttpStatus","1.00");		
+		   			result.put("Msg",Constants.SYSTEM_ERROR);		   			
+		   		 return result ;			
+				}               		 
+			  return result ;					 	    		   
+	}	
+			
+	
+	 /**
+		 * 첼린지 인증글 리스트
+		 * @param memberDto
+		 * @param challengeDto
+		 * @return
+		 */
+		@Transactional // 트랜잭션 안에서 entity를 조회해야 영속성 상태로 조회가 되고 값을 변경해면 변경 감지(dirty checking)가 일어난다.
+		public Map<String, Object> viewChallengeListTest (PageDto pageDto) {
+			Map<String, Object> result = new HashMap<String, Object>();
+			
+			log.info("첼린지 인증글 리스트 ------> " + "Start");
+									 						 					
+			  try {
+				  
+					if(pageDto.getTag() != null) {
+						pageDto.setTagList(Arrays.asList(pageDto.getTag().split("\\|")));  // hashTag | 기준으로 잘라서 리스트에 넣기
+					}
+				  	
+					// 첼린지 인증글 리스트 가져오기
+		        	ArrayList<Map<String, Object>> viewChallengeList = challengeMapper.viewChallengeList(pageDto);
+		        	        	        	
+		        	// 리스트 사이즈만큼 돌면서 DB에 저장된 이미지 경로로 이미지를 base64로 인코딩해서 값 덮어씌우기
+		        	if (viewChallengeList.size() != 0 ) { 
+		        		for(int i = 0; i < viewChallengeList.size(); i++) { 
+		        			String image = (String) viewChallengeList.get(i).get("SUBMISSION_IMAGE");		        			
+		        			viewChallengeList.get(i).put("SUBMISSION_IMAGE", image);
+		        		}
+		        		
+		        	 	log.info("첼린지 인증글 리스트 ------> " + Constants.SUCCESS);
+		        	   	result.put("HttpStatus","2.00");		
+		      			result.put("Msg",Constants.SUCCESS);
+		      			result.put("totalCount",challengeMapper.listTotalCnt(pageDto));
+		      			result.put("viewChallengeList",viewChallengeList);		        		
+		       		 
+		           } else {
+		        	   log.info("첼린지 인증글 리스트 ------> " + "게시글이 없습니다.");
+		        	    result.put("HttpStatus","1.00");		
+		       			result.put("Msg","게시글이 없습니다.");
+		       			return result ;
+		           }
+		        	
+				} catch (Exception e) {
+					log.error("첼린지 인증글 리스트 ------> " + Constants.SYSTEM_ERROR , e);					
 		    	    result.put("HttpStatus","1.00");		
 		   			result.put("Msg",Constants.SYSTEM_ERROR);		   			
 		   		 return result ;			

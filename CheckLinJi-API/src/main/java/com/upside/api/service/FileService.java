@@ -15,8 +15,12 @@ import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 import java.util.Base64;
 
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.upside.api.util.Constants;
 
@@ -145,7 +149,7 @@ public class FileService {
         byte[] fileContent = Files.readAllBytes(Paths.get(filePath));
         
         // Base64 인코딩
-        encoded = Base64.getEncoder().encodeToString(fileContent);
+        encoded = Base64.getEncoder().encodeToString(fileContent);                               
          
         log.info("저장된 파일을 Base64로 인코딩  ------> " + "성공");
 		
@@ -155,6 +159,31 @@ public class FileService {
 		}		
 		 return encoded ;				 	 	    			    		   
 	}
+	
+	/**
+	 * 저장된 파일을 Base64로 인코딩해서 클라이언트에게 응답 ( base64로 인코딩해야 용량이 줄어듬 | 프론트 측은 base64를 디코딩해서 사용자에게 표출 ) 
+	 * @param fileUploadDto
+	 * @return
+	 */
+	public byte[] myAuthImages(String fileRoute) {
+		
+		log.info("저장된 파일경로  ------> " + fileRoute);
+				
+		byte[] fileContent = null ;
+				         		
+		try {		        		
+										
+//	        // 파일을 바이트 배열로 읽어옴
+	        fileContent = Files.readAllBytes(Paths.get(fileRoute));	        	        
+
+	        log.info("저장된 파일 전달  ------> " + "성공");
+		
+		} catch (IOException e) {			
+			fileContent = null ;
+			log.error("저장된 파일 전달  ------> " + Constants.SYSTEM_ERROR , e);			
+		}		
+		 return fileContent ;				 	 	    			    		   
+	}	
 	
 	/**
 	 * 파일 삭제 ( 프로필 , 인증사진 등 )
