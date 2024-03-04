@@ -8,25 +8,30 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.upside.api.config.JwtTokenProvider;
 import com.upside.api.dto.ChallengeSubmissionDto;
 import com.upside.api.dto.PageDto;
 import com.upside.api.service.ChallengeService;
+import com.upside.api.util.Utill;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/challenge")
+@Slf4j // 로깅에 대한 추상 레이어를 제공하는 인터페이스의 모음.
 public class ChallengeController {
 	
 	private final ChallengeService challengeSerivce ;
@@ -42,8 +47,8 @@ public class ChallengeController {
 	 */
 	@PostMapping("/list") 
 	public ResponseEntity<Map<String, Object>> viewChallengeList (@RequestBody PageDto pageDto) {
-				 						
-		Map<String, Object> result = challengeSerivce.viewChallengeList(pageDto);
+			
+		Map<String, Object> result = challengeSerivce.viewChallengeListTest(pageDto);
 				
 		if (result.get("HttpStatus").equals("2.00")) { // 성공			
 			return new ResponseEntity<>(result,HttpStatus.OK);					
@@ -245,23 +250,26 @@ public class ChallengeController {
 		 * @param pageDto
 		 * @return
 		 */
-		@PostMapping("/subImage")		
-		public ResponseEntity<byte[]> subImage (@RequestBody ChallengeSubmissionDto challengeSubmissionDto) {
-					 						
+		@GetMapping("/subImage")		
+		public ResponseEntity<byte[]> subImage (@RequestParam String imageRoute) {
+					 	
 			   try {
+				   
+				    log.info("파일 다운로드 Start ------- > " + imageRoute);
+					        	
 		            // 이미지를 읽어옴
-		            Path imagePath = Paths.get(challengeSubmissionDto.getSubmissionImageRoute());
+		            Path imagePath = Paths.get(imageRoute);
 		            byte[] imageData = Files.readAllBytes(imagePath);
-
-		            // 이미지의 Content-Type 설정
-//		            HttpHeaders headers = new HttpHeaders();
-//		            headers.setContentType(MediaType.IMAGE_JPEG);
-
+		            
+		            // 헤더 이미지 타입 
+		            HttpHeaders headers = Utill.getFileExtension(imagePath);
+		            
 		            // ResponseEntity로 이미지 데이터와 헤더를 포함한 응답
-		            return new ResponseEntity<>(imageData, HttpStatus.OK);
+		            return new ResponseEntity<>(imageData,headers,HttpStatus.OK);
 		        } catch (IOException e) {
-		            e.printStackTrace();
+		        	log.error("파일 다운로드 Error ------- > ",e);
 		            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		        }
 		    }
+		
 }

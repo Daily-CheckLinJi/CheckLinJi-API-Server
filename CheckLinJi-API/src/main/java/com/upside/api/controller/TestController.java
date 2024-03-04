@@ -30,18 +30,18 @@ public class TestController {
         return "Login2";
     }
     
-    @GetMapping("/getImageUrl")
-    public ResponseEntity<Map<String, String>> getImageUrl() {
-    	
-    	Map<String, String> result = new HashMap<String, String>();
-    	
-    	// 이미지 파일의 경로를 가져옴
-        String imageUrl = Utill.getImagePath("profile/M-1.png").toString();
-    	
-    	result.put("image", imageUrl);
-    	                
-    	return new ResponseEntity<>(result,HttpStatus.OK);				
-    }
+//    @GetMapping("/getImageUrl")
+//    public ResponseEntity<Map<String, String>> getImageUrl() {
+//    	
+//    	Map<String, String> result = new HashMap<String, String>();
+//    	
+//    	// 이미지 파일의 경로를 가져옴
+//        String imageUrl = Utill.getImagePath("profile/M-1.png").toString();
+//    	
+//    	result.put("image", imageUrl);
+//    	                
+//    	return new ResponseEntity<>(result,HttpStatus.OK);				
+//    }
     
     // 카카오 로그인 페이지 테스트
     @PostMapping("/xsss")

@@ -368,8 +368,7 @@ public class ChallengeService {
         String submissionTime = time.format(timeFormatter);
 	    
 	    try {
-			
-		    			
+					    			
 			// 해당 유저가 있는지 확인
 			Optional<MemberEntity> existsMember = memberRepository.findById(userEmail);
 												

@@ -40,7 +40,8 @@ public class SecurityConfig {
         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS); // jwt로 인증하므로 세션 미사용        
         http.authorizeHttpRequests() // HTTP 요청에 대한 인가 규칙을 설정        		
         		.requestMatchers("/api/members/sign/**").permitAll()  // login 없이 접근 허용 하는 URL
-        		.requestMatchers("/api/members/login/**").permitAll()        		       	
+        		.requestMatchers("/api/members/login/**").permitAll()
+        		.requestMatchers("/api/challenge/subImage/**").permitAll()
         		.requestMatchers("/api/members/validateDuplicated/**").permitAll()
         		.requestMatchers("/api/members/changePasswordMail/**").permitAll()
         		.requestMatchers("/api/social/sign/**").permitAll()
