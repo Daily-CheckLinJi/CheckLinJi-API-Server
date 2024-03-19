@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,6 +47,9 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class ChallengeService {
 		
+	
+	 @Value("${file.url}")
+	 private String fileUrl; 
 	 
 	 private final UserChallengeRepository userChallengeRepository;
 	 private final MemberRepository memberRepository;
@@ -85,7 +89,7 @@ public class ChallengeService {
 		        	// 리스트 사이즈만큼 돌면서 DB에 저장된 이미지 경로로 이미지를 base64로 인코딩해서 값 덮어씌우기
 		        	if (viewChallengeList.size() != 0 ) { 
 		        		for(int i = 0; i < viewChallengeList.size(); i++) { 
-		        			String image = fileService.myAuthImage((String) viewChallengeList.get(i).get("SUBMISSION_IMAGE"));	       			
+		        			String image = fileUrl + (String) viewChallengeList.get(i).get("SUBMISSION_IMAGE");	       			
 		        			viewChallengeList.get(i).put("SUBMISSION_IMAGE", image);
 		        		}
 		        		
@@ -138,10 +142,9 @@ public class ChallengeService {
 		        	
 		        	 
 	        		for(int i = 0; i < userChallengeList.size(); i++) { 
-	        			String image = fileService.myAuthImage((String) userChallengeList.get(i).get("SUBMISSION_IMAGE"));
-	        				if(!image.equals("N")) {
-	        					userChallengeList.get(i).put("SUBMISSION_IMAGE", image);
-	        				}
+	        			String image = fileUrl + (String) userChallengeList.get(i).get("SUBMISSION_IMAGE");	        				
+    					userChallengeList.get(i).put("SUBMISSION_IMAGE", image);
+	        				
 	        		}
 	        		
 	        		// 사용자의 가입 날짜 가져오기
@@ -153,7 +156,7 @@ public class ChallengeService {
 	            	HashMap<String, Object> memberInfo = new HashMap<String, Object>();
 	            			        		
 	        		memberInfo.put("nickName", user.get().getNickName());
-	        		memberInfo.put("profile", fileService.myAuthImage(user.get().getProfile()));
+	        		memberInfo.put("profile", fileUrl + user.get().getProfile());
 	        		memberInfo.put("grade", user.get().getGrade());
 	        		memberInfo.put("totalMissionSuccessCnt", memberMapper.missionCompletedCntAll(pageDto.getEmail()));
 	        		memberInfo.put("joinDate", differenceInDays);
@@ -170,7 +173,7 @@ public class ChallengeService {
 						 missionRankingUser = new HashMap<String, String>();
 						 missionRankingUser.put("rank", "0");
 					 }
-	        				        		
+					 missionRankingUser.put("profile", fileUrl + missionRankingUser.get("profile"));
 					 missionRankingUser.remove("email");
 					 
 	        	   	result.put("HttpStatus","2.00");		
@@ -215,12 +218,8 @@ public class ChallengeService {
 				   					   
 				    // 리스트 사이즈만큼 돌면서 DB에 저장된 이미지 경로로 이미지를 base64로 인코딩해서 값 덮어씌우기
 		        	if (submissionDetail.size() != 0 ) { 		        	
-		        		String image = fileService.myAuthImage(submissionDetail.get("SUBMISSION_IMAGE_ROUTE"));
-		        		if(image.equals("N")) {
-		        			submissionDetail.put("SUBMISSION_IMAGE_ROUTE", "파일을 표시할 수 없습니다...");
-		        		}else {
-		        			submissionDetail.put("SUBMISSION_IMAGE_ROUTE", image);
-		        		}
+		        		String image = fileUrl + submissionDetail.get("SUBMISSION_IMAGE_ROUTE");
+		        		submissionDetail.put("SUBMISSION_IMAGE_ROUTE", image);		        
 		        		
 		        		// 좋아요 갯수 가져오기
 		        		int likesCount = challengeMapper.likesCount(submissionDto);
@@ -228,7 +227,7 @@ public class ChallengeService {
 		        		
 		        		// 댓글 가져오기
 		        		for(int i = 0 ; i < commentList.size(); i++) {
-		        			 commentList.get(i).put("PROFILE", fileService.myAuthImage((String) commentList.get(i).get("PROFILE")));		        			
+		        			 commentList.get(i).put("PROFILE", fileUrl + (String) commentList.get(i).get("PROFILE"));		        			
 		        		}
 		        				        		
 		        		// 게시글 신고 유무
@@ -531,7 +530,7 @@ public class ChallengeService {
 		        	// 리스트 사이즈만큼 돌면서 DB에 저장된 이미지 경로로 이미지를 base64로 인코딩해서 값 덮어씌우기
 		        	if (viewCheckRinger.size() != 0 ) { 
 		        		for(int i = 0; i < viewCheckRinger.size(); i++) { 
-		        			String image = fileService.myAuthImage((String) viewCheckRinger.get(i).get("PROFILE"));
+		        			String image = fileUrl + (String) viewCheckRinger.get(i).get("PROFILE");
 		        				if(!image.equals("N")) {
 		        					viewCheckRinger.get(i).put("PROFILE", image);
 		        				}
@@ -583,7 +582,7 @@ public class ChallengeService {
 		        	// 리스트 사이즈만큼 돌면서 DB에 저장된 이미지 경로로 이미지를 base64로 인코딩해서 값 덮어씌우기
 		        	if (viewChallengeList.size() != 0 ) { 
 		        		for(int i = 0; i < viewChallengeList.size(); i++) { 
-		        			String image = (String) viewChallengeList.get(i).get("SUBMISSION_IMAGE");		        			
+		        			String image = fileUrl + (String) viewChallengeList.get(i).get("SUBMISSION_IMAGE");		        			
 		        			viewChallengeList.get(i).put("SUBMISSION_IMAGE", image);
 		        		}
 		        		

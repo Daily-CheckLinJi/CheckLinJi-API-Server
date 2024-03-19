@@ -15,12 +15,8 @@ import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 import java.util.Base64;
 
-import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import com.upside.api.util.Constants;
 
@@ -36,7 +32,8 @@ import lombok.extern.slf4j.Slf4j;
 public class FileService {
 		
 	
-	 
+	 @Value("${file.route}")
+	 private String fileRoute; 
 	
 	 @Value("${file.upload-dir}")
 	 private String uploadDir;
@@ -74,7 +71,7 @@ public class FileService {
 		  	    
 		  	    Files.write(filePath, decodedData, StandardOpenOption.CREATE_NEW); // 새로운 파일 생성
 
-		  	    result = filePath.toString(); // DB에 저장될 경로
+		  	    result = "image/"+fileName; // DB에 저장될 경로
 
 		  	    return result;
 		  	} catch (Exception e) {
@@ -119,7 +116,7 @@ public class FileService {
 	  	  	Files.write(filePath, decodedData, StandardOpenOption.CREATE_NEW); // 새로운 파일 생성
 	        
 	        // 반환 값 저장경로 스트링으로 변환 
-	  	  	result = filePath.toString(); // DB에 저장될 경로	        	      
+	  	  	result = "image/profile/"+fileName; // DB에 저장될 경로   	      
 	        	        
 		    return result;
 		        
@@ -159,47 +156,24 @@ public class FileService {
 		}		
 		 return encoded ;				 	 	    			    		   
 	}
-	
-	/**
-	 * 저장된 파일을 Base64로 인코딩해서 클라이언트에게 응답 ( base64로 인코딩해야 용량이 줄어듬 | 프론트 측은 base64를 디코딩해서 사용자에게 표출 ) 
-	 * @param fileUploadDto
-	 * @return
-	 */
-	public byte[] myAuthImages(String fileRoute) {
-		
-		log.info("저장된 파일경로  ------> " + fileRoute);
-				
-		byte[] fileContent = null ;
-				         		
-		try {		        		
-										
-//	        // 파일을 바이트 배열로 읽어옴
-	        fileContent = Files.readAllBytes(Paths.get(fileRoute));	        	        
 
-	        log.info("저장된 파일 전달  ------> " + "성공");
-		
-		} catch (IOException e) {			
-			fileContent = null ;
-			log.error("저장된 파일 전달  ------> " + Constants.SYSTEM_ERROR , e);			
-		}		
-		 return fileContent ;				 	 	    			    		   
-	}	
-	
 	/**
 	 * 파일 삭제 ( 프로필 , 인증사진 등 )
 	 * @param fileUploadDto
 	 * @return
 	 */
-	public boolean deleteFile (String fileRoute) {
+	public boolean deleteFile (String files) {
 		
-		log.info("파일 삭제 ------> " + fileRoute);
+		String fileRoutes = fileRoute + files;
+		
+		log.info("파일 삭제 ------> " + fileRoutes);
 		
 		
 		boolean result = false ;
 		try {		        			
 		
 			// 삭제할 파일의 경로나 식별자
-			String filePath = fileRoute ;
+			String filePath = fileRoutes ;
 			// 파일 객체 생성
 			File file = new File(filePath);
 			// 파일이 존재하는 경우 삭제

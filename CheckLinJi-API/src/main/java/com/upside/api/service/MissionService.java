@@ -13,6 +13,7 @@ import java.util.Optional;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -39,6 +40,8 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class MissionService {
 		
+	@Value("${file.url}")
+	private String fileUrl; 
 	
 	private final MemberMapper memberMapper ;
 	
@@ -156,18 +159,18 @@ public class MissionService {
 	
 	       
 	       for(int i =0; i < missionRankingTop.size(); i++) {    	   
-	    	   missionRankingTop.get(i).put("profile",fileService.myAuthImage((String) missionRankingTop.get(i).get("profile")));
+	    	   missionRankingTop.get(i).put("profile", fileUrl + (String) missionRankingTop.get(i).get("profile"));
 	       }
 	       
 	       result.put("HttpStatus","2.00");		
 		   result.put("Msg",Constants.SUCCESS);
 		   result.put("missionRankingTop",missionRankingTop);
 		   if (missionRankingOwn != null ) {
-			   missionRankingOwn.put("profile",fileService.myAuthImage((String) missionRankingOwn.get("profile")));
+			   missionRankingOwn.put("profile",fileUrl + (String) missionRankingOwn.get("profile"));
 	    	   result.put("missionRankingOwn",missionRankingOwn);
 	       }else {
 	    	   Map<String, String> missionRankingOwnInfo = memberMapper.missionRankingOwnInfo(data);
-	    	   missionRankingOwnInfo.put("profile",fileService.myAuthImage((String) missionRankingOwnInfo.get("profile")));
+	    	   missionRankingOwnInfo.put("profile",fileUrl + (String) missionRankingOwnInfo.get("profile"));
 	    	   missionRankingOwnInfo.put("ranking","0");
 	    	   result.put("missionRankingOwn",missionRankingOwnInfo);
 	       }
@@ -248,13 +251,13 @@ public class MissionService {
         	
         	ArrayList<Map<String, Object>> missionComment = memberMapper.missionComment(challengeSubmissionDto);
 		    	for(int i = 0 ; i < missionComment.size(); i++) {
-		    		missionComment.get(i).put("PROFILE", fileService.myAuthImage((String) missionComment.get(i).get("PROFILE")));		        			
+		    		missionComment.get(i).put("PROFILE", fileUrl + (String) missionComment.get(i).get("PROFILE"));		        			
 		    	}
         	
         	ArrayList<Map<String, Object>> missionLikes = memberMapper.missionLikes(challengeSubmissionDto);
         	
 	        	for(int i = 0 ; i < missionLikes.size(); i++) {
-	        		missionLikes.get(i).put("PROFILE", fileService.myAuthImage((String) missionLikes.get(i).get("PROFILE")));		        			
+	        		missionLikes.get(i).put("PROFILE", fileUrl + (String) missionLikes.get(i).get("PROFILE"));		        			
 		    	}
         	
         	ArrayList<Map<String, Object>> missionHashTag = memberMapper.missionHashTag(challengeSubmissionDto);
@@ -286,8 +289,8 @@ public class MissionService {
 			    String profileImageRoute = (String) jsonObject.get("PROFILE");
 			    
 			    // Base64로 인코딩된 이미지 파일 문자열로 가져옴
-			    String missionImage = fileService.myAuthImage(missionImageRoute);
-			    String profileImage = fileService.myAuthImage(profileImageRoute);
+			    String missionImage = fileUrl + missionImageRoute;
+			    String profileImage = fileUrl + profileImageRoute;
         	   
 			    if(missionImage.equals("N")) {
 			    	log.info("본인 미션 상세보기 ------> " + "이미지를 표시할 수 없습니다.");

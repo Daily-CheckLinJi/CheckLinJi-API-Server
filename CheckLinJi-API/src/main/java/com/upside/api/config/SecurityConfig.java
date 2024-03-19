@@ -24,11 +24,11 @@ public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
     
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-     // antMatchers 부분도 deprecated 되어 requestMatchers로 대체
-        return (web) -> web.ignoring().requestMatchers("/css/**", "/js/**", "/img/**");
-    }
+//    @Bean
+//    public WebSecurityCustomizer webSecurityCustomizer() {
+//     // antMatchers 부분도 deprecated 되어 requestMatchers로 대체
+//        return (web) -> web.ignoring().requestMatchers("/css/**", "/js/**", "/img/**");
+//    }
     
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -38,7 +38,9 @@ public class SecurityConfig {
         .httpBasic().disable() // 기본 인증창(rest api이므로 기본설정 미사용)        
         .formLogin().disable() // rest api 폼 로그인 인증 방식을 비활성화
         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS); // jwt로 인증하므로 세션 미사용        
-        http.authorizeHttpRequests() // HTTP 요청에 대한 인가 규칙을 설정        		
+        http.authorizeHttpRequests() // HTTP 요청에 대한 인가 규칙을 설정
+        		.requestMatchers("/image/**").permitAll()  // login 없이 접근 허용 하는 URL
+//        		.requestMatchers("/image/profile/**").permitAll()  // login 없이 접근 허용 하는 URL        		        		        		
         		.requestMatchers("/api/members/sign/**").permitAll()  // login 없이 접근 허용 하는 URL
         		.requestMatchers("/api/members/login/**").permitAll()
         		.requestMatchers("/api/challenge/subImage/**").permitAll()

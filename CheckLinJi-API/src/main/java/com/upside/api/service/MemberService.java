@@ -44,11 +44,11 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Service
 public class MemberService {
+		 	
 	
-	@Value("${file.upload-dir}")
-	private String uploadDir;
-	 	
-			
+	@Value("${file.url}")
+	private String fileUrl; 			
+	
 	private final JwtTokenProvider jwtTokenProvider;		
 	private final PasswordEncoder passwordEncoder;	
 	private final MemberMapper memberMapper ;
@@ -103,7 +103,7 @@ public class MemberService {
 				 }
 				 
 				 // 저장된 파일을 Base64로 인코딩
-				 String file = fileService.myAuthImage(userInfo.get().getProfile());
+				 String file = fileUrl + userInfo.get().getProfile();
 				 
 				 userInfo.get().setPassword(""); // 조회시 패스워드는 공백 처리
 				 userInfo.get().setProfile(file); // 프로필은 base64로 인코딩해서 넘겨줌
@@ -202,7 +202,7 @@ public class MemberService {
 					.loginDate(today.format(new Date()))
 					.joinDate(today.format(new Date()))
 					.authority("user")
-					.profile(uploadDir + "/" + "profile" + "/" + profileName) // 문자열에서 백슬래시()는 이스케이프 문자(escape character)로 사용되기 때문에 사용할려면 \\ 두개로 해야 \로 인식
+					.profile("image" + "/" + "profile" + "/" + profileName) // 문자열에서 백슬래시()는 이스케이프 문자(escape character)로 사용되기 때문에 사용할려면 \\ 두개로 해야 \로 인식
 					.fcmToken(memberDto.getFcmToken())
 					.grade("책갈피")
 					.authAlarm("Y")
