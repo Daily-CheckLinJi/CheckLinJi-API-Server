@@ -1053,6 +1053,43 @@ public class MemberService {
 	}	
 	
 	/**
+	 * 유저 알람 설정 정보 업데이트
+	 * @param userEmail
+	 * @return
+	 */	
+	@Transactional // 트랜잭션 안에서 entity를 조회해야 영속성 상태로 조회가 되고 값을 변경해면 변경 감지(dirty checking)가 일어난다.
+	public Map<String, String> fcmUpdate (MemberDto memberDto) {
+		
+		Map<String, String> result = new HashMap<String, String>();
+				
+		log.info("유저 알람 설정 정보 업데이트  -----------------> Start " );	
+       
+       try {    	   
+	    	// 가입된 유저인지 확인
+			Optional<MemberEntity> user = memberRepository.findById(memberDto.getEmail());		
+						 						
+			if(user.isPresent()) { 
+				MemberEntity userInfo = user.get();	
+				userInfo.setFcmToken(memberDto.getFcmToken());												
+								
+		        result.put("HttpStatus","2.00");		
+				result.put("Msg",Constants.SUCCESS);					
+				log.info("fcm 정보 업데이트  -----------------> " + Constants.SUCCESS);					
+			}else {
+				result.put("HttpStatus","1.00");
+				result.put("Msg",Constants.NOT_EXIST_EMAIL);
+				log.info("fcm 정보 업데이트  ------> " + Constants.NOT_EXIST_EMAIL);		
+			}
+		} catch (Exception e) {
+			 result.put("HttpStatus","1.00");		
+			 result.put("Msg",Constants.SYSTEM_ERROR);			 
+			 log.error("fcm 정보 업데이트  -----------------> " + Constants.SYSTEM_ERROR , e);
+		}
+       
+	    return result ;			    		   
+	}		
+	
+	/**
 	 * fcm 삭제  
 	 * @param userEmail
 	 * @return
