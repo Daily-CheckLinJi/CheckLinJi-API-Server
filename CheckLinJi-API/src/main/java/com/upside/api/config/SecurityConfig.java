@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,13 +22,7 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
-    
-//    @Bean
-//    public WebSecurityCustomizer webSecurityCustomizer() {
-//     // antMatchers 부분도 deprecated 되어 requestMatchers로 대체
-//        return (web) -> web.ignoring().requestMatchers("/css/**", "/js/**", "/img/**");
-//    }
-    
+        
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf().disable() // rest api이므로 csrf 보안 미사용

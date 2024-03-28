@@ -14,7 +14,7 @@ public class RankingTopScheduler {
 
 	private final RankingTopInsert rankingTopInsert ;
 	
-	  @Scheduled(cron = "0 */5 * * * *") // 매 5분마다 동작
+	  @Scheduled(cron = "0 */1 * * * *") // 매 5분마다 동작
 	  public void rankingTopInsert() {	  	
 		   rankingTopInsert.rankingTopInsert();
 	  	

@@ -3,6 +3,7 @@ package com.upside.api.service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -12,6 +13,8 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import com.upside.api.entity.MemberEntity;
+import com.upside.api.repository.MemberRepository;
 import com.upside.api.util.Constants;
 
 import lombok.RequiredArgsConstructor;
@@ -24,6 +27,7 @@ public class MailService {
  
 	private final JavaMailSender javaMailSender;
 	private final RedisTemplate<String, String> redisTemplate;
+	private final MemberRepository memberRepository;
 	
 	
 	/**
@@ -86,10 +90,29 @@ public class MailService {
 	public Map<String,String> sendPasswordCode(String email){
 		
 		log.info("비밀번호 찾기 이메일 전송 ------> " + "Start");
+		Map<String, String> result = new HashMap<String, String>();
 		
-	    SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
-	    
-	    Map<String, String> result = new HashMap<String, String>();
+		// 유저 정보가 있는지 확인
+		Optional<MemberEntity> memberEntity = memberRepository.findById(email);
+		
+		// 이메일이 없을경우 
+		if(!memberEntity.isPresent()) {				
+			result.put("HttpStatus", "1.00");	    	
+	    	result.put("Msg", Constants.INBALID_EMAIL);
+	    	log.info("비밀번호 찾기 이메일 전송 ------> " + Constants.INBALID_EMAIL);
+	    	return result ;
+		}
+		
+		// 소셜 계정일 경우 
+		if(memberEntity.get().getPassword().equals("X")) {
+			result.put("HttpStatus", "1.00");	    	
+	    	result.put("Msg", Constants.INBALID_EMAIL);
+	    	log.info("비밀번호 찾기 이메일 전송 ------> " + "소셜 계정은 책린지 내에서는 비밀번호 변경이 불가능합니다.");
+	    	return result ;
+		}
+		
+		
+	    SimpleMailMessage simpleMailMessage = new SimpleMailMessage();	    	  
 	    
 	    String passwordCode = "" ; 
 	    

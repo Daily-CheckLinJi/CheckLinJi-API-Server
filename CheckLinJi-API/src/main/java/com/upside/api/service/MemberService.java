@@ -886,7 +886,15 @@ public class MemberService {
 		    	log.info("패스워드 변경 ( 로그인 한 상태 ) ------> " + Constants.INBALID_EMAIL);
 		    	return result ;
 			}
-									     
+			
+			// 소셜 계정일 경우 
+			if(memberEntity.get().getPassword().equals("X")) {
+				result.put("HttpStatus", "1.00");	    	
+		    	result.put("Msg", Constants.INBALID_EMAIL);
+		    	log.info("패스워드 변경 ( 로그인 한 상태 ) ------> " + "소셜 계정은 책린지 내에서는 비밀번호 변경이 불가능합니다.");
+		    	return result ;
+			}
+			
 		    if (!passwordEncoder.matches(memberDto.getPassword(), memberEntity.get().getPassword())) {	    	
 		    	result.put("HttpStatus", "1.00");	    	
 		    	result.put("Msg", Constants.INBALID_PASSWORD);		    	
@@ -931,7 +939,15 @@ public class MemberService {
 		    	log.info("패스워드 변경 ( 비밀번호 찾기 ) ------> " + Constants.INBALID_EMAIL);
 		    	return result ;
 			}
-									     
+			
+			// 소셜 계정일 경우 
+			if(memberEntity.get().getPassword().equals("X")) {
+				result.put("HttpStatus", "1.00");	    	
+		    	result.put("Msg", Constants.INBALID_EMAIL);
+		    	log.info("패스워드 변경 ( 로그인 한 상태 ) ------> " + "소셜 계정은 책린지 내에서는 비밀번호 변경이 불가능합니다.");
+		    	return result ;
+			}
+			
 	    	MemberEntity member = memberEntity.get();			 			
 	    	member.setPassword(passwordEncoder.encode(memberDto.getPassword()));	
 		    result.put("HttpStatus", "2.00");
