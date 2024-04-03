@@ -647,6 +647,7 @@ public class MemberService {
 				result.put("HttpStatus", "1.02");
 		    	result.put("UserEmail", null);
 		    	result.put("Msg", "존재하지 않는 사용자입니다.");
+		    	log.info("소셜 회원 로그인 ------> " + "존재 하지않는 사용자입니다.");
 		    	return result ;
 			}
 			
@@ -657,6 +658,7 @@ public class MemberService {
 				result.put("HttpStatus", "1.01");
 		    	result.put("UserEmail", null);
 		    	result.put("Msg", "소셜 로그인 유저가 아닙니다.");
+		    	log.info("소셜 회원 로그인 ------> " + "소셜 로그인 유저가 아닙니다.");
 		    	return result ;
 			}
 		     
