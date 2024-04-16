@@ -489,6 +489,9 @@ public class ChallengeService {
 					tagExistN += " -- 등록된 태그가 아니기 때문에 추가에서 제외 되었습니다."; 				
 					result.put("tagExistN",tagExistN);	
 				}
+				
+				 // 게시글 작성 완료 시 유저 게시글 id 값도 응답
+				 result.put("challengeSubmissionId", successYn.get().getChallengeSubmissionId().toString());
 				 result.put("HttpStatus","2.00");		
 				 result.put("Msg","첼린지 제출이 완료되었습니다.");	 
 							
