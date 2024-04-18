@@ -122,11 +122,13 @@ public class JwtTokenProvider {
             
             String email = getEmail(token);
             
-            if(redis.get("accessToken_"+email) == null || !redis.get("accessToken_"+email).equals(token)) { // token 값이 null 이거나 redis에 저장된 값과 다를경우 false            	
+            // token 값이 null 이거나 redis에 저장된 값과 다를경우 false
+            if(redis.get("accessToken_"+email) == null || !redis.get("accessToken_"+email).equals(token)) {             	
             	return false;
             }
             
-            return !claims.getBody().getExpiration().before(new Date()); // 이전과 같이 token을 디코딩하여 만료시간을 끌고와 현재시간과 비교해 확인해준다.
+            // 이전과 같이 token을 디코딩하여 만료시간을 끌고와 현재시간과 비교해 확인해준다.
+            return !claims.getBody().getExpiration().before(new Date()); 
         } catch(Exception e) {        	
             return false;
         }

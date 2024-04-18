@@ -33,6 +33,7 @@ import com.upside.api.repository.MemberRepository;
 import com.upside.api.repository.ReportSubmissionRepository;
 import com.upside.api.repository.SubmissionHashTagRepository;
 import com.upside.api.repository.UserChallengeRepository;
+import com.upside.api.scheduler.RankingTopInsert;
 import com.upside.api.util.Constants;
 import com.upside.api.util.DateTime;
 
@@ -61,6 +62,7 @@ public class ChallengeService {
 	 private final FileService fileService;
 	 private final ChallengeMapper challengeMapper;
 	 private final ReportSubmissionRepository reportSubmissionRepository;
+	 private final RankingTopInsert rankingTopInsert ;
 	 	 
 	
 	 
@@ -493,7 +495,10 @@ public class ChallengeService {
 				 // 게시글 작성 완료 시 유저 게시글 id 값도 응답
 				 result.put("challengeSubmissionId", successYn.get().getChallengeSubmissionId().toString());
 				 result.put("HttpStatus","2.00");		
-				 result.put("Msg","첼린지 제출이 완료되었습니다.");	 
+				 result.put("Msg","첼린지 제출이 완료되었습니다.");	
+				 
+				 // 유저 실시간 랭킹 업데이트
+				 rankingTopInsert.rankingTopInsert();
 							
 		 	} else {
 		 		 log.info("첼린지 제출 ------> " + Constants.FAIL);

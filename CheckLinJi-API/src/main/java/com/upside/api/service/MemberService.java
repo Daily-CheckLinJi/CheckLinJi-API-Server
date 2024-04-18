@@ -34,6 +34,7 @@ import com.upside.api.repository.LikeRepository;
 import com.upside.api.repository.MemberRepository;
 import com.upside.api.repository.RankingRepository;
 import com.upside.api.repository.UserChallengeRepository;
+import com.upside.api.scheduler.RankingTopInsert;
 import com.upside.api.util.Constants;
 import com.upside.api.util.Utill;
 
@@ -61,6 +62,8 @@ public class MemberService {
 	private final CommentRepository commentRepository;
 	private final LikeRepository likeRepository;
 	private final RankingRepository rankingRepository;
+	
+	private final RankingTopInsert rankingTopInsert ;
 
 	
 	
@@ -456,7 +459,10 @@ public class MemberService {
 			     redisTemplate.delete("refreshToken_"+email);
 			     
 			     // 유저 게시글 이미지 및 프로필 삭제
-			     fileService.deleteFileList(email);			     			     
+			     fileService.deleteFileList(email);			
+			     
+			     // 유저 실시간 랭킹 업데이트 
+			     rankingTopInsert.rankingTopInsert();
 				 
 				 log.info("회원정보 삭제 성공 ------> " + Constants.SUCCESS);
 				 result.put("HttpStatus", "2.00");

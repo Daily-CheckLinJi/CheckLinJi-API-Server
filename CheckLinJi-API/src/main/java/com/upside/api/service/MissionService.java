@@ -27,6 +27,7 @@ import com.upside.api.repository.ChallengeSubmissionRepository;
 import com.upside.api.repository.HashTagRepository;
 import com.upside.api.repository.ReportSubmissionRepository;
 import com.upside.api.repository.SubmissionHashTagRepository;
+import com.upside.api.scheduler.RankingTopInsert;
 import com.upside.api.util.Constants;
 
 import lombok.RequiredArgsConstructor;
@@ -54,6 +55,8 @@ public class MissionService {
 	private final FileService fileService ;
 	
 	private final ReportSubmissionRepository reportSubmissionRepository;
+	
+	private final RankingTopInsert rankingTopInsert ;
 	 	 
 	
 	
@@ -452,7 +455,9 @@ public class MissionService {
        			result.put("Msg","요청이 제대로 처리되지 않았습니다.");
        		 return result ;
        		 
-           } else { // 본인 미션 삭제
+           } else { // 본인 미션 삭제        	   
+        	    // 유저 실시간 랭킹 업데이트
+        	   	rankingTopInsert.rankingTopInsert();
         	    log.info("본인 미션 삭제 ------> " + Constants.SUCCESS);
        	    	result.put("HttpStatus","2.00");		
       			result.put("Msg",Constants.SUCCESS);    
