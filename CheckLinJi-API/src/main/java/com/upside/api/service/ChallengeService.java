@@ -551,7 +551,7 @@ public class ChallengeService {
 		       		 
 		           } else {
 		        	   log.info("사람들이 많이 구경하는 첵린저 리스트 ------> " + "게시글이 없습니다.");
-		        	    result.put("HttpStatus","1.00");		
+		        	    result.put("HttpStatus","2.00");		
 		       			result.put("Msg","게시글이 없습니다.");
 		       			return result ;
 		           }

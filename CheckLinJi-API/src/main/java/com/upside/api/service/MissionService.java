@@ -153,9 +153,9 @@ public class MissionService {
 	       Map<String, String> missionRankingOwn = memberMapper.missionRankingOwn(data);
 	                     
 	       if (missionRankingTop.get(0) == null ) {
-	    	    log.info("실시간 랭킹 ------> " + "TOP 3 조회 실패");
-	    	    result.put("HttpStatus","1.00");		
-	   			result.put("Msg","TOP 3 조회 실패");
+	    	    log.info("실시간 랭킹 ------> " + "게시글이 없음");
+	    	    result.put("HttpStatus","2.00");		
+	   			result.put("Msg","게시글이 없습니다.");
 	   		 return result ;
 	       }
 	       
