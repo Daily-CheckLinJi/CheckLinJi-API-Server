@@ -21,10 +21,10 @@ public class WebMvcConfig implements WebMvcConfigurer {
 	    @Override
 	    public void addResourceHandlers(ResourceHandlerRegistry registry) {
 	        registry.addResourceHandler("/image/**")
-	        		.addResourceLocations("file:///home/checkRingi/API-Server/image/");
+	        		.addResourceLocations("file:///home/ec2-user/API-Server/image/");
 	                
 	        registry.addResourceHandler("/image/profile/**")
-	        		.addResourceLocations("file:///home/checkRingi/API-Server/image/profile/");
+	        		.addResourceLocations("file:///home/ec2-user/API-Server/image/profile/");
 	    }	
 	
 }
